@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { CssBaseline, Box } from "@mui/material"; 
+import { CssBaseline, Box, AppBar } from "@mui/material"; 
 import { ButtonMosaic } from "./(admin)/button-inicio-admin/ButtonInicioAdm"; 
+import TopNavbar from "@/components/ui/top-navbar/TopNavbar";
+
 
 // Importando las fuentes locales
 const geistSans = localFont({
@@ -34,14 +36,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        // simulador de slidebar
         <CssBaseline />
+        {/* Usamos flexbox para organizar el layout */}
+        <TopNavbar/>
         <Box sx={{ display: "flex", minHeight: "100vh" }}>
        
           <Box
             component="aside"
             sx={{
-              width: "255px", 
+              width: "250px", // Sidebar de 255px de ancho
               backgroundColor: "#f0f0f0",
               p: 2,
             }}
@@ -50,6 +53,7 @@ export default function RootLayout({
             <p>Este es el espacio del sidebar.</p>
           </Box>
 
+          {/* Contenedor derecho para ButtonInicioAdm y otros contenidos */}
           <Box
             component="main"
             sx={{
@@ -58,7 +62,6 @@ export default function RootLayout({
               backgroundColor: "#fff",
             }}
           >
-          //simulador de slidebar
             <ButtonMosaic  />
             {children}
           </Box>

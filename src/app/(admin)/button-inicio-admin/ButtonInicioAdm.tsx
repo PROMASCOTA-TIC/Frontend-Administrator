@@ -28,7 +28,8 @@ const ButtonInicioAdm: React.FC<ButtonInicioAdmProps> = ({ name, icon: Icon, lin
           color: themePalette.primary,
           width: 400, 
           height: 200, 
-          margin: 1, 
+          margin: 1,
+          borderRadius: '15px',
         }}
       >
         <Box
@@ -43,6 +44,7 @@ const ButtonInicioAdm: React.FC<ButtonInicioAdmProps> = ({ name, icon: Icon, lin
             color: themePalette.cwhite,
             fontSize: 20, 
             textTransform: 'none',
+            borderRadius: '15px 15px 0 0',
           }}
         >
           {name}
@@ -54,6 +56,7 @@ const ButtonInicioAdm: React.FC<ButtonInicioAdmProps> = ({ name, icon: Icon, lin
             justifyContent: 'center',
             width: '100%',
             height: '100%',
+            
           }}
         >
           <Icon sx={{ fontSize: 80 }} />
@@ -67,8 +70,8 @@ export const ButtonMosaic = () => {
   const buttons = [
     { name: 'Emprendedores', icon: StoreIcon, link: '/emprendedores' }, 
     { name: 'Financiero', icon: LeaderboardIcon, link: '/financiero' }, 
-    { name: 'Inventarios', icon: BackupTableIcon, link: '/inventarios' }, 
-    { name: 'Envios', icon: LocalShippingIcon, link: '/envios' }, 
+    { name: 'Gestión de contenido', icon: BackupTableIcon, link: '/inventarios' }, 
+    { name: 'Envíos', icon: LocalShippingIcon, link: '/envios' }, 
   ];
 
   return (
