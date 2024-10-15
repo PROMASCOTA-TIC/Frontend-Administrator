@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { CssBaseline, Box, AppBar } from "@mui/material"; 
-import { ButtonMosaic } from "./(admin)/button-inicio-admin/ButtonInicioAdm"; 
+import { ButtonMosaic } from "../components/ui/button-inicio-admin/ButtonInicioAdm"; 
 import TopNavbar from "@/components/ui/top-navbar/TopNavbar";
+import { FiltroBusqueda } from "@/components/emprendedores/FiltroBusqueda";
 
 
 // Importando las fuentes locales
@@ -37,35 +38,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CssBaseline />
-        {/* Usamos flexbox para organizar el layout */}
-        <TopNavbar/>
-        <Box sx={{ display: "flex", minHeight: "100vh" }}>
-       
-          <Box
-            component="aside"
-            sx={{
-              width: "250px", // Sidebar de 255px de ancho
-              backgroundColor: "#f0f0f0",
-              p: 2,
-            }}
-          >
-            <h2>Sidebar</h2>
-            <p>Este es el espacio del sidebar.</p>
-          </Box>
 
-          {/* Contenedor derecho para ButtonInicioAdm y otros contenidos */}
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              p: 2,
-              backgroundColor: "#fff",
-            }}
-          >
-            <ButtonMosaic  />
+            <FiltroBusqueda />
             {children}
-          </Box>
-        </Box>
+          {/* </Box>
+        </Box> */}
       </body>
     </html>
   );
