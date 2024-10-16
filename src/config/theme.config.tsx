@@ -18,50 +18,59 @@ export enum themePalette {
     cwhite = '#FFFFFF',
 }
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: themePalette.primary,
-        },
-        secondary: {
-            main: themePalette.secondary,
-        },
-    },
-    typography: {
-        fontFamily: themePalette.FONT_GLOBAL,
-        h1: {
-            fontSize: 36,
-            fontWeight: 'bold',
-        },
-        h2: {
-            fontSize: 24,
-            fontWeight: 'bold',
-        },
-        h3: {
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        h4: {
-            fontSize: 14,
-            fontWeight: 'bold',
-        },
-        h5: {
-            fontSize: 12,
-            fontWeight: 'bold',
+export const theme = createTheme({
+    breakpoints: {
+        values: {
+            xs: 0,
+            sm: 600,
+            md: 600,
+            lg: 1200,
+            xl: 1536,
         },
     },
-    components: {
-        MuiButton: {
-            defaultProps: {
-                style: {
-                    textTransform: 'none',
+        palette: {
+            primary: {
+                main: themePalette.primary,
+            },
+            secondary: {
+                main: themePalette.secondary,
+            },
+        },
+        typography: {
+            fontFamily: themePalette.FONT_GLOBAL,
+            h1: {
+                fontSize: 36,
+                fontWeight: 'bold',
+            },
+            h2: {
+                fontSize: 24,
+                fontWeight: 'bold',
+            },
+            h3: {
+                fontSize: 18,
+                fontWeight: 'bold',
+            },
+            h4: {
+                fontSize: 14,
+                fontWeight: 'bold',
+            },
+            h5: {
+                fontSize: 12,
+                fontWeight: 'bold',
+            },
+        },
+        components: {
+            MuiButton: {
+                defaultProps: {
+                    style: {
+                        textTransform: 'none',
+                    },
                 },
             },
         },
-    },
-});
+    });
 
-export const ThemeConfig: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ThemeConfig: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
@@ -69,3 +78,5 @@ export const ThemeConfig: React.FC<{ children: React.ReactNode }> = ({ children 
         </ThemeProvider>
     );
 };
+
+export default ThemeConfig;
