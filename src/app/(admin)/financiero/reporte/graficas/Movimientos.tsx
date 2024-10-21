@@ -1,49 +1,75 @@
-import { PieChart } from "@mui/x-charts";
+import { pieArcLabelClasses, PieChart } from "@mui/x-charts";
 import { useEffect, useState } from "react";
+import { desktopOS, valueFormatter } from "./webUsageStats";
+import { Box } from "@mui/material";
 
 interface Props {
     selectedCategory: string;
+    tipoMovimiento: string;
 }
 
-export const Movimientos = (selectedCategory: Props) => {
+export const Movimientos = ({ selectedCategory, tipoMovimiento }: Props) => {
 
-    const [loading, setLoading] = useState(false);
-    const [ingresos, setIngresos] = useState<number[]>([]);
+    // const [loading, setLoading] = useState(false);
+    // const [ingresos, setIngresos] = useState<number[]>([]);
 
-    loading ? <div>Cargando...</div> : null;
+    // loading ? <div>Cargando...</div> : null;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const responseIngresos = await fetch(`/api/ingresos?year=${selectedCategory}`);
-                const dataIngresos = await responseIngresos.json();
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             setLoading(true);
+    //             const responseIngresos = await fetch(`/api/${tipoMovimiento}?year=${selectedCategory}`);
+    //             const dataIngresos = await responseIngresos.json();
 
-                setIngresos(dataIngresos.length > 0 ? dataIngresos : [0]);
-            } catch (error) {
-                console.error('Error al obtener los datos:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-        const interval = setInterval(fetchData, 100000000);
-        return () => clearInterval(interval);
-    }, [selectedCategory]);
+    //             setIngresos(dataIngresos.length > 0 ? dataIngresos : [0]);
+    //         } catch (error) {
+    //             console.error('Error al obtener los datos:', error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+    //     fetchData();
+    //     const interval = setInterval(fetchData, 100000000);
+    //     return () => clearInterval(interval);
+    // }, [selectedCategory]);
 
     return (
-        <>
+        <Box
+            sx={{
+                display: 'flex',
+                height: { xs: '150px', md: '250px' },
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: {xs: '30px', md: '0px'},
+            }}
+        >
             <PieChart
                 series={[
                     {
-                        data: [{ id: 0, value: 10, label: 'series A' },
-                                { id: 1, value: 15, label: 'series B' },
-                                { id: 2, value: 20, label: 'series C' },]
+                        arcLabel: (item) => `${item.value}%`,
+                        arcLabelMinAngle: 35,
+                        arcLabelRadius: '60%',
+                        ...data,
                     },
                 ]}
-                width={350}
-                height={200}
+                sx={{
+                    [`& .${pieArcLabelClasses.root}`]: {
+                        fontWeight: 'bold',
+                    },
+                }}
+                {...size}
             />
-        </>
-    )
+        </Box>
+    );
 }
+
+const size = {
+    width: 400,
+    height: 200,
+};
+
+const data = {
+    data: desktopOS,
+    valueFormatter,
+};

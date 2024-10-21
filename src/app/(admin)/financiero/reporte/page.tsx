@@ -9,13 +9,11 @@ import { Movimientos } from './graficas/Movimientos';
 
 const categories = [
     { label: 'Todos', value: '' },
-    { label: 'Electrónica', value: 'electronics' },
     { label: 'Ropa', value: 'clothing' },
     { label: 'Alimentos', value: 'food' },
 ];
 
 export default function Reporte() {
-
     const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     const handleCategoryChange = (category: string) => {
@@ -23,8 +21,9 @@ export default function Reporte() {
     };
 
     return (
-        <Grid2 container rowSpacing={'34px'}>
-            <Grid2 size={12}
+        <Grid2 container rowSpacing={{ xs: '20px', md: '34px' }}>
+            <Grid2
+                size={12}
                 sx={{
                     display: 'flex',
                     justifyContent: 'center',
@@ -33,19 +32,23 @@ export default function Reporte() {
                 <Box
                     sx={{
                         display: 'flex',
-                        flexDirection: 'inline',
-                        gap: '64px',
+                        flexDirection: { xs: 'column', sm: 'row', md: 'row' },
+                        gap: { xs: '21px', sm: '34px', md: '5%' },
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: { xs: '95%', md: '90%' },
                     }}
                 >
-                    <Box id='Ingresos'
+                    <Box
+                        id='Ingresos'
                         sx={{
-                            height: '327px',
-                            width: '484px',
+                            height: { xs: '300px', md: '350px' },
+                            width: { xs: '100%', sm: '48%', md: '48%' },
                             border: '1px solid black',
                             borderRadius: '15px',
-                            marginTop: '34px',
                             alignItems: 'center',
-                        }}>
+                        }}
+                    >
                         <Box
                             sx={{
                                 width: '100%',
@@ -59,10 +62,10 @@ export default function Reporte() {
                             <Typography
                                 sx={{
                                     textAlign: 'left',
-                                    fontSize: '24px',
+                                    fontSize: { xs: '18px', md: '24px' },
                                     fontWeight: 'bold',
                                     color: themePalette.primary,
-                                    marginLeft: '54px',
+                                    marginLeft: { xs: '16px', md: '21px' },
                                 }}
                             >
                                 Ingresos
@@ -86,32 +89,24 @@ export default function Reporte() {
                                     fontSize: '18px',
                                     fontWeight: 'bold',
                                     color: themePalette.primary,
-                                    marginRight: '56px',
+                                    marginRight: { xs: '16px', md: '13px' },
                                 }}
                             >
                                 $500
                             </Typography>
                         </Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                height: '228px',
-                                width: '484px',                 
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Movimientos selectedCategory={selectedCategory} />
-                        </Box>
+                        <Movimientos selectedCategory={selectedCategory} tipoMovimiento='Egreso' />
                     </Box>
-                    <Box id='Egresos'
+                    <Box
+                        id='Egresos'
                         sx={{
-                            height: '327px',
-                            width: '484px',
+                            height: { xs: '300px', md: '350px' },
+                            width: { xs: '100%', sm: '48%', md: '48%' },
                             border: '1px solid black',
                             borderRadius: '15px',
-                            marginTop: '34px',
-                        }}>
+                            alignItems: 'center',
+                        }}
+                    >
                         <Box
                             sx={{
                                 width: '100%',
@@ -125,10 +120,10 @@ export default function Reporte() {
                             <Typography
                                 sx={{
                                     textAlign: 'left',
-                                    fontSize: '24px',
+                                    fontSize: { xs: '18px', md: '24px' },
                                     fontWeight: 'bold',
                                     color: themePalette.primary,
-                                    marginLeft: '54px',
+                                    marginLeft: { xs: '16px', md: '21px' },
                                 }}
                             >
                                 Egresos
@@ -152,37 +147,28 @@ export default function Reporte() {
                                     fontSize: '18px',
                                     fontWeight: 'bold',
                                     color: themePalette.primary,
-                                    marginRight: '56px',
+                                    marginRight: { xs: '16px', md: '13px' },
                                 }}
                             >
                                 $500
                             </Typography>
                         </Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                height: '228px',
-                                width: '484px',                 
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Movimientos selectedCategory={selectedCategory} />
-                        </Box>
+                        <Movimientos selectedCategory={selectedCategory} tipoMovimiento='Egreso' />
                     </Box>
                 </Box>
             </Grid2>
             <Grid2 size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Box
+                    id='TendenciaGeneral'
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        height: '338px',
-                        width: '1030px',
+                        height: '350px',
+                        width: { xs: '95%', md: '90%' },
                         border: '1px solid black',
                         borderRadius: '15px',
-                        marginBottom: '34px',
+                        marginBottom: '20px',
                     }}
                 >
                     <Box
@@ -198,10 +184,10 @@ export default function Reporte() {
                         <Typography
                             sx={{
                                 textAlign: 'left',
-                                fontSize: '24px',
+                                fontSize: { xs: '18px', md: '24px' },
                                 fontWeight: 'bold',
                                 color: themePalette.primary,
-                                marginLeft: '54px',
+                                marginLeft: { xs: '16px', md: '32px' },
                             }}
                         >
                             Tendencia General
@@ -213,6 +199,7 @@ export default function Reporte() {
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
+                            px: { xs: '16px', md: '32px' },
                         }}
                     >
                         <FilterSelector
@@ -225,7 +212,6 @@ export default function Reporte() {
                                 fontSize: '18px',
                                 fontWeight: 'bold',
                                 color: themePalette.primary,
-                                marginRight: '56px',
                             }}
                         >
                             $500
@@ -236,10 +222,9 @@ export default function Reporte() {
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            width: '920px',
+                            width: '95%',
                             height: '200px',
-                            border: '1px solid black',
-                            margin: '18px 24px',
+                            marginTop: '18px',
                         }}
                     >
                         <TendenciaGeneral selectedCategory={selectedCategory} />

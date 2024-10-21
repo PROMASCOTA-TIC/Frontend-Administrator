@@ -18,12 +18,23 @@ export default function Dashboard({
                 <Grid2 container spacing={1}>
                     <Grid2
                         size={{ xs: isOpen ? 1 : 0, sm: isOpen ? 2 : 0, md: isOpen ? 2 : 0 }}
+                        sx={{ transition: "all 0.3s ease",
+                            zIndex:5,
+                        }}
                     >
                         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
                     </Grid2>
                     <Grid2
                         size={{ xs: isOpen ? 11 : 12, sm: isOpen ? 10 : 12, md: isOpen ? 10 : 12 }}
-                        sx={{ transition: "all 0.3s ease" }}>
+                        sx={{ transition: "all 0.3s ease",
+                            width: {
+                                xs: "100%",
+                                md: isOpen ? "calc(100% - 250px)" : "100%",
+                            },
+                            maxWidth: "100%",
+                        }}
+                        marginLeft={{ md: isOpen ? "250px" : "0" }}
+                        >
                         <main>
                             <MarginWidthWrapper>
                                 <PageWrapper>

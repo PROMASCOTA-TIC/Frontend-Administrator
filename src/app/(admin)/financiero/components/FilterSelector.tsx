@@ -24,8 +24,8 @@ export default function FilterSelector({ label, options, onFilterChange }: Props
     return (
         <Box
             sx={{
-                width: '220px',
-                marginLeft: '54px',
+                width: { xs: '200px', md: '60%'},
+                marginLeft: '21px',
             }}>
             <FormControl fullWidth>
                 <InputLabel
