@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronRight, Remove, Menu as MenuIcon } from '@mui/icons-material';
 import { Box, Typography, List, IconButton } from '@mui/material';
 import { themePalette } from '@/config/theme.config';
@@ -60,12 +60,26 @@ const SIDEBAR_ITEMS: SideBarItem[] = [
     },
 ];
 
-const Sidebar = ({isOpen,setIsOpen,}: {isOpen: boolean;setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;}) => {
+const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Dispatch<React.SetStateAction<boolean>>; }) => {
     const [openSubMenuIndex, setOpenSubMenuIndex] = useState<number | null>(null);
+    const [windowWidth, setWindowWidth] = useState<number>(0);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+            window.innerWidth <= 900 ? setIsOpen(false) : setIsOpen(true);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [setIsOpen]);
 
     const handleSubMenuToggle = (index: number) => {
         setOpenSubMenuIndex(openSubMenuIndex === index ? null : index);
@@ -100,13 +114,12 @@ const Sidebar = ({isOpen,setIsOpen,}: {isOpen: boolean;setIsOpen: React.Dispatch
             </IconButton>
             <Box
                 sx={{
-                    width: { sx: isOpen ? 200 : 0, md: isOpen ? 250 : 0 },
+                    display: { xs: isOpen ? 'block' : 'none', md: 'block' },
+                    width: isOpen ? { xs: '200px', md: '250px' } : 0,
                     bgcolor: themePalette.primary,
                     color: themePalette.cwhite,
                     height: '100vh',
                     position: 'fixed',
-                    alignItems: 'center',
-                    display: { xs: 'block', md: 'block' },
                     transition: 'width 0.3s ease',
                     overflow: 'hidden',
                     [`& .MuiListItemButton-root`]: {
@@ -133,7 +146,7 @@ const Sidebar = ({isOpen,setIsOpen,}: {isOpen: boolean;setIsOpen: React.Dispatch
                     </Box>
                 )}
                 {isOpen && (
-                    <List sx={{ overflowY: 'hidden'}}>
+                    <List sx={{ overflowY: 'hidden' }}>
                         {SIDEBAR_ITEMS.map((item, idx) => (
                             <MenuItem
                                 key={idx}

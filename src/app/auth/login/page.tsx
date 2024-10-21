@@ -1,45 +1,11 @@
-'use client'
-
-import { loginSchema } from "@/app/validations/loginSchema";
-import { theme, themePalette } from "@/config/theme.config";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, FormControl, FormLabel, Grid2, IconButton, InputAdornment, OutlinedInput, TextField, Typography } from "@mui/material";
+import { theme, } from "@/config/theme.config";
+import { Box, Grid2, Typography } from "@mui/material";
 import Image from "next/image";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LogoVerde from "@/assets/images/logoVerde.png";
 import Imagen from "@/assets/images/Foto.png";
-import Link from "next/link";
-
-type Inputs = {
-  email: string;
-  password: string;
-}
+import { LoginForm } from "./ui/LoginForm";
 
 export default function Login() {
-
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<Inputs>({
-    resolver: zodResolver(loginSchema),
-    mode: 'onChange',
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-
-  const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-
-  const onSubmit = (data: Inputs) => {
-    console.log({ ...data });
-  };
-
   return (
     <div>
       <Grid2 container
@@ -48,7 +14,7 @@ export default function Login() {
           height: '100vh',
           fontFamily: theme.typography.fontFamily,
         }} >
-        <Grid2 size={{xs: 12, md: 7}}
+        <Grid2 size={{ xs: 12, md: 7 }}
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -99,111 +65,10 @@ export default function Login() {
             >
               Inicio de sesión
             </Typography>
-            <FormControl component="form" onSubmit={handleSubmit(onSubmit)}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                width: '100%',
-                marginBottom: '21px',
-              }}
-            >
-              <FormLabel htmlFor="email"
-                sx={{
-                  color: themePalette.black,
-                  textAlign: 'left',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  marginBottom: '10px',
-                }}
-              required
-              >
-                Correo electrónico
-              </FormLabel>
-              <TextField
-                id="email"
-                error={!!errors.email}
-                placeholder="Ingrese su correo electrónico"
-                {...register('email')}
-                required
-              />
-              {errors.email &&
-                <Typography className="text-red-500"
-                  style={{ textAlign: 'left' }}>{errors.email.message}
-                </Typography>}
-              <FormLabel htmlFor="password"
-                sx={{
-                  color: themePalette.black,
-                  textAlign: 'left',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  marginBottom: '10px',
-                  marginTop: '20px',
-                }}
-              required
-              >
-                Contraseña
-              </FormLabel>
-              <OutlinedInput
-                id="password"
-                error={!!errors.password}
-                type={showPassword ? 'text' : 'password'}
-                {...register('password')}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      onMouseUp={handleMouseUpPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                inputProps={{ placeholder: "Ingrese su contraseña" }}
-                required
-              />
-              <Link href="#"
-                style={{
-                  color: themePalette.secondary,
-                  textDecoration: 'underline',
-                  fontSize: '14px',
-                  textAlign: 'right',
-                  marginTop: '5px',
-                  marginBottom: '10px',
-                }}
-              >
-                Recuperar contraseña
-              </Link>
-              <Box
-                sx={{
-                  margin: '10px 0',
-                }}
-              >
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={
-                    {
-                      backgroundColor: theme.palette.primary.main,
-                      color: themePalette.cwhite,
-                      borderRadius: '20px',
-                      padding: '5px 0',
-                      fontSize: '18px',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      width: { xs: '40%', md: '50%' },
-                    }
-                  }
-                >
-                  Iniciar Sesión
-                </Button>
-              </Box>
-            </FormControl>
+            <LoginForm />
           </Box>
         </Grid2>
-        <Grid2 size={{xs: 0, md: 5}}
+        <Grid2 size={{ xs: 0, md: 5 }}
           sx={{
             display: { xs: 'none', md: 'block' },
             margin: 0,

@@ -39,23 +39,23 @@ export const theme = createTheme({
         typography: {
             fontFamily: themePalette.FONT_GLOBAL,
             h1: {
-                fontSize: 36,
+                fontSize: '36px',
                 fontWeight: 'bold',
             },
             h2: {
-                fontSize: 24,
+                fontSize: '24px',
                 fontWeight: 'bold',
             },
             h3: {
-                fontSize: 18,
+                fontSize: '18px',
                 fontWeight: 'bold',
             },
             h4: {
-                fontSize: 14,
+                fontSize: '14px',
                 fontWeight: 'bold',
             },
             h5: {
-                fontSize: 12,
+                fontSize: '12px',
                 fontWeight: 'bold',
             },
         },
