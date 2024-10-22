@@ -4,7 +4,8 @@ import "./globals.css";
 import { CssBaseline, Box, AppBar } from "@mui/material"; 
 import { ButtonMosaic } from "../components/ui/button-inicio-admin/ButtonInicioAdm"; 
 import TopNavbar from "@/components/ui/top-navbar/TopNavbar";
-import { FiltroBusqueda } from "@/components/emprendedores/FiltroBusqueda";
+import { SolicitudesEmprendedores } from "@/components/emprendedores/SolicitudesEmprendedores";
+
 
 
 // Importando las fuentes locales
@@ -39,7 +40,7 @@ export default function RootLayout({
       >
         <CssBaseline />
 
-            <FiltroBusqueda />
+            <SolicitudesEmprendedores/>
             {children}
           {/* </Box>
         </Box> */}
