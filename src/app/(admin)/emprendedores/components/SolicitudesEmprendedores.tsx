@@ -5,19 +5,19 @@ import { useForm, Controller } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, Typography, Box, TextField, Grid2, IconButton } from "@mui/material";
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { Button, Typography, Box, Grid2, IconButton } from "@mui/material";
+import { GridRenderCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import "/src/assets/styles/emprendedores/general.css";
+import { themePalette } from "@/config/theme.config";
+import { esES } from '@mui/x-data-grid/locales';
+import 'dayjs/locale/es';
 
 interface DateFormValues {
   startDate: Dayjs | null;
   endDate: Dayjs | null;
-}
-
-interface NameFormValues {
-  ownerName: string;
 }
 
 interface RowData {
@@ -42,11 +42,9 @@ const rows: RowData[] = [
     ruc: "1712345678001",
     tipoVenta: "Directa",
   },
-  // Puedes agregar más datos aquí...
 ];
 
 export const SolicitudesEmprendedores = () => {
-  // Hook form para las fechas
   const {
     handleSubmit: handleDateSubmit,
     control: controlDate,
@@ -59,43 +57,26 @@ export const SolicitudesEmprendedores = () => {
     },
   });
 
-  // Hook form para la búsqueda por nombre
-  const {
-    handleSubmit: handleNameSubmit,
-    control: controlName,
-    formState: { errors: nameErrors },
-  } = useForm<NameFormValues>({
-    defaultValues: {
-      ownerName: "",
-    },
-  });
-
   const startDate = watchDate("startDate");
 
   const onDateSubmit = (data: DateFormValues) => {
     console.log("Filtrado por fechas:", data);
   };
 
-  const onNameSubmit = (data: NameFormValues) => {
-    console.log("Filtrado por nombre de propietario:", data);
-  };
-
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 10 },
-    { field: "nombrePropietario", headerName: "Nombre", width: 100 },
-    { field: "email", headerName: "Email", width: 150 },
-    { field: "telefono", headerName: "Teléfono", width: 100 },
-    { field: "nombreComercial", headerName: "Nombre comercial", width: 150 },
-    { field: "fechaSolicitud", headerName: "Fecha solicitud", width: 120 },
-    { field: "ruc", headerName: "RUC", width: 125 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 40 }, 
+    { field: "nombrePropietario", headerName: "Nombre", flex: 1, minWidth: 100 }, 
+    { field: "email", headerName: "Email", flex: 1.5, minWidth: 150 }, 
+    { field: "telefono", headerName: "Teléfono", flex: 1, minWidth: 120 }, 
+    { field: "nombreComercial", headerName: "Nombre comercial", flex: 1.5, minWidth: 180 }, 
+    { field: "fechaSolicitud", headerName: "Fecha solicitud", flex: 1, minWidth: 115 }, 
+    { field: "ruc", headerName: "RUC", flex: 1, minWidth: 140 }, 
     {
       field: "aceptar",
       headerName: "Aceptar",
-      width: 80,
+      flex: 0.5, minWidth: 80,
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" 
-        sx={{ color: "green" }}
-        >
+        <IconButton size="medium" sx={{ color: "green" }}>
           <CheckIcon />
         </IconButton>
       ),
@@ -103,19 +84,28 @@ export const SolicitudesEmprendedores = () => {
     {
       field: "rechazar",
       headerName: "Rechazar",
-      width: 120,
+      flex: 0.5, minWidth: 80,
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium"
-        sx={{ color: "red" }}
-        >
+        <IconButton size="medium" sx={{ color: "red" }}>
           <CloseIcon />
         </IconButton>
       ),
     },
   ];
 
-  const handleAction = (row: RowData, action: string) => {
-    console.log(`Acción ${action} para el ID: ${row.id}`);
+  const CustomToolbar = () => {
+    return (
+        <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <GridToolbarFilterButton />
+                <GridToolbarExport />
+            </div>
+            <GridToolbarQuickFilter 
+                debounceMs={500}
+                sx={{ marginLeft: 'auto' }}
+            />
+        </GridToolbarContainer>
+    );
   };
 
   return (
@@ -123,26 +113,27 @@ export const SolicitudesEmprendedores = () => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "column", 
-          marginLeft: { xs: "10px", sm: "20px", md: "250px" }, 
-          padding: "20px",
-          maxWidth: "calc(100% - 250px)",
-          boxSizing: "border-box",
-          minWidth: "300px"
+          flexDirection: "column",
+          padding: "0 20px",
+          width: "100%",
         }}
       >
-        {/* Formulario de búsqueda por nombre y fechas en la misma línea */}
-        <Grid2 container spacing={2} alignItems="center">
-          <Grid2 
-            size={{ xs: 12, sm: 4, md: 2 }}
-            sx={{ minWidth: "150px" }} 
-          >
+        {/* Título centrado */}
+        <Typography sx={{ marginBottom: "20px", textAlign: "center",
+        color:themePalette.primary, fontSize: "36px", fontWeight: "bold"
+       }}>
+          Solicitudes de emprendedores
+        </Typography>
+
+        <Grid2 container spacing={2} alignItems="center" justifyContent="flex-end">
+          <Grid2 size={{ xs: 12, sm: 4, md: 2.09 }}>
             <Controller
               name="startDate"
               control={controlDate}
               rules={{ required: "La fecha de inicio es obligatoria" }}
               render={({ field }) => (
                 <>
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                   <DatePicker
                     {...field}
                     format="DD/MM/YYYY"
@@ -150,6 +141,7 @@ export const SolicitudesEmprendedores = () => {
                     sx={{ width: "100%" }}
                     onChange={(date) => field.onChange(date)}
                   />
+                  </LocalizationProvider > 
                   {dateErrors.startDate && (
                     <Typography color="error" variant="body2">
                       {dateErrors.startDate.message}
@@ -160,10 +152,7 @@ export const SolicitudesEmprendedores = () => {
             />
           </Grid2>
 
-          <Grid2 
-            size={{ xs: 12, sm: 4, md: 2 }}
-            sx={{ minWidth: "150px" }} 
-          >
+          <Grid2 size={{ xs: 12, sm: 4, md: 2 }}>
             <Controller
               name="endDate"
               control={controlDate}
@@ -178,6 +167,7 @@ export const SolicitudesEmprendedores = () => {
               }}
               render={({ field }) => (
                 <>
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                   <DatePicker
                     {...field}
                     format="DD/MM/YYYY"
@@ -186,6 +176,7 @@ export const SolicitudesEmprendedores = () => {
                     minDate={startDate || undefined}
                     onChange={(date) => field.onChange(date)}
                   />
+                  </LocalizationProvider>
                   {dateErrors.endDate && (
                     <Typography color="error" variant="body2">
                       {dateErrors.endDate.message}
@@ -196,74 +187,21 @@ export const SolicitudesEmprendedores = () => {
             />
           </Grid2>
 
-          {/* Botón Filtrar después de los campos de fechas */}
-          <Grid2 
-            size={{ xs: 12, sm: 4, md: 2 }}
-            sx={{ minWidth: "80px" }}
-          >
+          <Grid2 size={{ xs: 12, sm: 4, md: 2 }}>
             <Button
               type="submit"
               className="buttonFiltrarBuscar"
-              sx={{ width: "100px" }} 
+              sx={{ width: "100%" }}
               onClick={handleDateSubmit(onDateSubmit)}
             >
               Filtrar
             </Button>
           </Grid2>
-
-          <Grid2 
-            size={{ xs: 12, sm: 6, md: 4 }}
-            sx={{ minWidth: "200px" }}
-          >
-            {/* Campo de texto para la búsqueda por nombre con validación */}
-            <Controller
-              name="ownerName"
-              control={controlName}
-              rules={{
-                required: "El nombre del propietario es obligatorio",
-                pattern: {
-                  value: /^[A-Za-z\s]+$/, // Solo acepta letras y espacios
-                  message: "El nombre solo debe contener letras",
-                },
-              }}
-              render={({ field }) => (
-                <>
-                  <TextField
-                    {...field}
-                    label="Nombre del propietario"
-                    variant="outlined"
-                    sx={{ width: "100%" }}
-                    onChange={(e) => field.onChange(e.target.value)}
-                  />
-                  {nameErrors.ownerName && (
-                    <Typography color="error" variant="body2">
-                      {nameErrors.ownerName.message}
-                    </Typography>
-                  )}
-                </>
-              )}
-            />
-          </Grid2>
-
-          {/* Botón Buscar */}
-          <Grid2 
-            size={{ xs: 12, sm: 4, md: 2 }}
-            sx={{ minWidth: "80px" }}
-          >
-            <Button
-              type="submit"
-              className="buttonFiltrarBuscar"
-              sx={{ width: "100px" }}
-              onClick={handleNameSubmit(onNameSubmit)}
-            >
-              Buscar
-            </Button>
-          </Grid2>
         </Grid2>
 
-        {/* Tabla con 10 columnas */}
         <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
           <DataGrid
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             rows={rows}
             columns={columns}
             initialState={{
@@ -272,6 +210,30 @@ export const SolicitudesEmprendedores = () => {
               },
             }}
             pageSizeOptions={[5, 10, 25]}
+            slots={{
+              toolbar: CustomToolbar,
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+                quickFilterProps: { debounceMs: 500 },
+              },
+            }}
+            sx={{
+              '& .MuiDataGrid-toolbarContainer': {
+                backgroundColor: themePalette.cwhite,
+                padding: '0.5rem',
+                border: '0px solid',
+              },
+              '& .MuiDataGrid-columnHeader': {
+                backgroundColor: themePalette.black10,
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-footerContainer': {
+                backgroundColor: themePalette.black10,
+                fontWeight: 'bold',
+              },
+            }}
           />
         </Box>
       </Box>
