@@ -6,6 +6,7 @@ import { ButtonMosaic } from "../components/ui/button-inicio-admin/ButtonInicioA
 import TopNavbar from "@/components/ui/top-navbar/TopNavbar";
 import { SolicitudesEmprendedores } from "@/components/emprendedores/SolicitudesEmprendedores";
 import { ListaEmprendedores } from "@/components/emprendedores/ListaEmprendedores";
+import { ProductosRegistrados } from "@/components/emprendedores/ProductosRegistrados";
 
 
 
@@ -41,7 +42,7 @@ export default function RootLayout({
       >
         <CssBaseline />
 
-            <ListaEmprendedores />
+            <ProductosRegistrados />
             {children}
           {/* </Box>
         </Box> */}
