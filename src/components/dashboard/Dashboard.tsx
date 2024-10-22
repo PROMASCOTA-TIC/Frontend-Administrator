@@ -28,8 +28,8 @@ export default function Dashboard({
                     <Grid2
                         size={{ xs: isOpen ? 11 : 12, sm: isOpen ? 10 : 12, md: isOpen ? 10 : 12 }}
                         sx={{ transition: "all 0.3s ease" }}
-                        maxWidth={isOpen ? "calc(100% - 250px)" : "100%"}
-                        marginLeft={isOpen ? "250px" : "0px" }
+                        maxWidth={{ md: isOpen ? "calc(100% - 250px)" : "100%"}}
+                        marginLeft={{md: isOpen ? "250px" : "0px"}}
                         >
                         
                         <main>

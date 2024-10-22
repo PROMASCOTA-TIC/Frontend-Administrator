@@ -94,7 +94,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     marginTop: '6px',
                     display: 'flex',
                     alignItems: 'center',
-                    zIndex: 1,
+                    zIndex: 11,
                     position: 'fixed',
                     color: isOpen ? '#fff' : themePalette.primary,
                     '&:hover': {
@@ -122,6 +122,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     position: 'fixed',
                     transition: 'width 0.3s ease',
                     overflow: 'hidden',
+                    zIndex: 10,
                     [`& .MuiListItemButton-root`]: {
                         '&.Mui-selected': {
                             color: themePalette.secondary,

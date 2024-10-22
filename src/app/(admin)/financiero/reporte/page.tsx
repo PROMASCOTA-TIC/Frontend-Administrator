@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { Box, Grid2, Typography } from '@mui/material';
 import { themePalette } from '@/config/theme.config';
-import FilterSelector from '../components/FilterSelector';
 import { TendenciaGeneral } from './graficas/TendenciaGeneral';
 import { Movimientos } from './graficas/Movimientos';
+import FilterSelector from '../components/FilterSelector';
 
 const categories = [
     { label: 'Todos', value: '' },
