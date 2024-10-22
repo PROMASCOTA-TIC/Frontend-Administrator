@@ -5,6 +5,7 @@ import { CssBaseline, Box, AppBar } from "@mui/material";
 import { ButtonMosaic } from "../components/ui/button-inicio-admin/ButtonInicioAdm"; 
 import TopNavbar from "@/components/ui/top-navbar/TopNavbar";
 import { SolicitudesEmprendedores } from "@/components/emprendedores/SolicitudesEmprendedores";
+import { ListaEmprendedores } from "@/components/emprendedores/ListaEmprendedores";
 
 
 
@@ -40,7 +41,7 @@ export default function RootLayout({
       >
         <CssBaseline />
 
-            <SolicitudesEmprendedores/>
+            <ListaEmprendedores />
             {children}
           {/* </Box>
         </Box> */}
