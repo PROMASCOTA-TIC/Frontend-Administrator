@@ -3,6 +3,10 @@
     background-color: #004040;
 }
 
+.bg-primarydos{
+    background-color: #00404099;
+}
+
 .bg-secondary {
     background-color: #00AA28;
 }
@@ -19,9 +23,7 @@
     background-color: #0000001A;
 }
 
-/* .bg-primarydos{
-    background-color: #00404099;
-}
+/* 
 
 .bg-secondary40 {
     background-color: #00AA2866;
