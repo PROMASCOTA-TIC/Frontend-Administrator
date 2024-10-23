@@ -5,12 +5,13 @@ import { useForm, Controller } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, Typography, Box, Grid2, IconButton } from "@mui/material";
-import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter, GridRenderCellParams } from "@mui/x-data-grid";
+import { Button, Typography, Box, Grid2, IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import "/src/assets/styles/emprendedores/general.css";
+import { ProductosRegistrados } from './ProductosRegistrados'; // Importa el componente
 import { themePalette } from "@/config/theme.config";
 import { esES } from '@mui/x-data-grid/locales';
 
@@ -39,25 +40,34 @@ const rows: RowData[] = [
     ruc: "1712345678001",
     estado: "Activo",
   },
+  // Agrega más emprendedores según sea necesario
 ];
 
 export const ListaEmprendedores = () => {
-  const {
-    handleSubmit: handleDateSubmit,
-    control: controlDate,
-    watch: watchDate,
-    formState: { errors: dateErrors },
-  } = useForm<DateFormValues>({
+  const { handleSubmit: handleDateSubmit, control: controlDate, watch: watchDate, formState: { errors: dateErrors } } = useForm<DateFormValues>({
     defaultValues: {
       startDate: null,
       endDate: null,
     },
   });
 
+  const [openProductos, setOpenProductos] = React.useState(false); // Estado para el modal
+  const [selectedEntrepreneur, setSelectedEntrepreneur] = React.useState<RowData | null>(null); // Estado para el emprendedor seleccionado
+
   const startDate = watchDate("startDate");
 
   const onDateSubmit = (data: DateFormValues) => {
     console.log("Filtrado por fechas:", data);
+  };
+
+  const handleOpenProductos = (row: RowData) => {
+    setSelectedEntrepreneur(row); // Guarda el emprendedor seleccionado
+    setOpenProductos(true); // Abre el modal
+  };
+
+  const handleCloseProductos = () => {
+    setOpenProductos(false); // Cierra el modal
+    setSelectedEntrepreneur(null); // Resetea el emprendedor seleccionado
   };
 
   const columns: GridColDef[] = [
@@ -94,114 +104,46 @@ export const ListaEmprendedores = () => {
       flex: 0.5,
       minWidth: 88,
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" sx={{ color: "blue" }}>
-          <VisibilityIcon />
+        <IconButton
+          size="medium"
+          sx={{ color: "blue" }}
+          onClick={() => handleOpenProductos(params.row)} // Abre el modal al hacer clic
+        >
+          <VisibilityIcon sx={{color:themePalette.primary}}/>
         </IconButton>
       ),
     },
   ];
-
   const CustomToolbar = () => {
     return (
-      <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div>
-          <GridToolbarFilterButton />
-          <GridToolbarExport />
-        </div>
-        <GridToolbarQuickFilter 
-          debounceMs={500}
-          sx={{ marginLeft: 'auto' }}
-        />
-      </GridToolbarContainer>
+        <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <GridToolbarFilterButton />
+                <GridToolbarExport />
+            </div>
+            <GridToolbarQuickFilter 
+                debounceMs={500}
+                sx={{ marginLeft: 'auto' }}
+            />
+        </GridToolbarContainer>
     );
   };
 
+  
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 20px",
-          width: "100%",
-        }}
-      >
-        <Typography sx={{ marginBottom: "20px", textAlign: "center", color: themePalette.primary, fontSize: "36px", fontWeight: "bold" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", padding: "0 20px", width: "100%" }}>
+        <Typography 
+        sx={{ marginBottom: "20px", textAlign: "center",
+        color:themePalette.primary, fontSize: "36px", fontWeight: "bold"
+       }}>
           Lista de Emprendedores
         </Typography>
 
-        <Grid2 container spacing={2} alignItems="center" justifyContent="flex-end">
-          <Grid2 size={{ xs: 12, sm: 4, md: 2.09 }}>
-            <Controller
-              name="startDate"
-              control={controlDate}
-              rules={{ required: "La fecha de inicio es obligatoria" }}
-              render={({ field }) => (
-                <>
-                  <DatePicker
-                    {...field}
-                    format="DD/MM/YYYY"
-                    label="Fecha de inicio"
-                    sx={{ width: "100%" }}
-                    onChange={(date) => field.onChange(date)}
-                  />
-                  {dateErrors.startDate && (
-                    <Typography color="error" variant="body2">
-                      {dateErrors.startDate.message}
-                    </Typography>
-                  )}
-                </>
-              )}
-            />
-          </Grid2>
-
-          <Grid2 size={{ xs: 12, sm: 4, md: 2 }}>
-            <Controller
-              name="endDate"
-              control={controlDate}
-              rules={{
-                required: "La fecha de fin es obligatoria",
-                validate: (value) => {
-                  if (startDate && value && dayjs(value).isBefore(dayjs(startDate))) {
-                    return "La fecha de fin no puede ser anterior a la fecha de inicio";
-                  }
-                  return true;
-                },
-              }}
-              render={({ field }) => (
-                <>
-                  <DatePicker
-                    {...field}
-                    format="DD/MM/YYYY"
-                    label="Fecha de fin"
-                    sx={{ width: "100%" }}
-                    minDate={startDate || undefined}
-                    onChange={(date) => field.onChange(date)}
-                  />
-                  {dateErrors.endDate && (
-                    <Typography color="error" variant="body2">
-                      {dateErrors.endDate.message}
-                    </Typography>
-                  )}
-                </>
-              )}
-            />
-          </Grid2>
-
-          <Grid2 size={{ xs: 12, sm: 4, md: 2 }} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              type="submit"
-              className="buttonFiltrarBuscar"
-              sx={{ width: "100px" }}
-              onClick={handleDateSubmit(onDateSubmit)}
-            >
-              Filtrar
-            </Button>
-          </Grid2>
-        </Grid2>
-
+        {/* Tabla con DataGrid */}
         <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
-          <DataGrid
+        <DataGrid
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             rows={rows}
             columns={columns}
@@ -213,6 +155,12 @@ export const ListaEmprendedores = () => {
             pageSizeOptions={[5, 10, 25]}
             slots={{
               toolbar: CustomToolbar,
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+                quickFilterProps: { debounceMs: 500 },
+              },
             }}
             sx={{
               '& .MuiDataGrid-toolbarContainer': {
@@ -231,6 +179,39 @@ export const ListaEmprendedores = () => {
             }}
           />
         </Box>
+
+        {/* Modal para mostrar productos */}
+        <Dialog open={openProductos} onClose={handleCloseProductos} maxWidth="xl" fullWidth>
+  <DialogTitle
+    sx={{
+      marginBottom: "20px",
+      textAlign: "center",
+      color: themePalette.primary,
+      fontSize: "36px",
+      fontWeight: "bold",
+      position: "relative",
+    }}
+  >
+    Productos Registrados - {selectedEntrepreneur?.nombreComercial}
+    {/* Botón para cerrar */}
+    <IconButton
+      aria-label="close"
+      onClick={handleCloseProductos}
+      sx={{
+        position: "absolute",
+        right: 8,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+      }}
+    >
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
+  <DialogContent>
+    <ProductosRegistrados />
+   
+  </DialogContent>
+</Dialog>      
       </Box>
     </LocalizationProvider>
   );
