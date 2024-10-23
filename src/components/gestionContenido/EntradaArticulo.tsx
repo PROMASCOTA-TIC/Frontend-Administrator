@@ -3,14 +3,13 @@ import React from 'react'
 
 import '/src/assets/styles/gestionContenido/general.css';
 import '/src/assets/styles/gestionContenido/estilos.css';
-import BotonEditar from '@/components/gestionContenido/BotonEditar';
-import BotonEliminar from '@/components/gestionContenido/BotonEliminar';
+import BotonEditar from '@/components/gestionContenido/botones/BotonEditar';
+import BotonEliminar from '@/components/gestionContenido/botones/BotonEliminar';
 
 const EntradaArticulo = () => {
     return (
         <Box
             sx={{
-                padding: '34px 55px',
                 gap: '21px'
             }}
         >
@@ -25,23 +24,6 @@ const EntradaArticulo = () => {
                 </div>
                 <img src="https://via.placeholder.com/100" className='articulo_imagen' />
             </div>
-
-            <Box
-                className='flex-center'
-                sx={{
-                    gap: {
-                        xs: '15px',   // Gap para pantallas extra pequeñas
-                        md: '100px',
-                    },
-                }}
-            >
-                <BotonEditar
-                    link="https://example.com"
-                />
-                <BotonEliminar
-                    link="https://example.com"
-                />
-            </Box>
         </Box>
     )
 }

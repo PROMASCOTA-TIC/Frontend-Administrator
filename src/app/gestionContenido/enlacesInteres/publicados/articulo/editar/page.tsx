@@ -1,7 +1,7 @@
 import PieDePagina from "@/components/ui/footer/PieDePagina";
-import EntradaArticulo from "../../../../../components/gestionContenido/EntradaArticulo";
-import Btn_EditarEliminar from "@/components/gestionContenido/Btn_EditarEliminar";
 import { Box } from "@mui/material";
+import EntradaArticulo from "@/components/gestionContenido/EntradaArticulo";
+import Btn_GuardarCancelar from "@/components/gestionContenido/Btn_GuardarCancelar";
 
 const page = () => {
     return (
@@ -15,7 +15,7 @@ const page = () => {
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <EntradaArticulo />
-                <Btn_EditarEliminar />
+                <Btn_GuardarCancelar />
             </Box>
             <PieDePagina />
         </div>
