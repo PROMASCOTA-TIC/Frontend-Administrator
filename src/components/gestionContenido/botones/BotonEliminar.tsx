@@ -1,34 +1,74 @@
-import { Button } from '@mui/material';
-import { Delete } from '@mui/icons-material';
-import React from 'react';
-import Link from 'next/link';
+"use client";
 
-import '/src/assets/styles/gestionContenido/general.css';
+import React, { useState } from 'react';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Delete } from '@mui/icons-material';
 
 interface BotonEliminarProps {
-    link: string;
+    onConfirm: () => void;
 }
 
-const BotonEliminar: React.FC<BotonEliminarProps> = ({ link }) => {
+const BotonEliminar: React.FC<BotonEliminarProps> = ({ onConfirm }) => {
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleConfirm = () => {
+        onConfirm();
+        handleClose();
+    };
+
     return (
-        <Link href={link} passHref>
+        <>
             <Button
                 variant="contained"
-                className='n-regular'
+                onClick={handleClickOpen} // Este evento abre el diálogo de confirmación
                 sx={{
-                    backgroundColor: 'red',
-                    width: { xs: '100%', md: 'auto' }, // Ajusta el ancho según el tamaño de pantalla
+                    width: { xs: '100%', md: 'auto' },
                     height: { xs: '40px', md: '50px' },
-
-                    color: 'white',                
-                    borderRadius: '8px',          
-                    padding: '8px 12px',          
+                    backgroundColor: 'red',
+                    color: 'white',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
                 }}
             >
                 <Delete />
             </Button>
-        </Link>
-    )
-}
+
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title" style={{ textAlign: 'center' }} >{"Confirmar Eliminación"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        ¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions className='flex-center'>
+                    <Button onClick={handleConfirm} color="error" autoFocus>
+                        Eliminar
+                    </Button>
+                    <Button onClick={handleClose} color="primary">
+                        Cancelar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+};
 
 export default BotonEliminar;

@@ -1,7 +1,7 @@
 import PieDePagina from "@/components/ui/footer/PieDePagina";
 import { Box } from "@mui/material";
 import EntradaArticulo from "@/components/gestionContenido/EntradaArticulo";
-import Btn_GuardarCancelar from "@/components/gestionContenido/Btn_GuardarCancelar";
+import Btn_GuardarCancelar from "@/components/gestionContenido/barraBotones/Btn_GuardarCancelar";
 
 const page = () => {
     return (

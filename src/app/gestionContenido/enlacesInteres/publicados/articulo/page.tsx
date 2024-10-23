@@ -1,6 +1,6 @@
 import PieDePagina from "@/components/ui/footer/PieDePagina";
 import EntradaArticulo from "../../../../../components/gestionContenido/EntradaArticulo";
-import Btn_EditarEliminar from "@/components/gestionContenido/Btn_EditarEliminar";
+import Btn_EditarEliminar from "@/components/gestionContenido/barraBotones/Btn_EditarEliminar";
 import { Box } from "@mui/material";
 
 const page = () => {

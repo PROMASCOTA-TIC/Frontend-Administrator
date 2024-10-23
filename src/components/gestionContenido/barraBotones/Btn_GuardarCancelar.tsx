@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import React from 'react'
-import BotonAzul from './botones/BotonAzul'
+import BotonAzul from '../botones/BotonAzul'
 
 const Btn_GuardarCancelar = () => {
     return (

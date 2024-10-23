@@ -1,5 +1,5 @@
 import ArticulosConFoto from '@/components/gestionContenido/ArticulosConFoto';
-import EI_Filtro from '@/components/gestionContenido/EI_Filtro'
+import EI_Filtro from '@/components/gestionContenido/filtros/EI_Filtro'
 import PieDePagina from '@/components/ui/footer/PieDePagina';
 import React from 'react'
 
