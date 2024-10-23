@@ -133,7 +133,6 @@ export const SolicitudesEmprendedores = () => {
               rules={{ required: "La fecha de inicio es obligatoria" }}
               render={({ field }) => (
                 <>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                   <DatePicker
                     {...field}
                     format="DD/MM/YYYY"
@@ -141,7 +140,6 @@ export const SolicitudesEmprendedores = () => {
                     sx={{ width: "100%" }}
                     onChange={(date) => field.onChange(date)}
                   />
-                  </LocalizationProvider > 
                   {dateErrors.startDate && (
                     <Typography color="error" variant="body2">
                       {dateErrors.startDate.message}
@@ -167,7 +165,6 @@ export const SolicitudesEmprendedores = () => {
               }}
               render={({ field }) => (
                 <>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                   <DatePicker
                     {...field}
                     format="DD/MM/YYYY"
@@ -176,7 +173,6 @@ export const SolicitudesEmprendedores = () => {
                     minDate={startDate || undefined}
                     onChange={(date) => field.onChange(date)}
                   />
-                  </LocalizationProvider>
                   {dateErrors.endDate && (
                     <Typography color="error" variant="body2">
                       {dateErrors.endDate.message}
@@ -187,18 +183,17 @@ export const SolicitudesEmprendedores = () => {
             />
           </Grid2>
 
-          <Grid2 size={{ xs: 12, sm: 4, md: 2 }}>
+          <Grid2 size={{ xs: 12, sm: 4, md: 2 }} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               type="submit"
               className="buttonFiltrarBuscar"
-              sx={{ width: "100%" }}
+              sx={{ width: "100px" }}
               onClick={handleDateSubmit(onDateSubmit)}
             >
               Filtrar
             </Button>
           </Grid2>
         </Grid2>
-
         <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
           <DataGrid
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
