@@ -1,7 +1,10 @@
+"use client";
+
 import { Box } from '@mui/material'
 import React from 'react'
 import BotonEditar from '../botones/BotonEditar'
 import BotonEliminar from '../botones/BotonEliminar'
+import BotonCheck from '../botones/BotonCheck'
 
 const Btn_PorPublicar = () => {
 
@@ -20,6 +23,8 @@ const Btn_PorPublicar = () => {
                 },
             }}
         >
+            <BotonCheck mensaje="Enlace de interés publicado con éxito." />
+
             <BotonEditar
                 link="https://example.com"
             />
