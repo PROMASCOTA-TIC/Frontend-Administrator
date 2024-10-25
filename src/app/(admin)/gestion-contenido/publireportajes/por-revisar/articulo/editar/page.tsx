@@ -16,7 +16,10 @@ const page = () => {
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <PR_Articulo />
                 <div style={{ paddingTop: '34px' }}>
-                    <Btn_GuardarCancelar />
+                    <Btn_GuardarCancelar
+                        linkGuardar="/gestion-contenido/publireportajes/por-revisar/articulo"
+                        linkCancelar="/gestion-contenido/publireportajes/por-revisar/articulo"
+                    />
                 </div>
             </Box>
             <PieDePagina />
