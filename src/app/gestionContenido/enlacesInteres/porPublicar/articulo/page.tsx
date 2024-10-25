@@ -1,9 +1,9 @@
 "use client";
 
 import PieDePagina from "@/components/ui/footer/PieDePagina";
-import EntradaArticulo from "../../../../../components/gestionContenido/EntradaArticulo";
 import { Box } from "@mui/material";
 import Btn_PorPublicar from "@/components/gestionContenido/barraBotones/Btn_PorPublicar";
+import EI_Articulo from "../../../../../components/gestionContenido/EI_Articulo";
 
 const page = () => {
     return (
@@ -16,7 +16,7 @@ const page = () => {
                 }}
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
-                <EntradaArticulo />
+                <EI_Articulo />
                 <Btn_PorPublicar />
             </Box>
             <PieDePagina />

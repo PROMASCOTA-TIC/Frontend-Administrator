@@ -48,13 +48,10 @@ const BotonCheck: React.FC<BotonCheckProps> = ({ mensaje }) => {
             >
                 <Alert
                     onClose={handleClose}
+                    className="n-bold txt-center"
                     severity="success"
                     sx={{
                         width: '100%',
-                        textAlign: 'center', // Centrar el texto
-                        fontSize: '18px', // Cambiar el tamaño de la fuente
-                        fontWeight: 'bold', // Cambiar el grosor de la letra
-                        fontFamily: 'Arial, sans-serif', // Cambiar la fuente
                     }}
                 >
                     {mensaje} {/* Usamos el prop mensaje aquí */}

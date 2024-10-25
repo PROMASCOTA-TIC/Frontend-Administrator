@@ -6,7 +6,7 @@ import '/src/assets/styles/gestionContenido/estilos.css';
 import BotonEditar from '@/components/gestionContenido/botones/BotonEditar';
 import BotonEliminar from '@/components/gestionContenido/botones/BotonEliminar';
 
-const EntradaArticulo = () => {
+const EI_Articulo = () => {
     return (
         <Box
             sx={{
@@ -28,7 +28,7 @@ const EntradaArticulo = () => {
     )
 }
 
-export default EntradaArticulo
+export default EI_Articulo
 
 
 // 'use client'; // Asegúrate de que este componente funcione como un componente del lado del cliente

@@ -5,7 +5,7 @@ import { Box } from '@mui/material'
 import React from 'react'
 
 const buttons = [
-    { name: 'Enlaces Publicados', icon: AssignmentTurnedIn, link: '' },
+    { name: 'Enlaces publicados', icon: AssignmentTurnedIn, link: '' },
     { name: 'Enlaces por revisar', icon: Assignment , link: '' },
   ];
 

@@ -16,6 +16,7 @@ const BotonAzul: React.FC<ButtonAzulProps> = ({ name, link }) => {
                 variant="contained" 
                 className='bg-primary n-regular'
                 sx={{
+                    textTransform: 'none',
                     width: { xs: '100%', md: 'auto' }, // Ajusta el ancho según el tamaño de pantalla
                     height: { xs: '40px', md: '50px' }, // Ajusta la altura según el tamaño de pantalla
                 }}
