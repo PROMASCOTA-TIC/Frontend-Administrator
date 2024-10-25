@@ -1,11 +1,17 @@
 "use client";
 
 import { Box } from '@mui/material'
-import React from 'react'
+import React, { FC } from 'react'
 import BotonEditar from '../botones/BotonEditar'
 import BotonEliminar from '../botones/BotonEliminar'
 
-const Btn_EditarEliminar = () => {
+{/********************** REVISAR LOGICA DE ESTE LINK ***************************/}
+
+interface BtnEditarEliminarProps {
+    linkEditar: string;
+}
+
+const Btn_EditarEliminar: FC<BtnEditarEliminarProps> = ({ linkEditar }) => {
 
     const handleDelete = () => {
         console.log('Elemento eliminado');
@@ -22,10 +28,9 @@ const Btn_EditarEliminar = () => {
                 },
             }}
         >
-            <BotonEditar
-                link="https://example.com"
-            />
+            <BotonEditar link={linkEditar} />
             
+            {/********************** REVISAR LOGICA DE ESTE LINK ***************************/}
             <BotonEliminar onConfirm={handleDelete} />
         </Box>
     )

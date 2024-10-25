@@ -1,11 +1,16 @@
-import { Box } from '@mui/material'
-import React from 'react'
-import BotonAzul from '../botones/BotonAzul'
+import { Box } from '@mui/material';
+import React, { FC } from 'react';
+import BotonAzul from '../botones/BotonAzul';
 
-const Btn_GuardarCancelar = () => {
+interface Btn_GuardarCancelarProps {
+    linkGuardar: string;
+    linkCancelar: string;
+}
+
+const Btn_GuardarCancelar: FC<Btn_GuardarCancelarProps> = ({ linkGuardar, linkCancelar }) => {
     return (
         <Box
-            className='flex-center'
+            className="flex-center"
             sx={{
                 gap: {
                     xs: '15px',   // Gap para pantallas extra pequeñas
@@ -15,15 +20,15 @@ const Btn_GuardarCancelar = () => {
         >
             <BotonAzul
                 name="Guardar"
-                link="https://example.com"
+                link={linkGuardar}
             />
 
             <BotonAzul
                 name="Cancelar"
-                link="https://example.com"
+                link={linkCancelar}
             />
         </Box>
-    )
+    );
 }
 
-export default Btn_GuardarCancelar
+export default Btn_GuardarCancelar;
