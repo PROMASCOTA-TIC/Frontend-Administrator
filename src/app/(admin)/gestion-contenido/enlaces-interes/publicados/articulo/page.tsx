@@ -1,7 +1,7 @@
 import PieDePagina from "@/components/ui/footer/PieDePagina";
 import Btn_EditarEliminar from "@/components/gestionContenido/barraBotones/Btn_EditarEliminar";
 import { Box } from "@mui/material";
-import EI_Articulo from "../../../../../components/gestionContenido/EI_Articulo";
+import EI_Articulo from "@/components/gestionContenido/EI_Articulo";
 
 const page = () => {
     return (
@@ -15,11 +15,18 @@ const page = () => {
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <EI_Articulo />
-                <Btn_EditarEliminar />
+
+
+                {/********************** REVISAR LOGICA DE ESTE LINK ***************************/}
+                <div style={{ paddingTop: '34px' }}>
+                    <Btn_EditarEliminar
+                        linkEditar="/gestion-contenido/enlaces-interes/publicados/articulo/editar"
+                    />
+                </div>
             </Box>
             <PieDePagina />
         </div>
     );
 }
- 
+
 export default page

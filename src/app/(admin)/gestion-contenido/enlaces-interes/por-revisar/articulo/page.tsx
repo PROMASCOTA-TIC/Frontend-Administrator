@@ -2,8 +2,9 @@
 
 import PieDePagina from "@/components/ui/footer/PieDePagina";
 import { Box } from "@mui/material";
-import Btn_PorPublicar from "@/components/gestionContenido/barraBotones/Btn_PorPublicar";
-import EI_Articulo from "../../../../../components/gestionContenido/EI_Articulo";
+import EI_Articulo from "@/components/gestionContenido/EI_Articulo";
+import Btn_PorRevisar from "@/components/gestionContenido/barraBotones/Btn_PorRevisar";
+
 
 const page = () => {
     return (
@@ -17,11 +18,15 @@ const page = () => {
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <EI_Articulo />
-                <Btn_PorPublicar />
+
+                {/********************** REVISAR LOGICA DE ESTE LINK ***************************/}
+                <div style={{ paddingTop: '34px' }}>
+                    <Btn_PorRevisar link="/gestion-contenido/enlaces-interes/por-revisar/articulo/editar" />
+                </div>
             </Box>
             <PieDePagina />
         </div>
     );
 }
- 
+
 export default page

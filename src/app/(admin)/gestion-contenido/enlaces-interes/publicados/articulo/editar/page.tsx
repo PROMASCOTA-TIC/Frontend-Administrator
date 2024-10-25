@@ -15,11 +15,16 @@ const page = () => {
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <EntradaArticulo />
-                <Btn_GuardarCancelar />
+                <div style={{ paddingTop: '34px' }}>
+                    <Btn_GuardarCancelar
+                        linkGuardar="/gestion-contenido/enlaces-interes/publicados/articulo"
+                        linkCancelar="/gestion-contenido/enlaces-interes/publicados/articulo"
+                    />
+                </div>
             </Box>
             <PieDePagina />
         </div>
     );
 }
- 
+
 export default page

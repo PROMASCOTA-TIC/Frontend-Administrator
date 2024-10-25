@@ -6,7 +6,7 @@ import React from 'react'
 
 const buttons = [
     { name: 'Enlaces publicados', icon: AssignmentTurnedIn, link: '/gestion-contenido/enlaces-interes/publicados' },
-    { name: 'Enlaces por revisar', icon: Assignment, link: '/gestion-contenido/enlaces-interes/por-publicar' },
+    { name: 'Enlaces por revisar', icon: Assignment, link: '/gestion-contenido/enlaces-interes/por-revisar' },
 ];
 
 const page = () => {

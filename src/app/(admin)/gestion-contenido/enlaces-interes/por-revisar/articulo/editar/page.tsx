@@ -16,12 +16,15 @@ const page = () => {
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
                 <EI_Articulo />
                 <div style={{ paddingTop: '34px' }}>
-                    <Btn_GuardarCancelar />
+                    <Btn_GuardarCancelar
+                        linkGuardar="/gestion-contenido/enlaces-interes/por-revisar/articulo"
+                        linkCancelar="/gestion-contenido/enlaces-interes/por-revisar/articulo"
+                    />
                 </div>
             </Box>
             <PieDePagina />
         </div>
     );
 }
- 
+
 export default page
