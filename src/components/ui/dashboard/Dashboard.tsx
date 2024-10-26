@@ -1,10 +1,11 @@
 'use client';
 
 import Sidebar from "@/components/ui/sidebar/Sidebar";
-import MarginWidthWrapper from "@/components/ui/Margin-width-weapper";
-import PageWrapper from "../ui/Page-wrapper";
 import React, { useState } from "react";
 import { Grid2 } from "@mui/material";
+import MarginWidthWrapper from "../wrapper/Margin-width-wrapper";
+import PageWrapper from "../wrapper/Page-wrapper";
+
 
 
 
