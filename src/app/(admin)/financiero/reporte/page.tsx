@@ -6,6 +6,7 @@ import { themePalette } from '@/config/theme.config';
 import { TendenciaGeneral } from './graficas/TendenciaGeneral';
 import { Movimientos } from './graficas/Movimientos';
 import FilterSelector from '../components/FilterSelector';
+import { DateFilter } from '../components';
 
 const categories = [
     { label: 'Todos', value: '' },
@@ -21,7 +22,14 @@ export default function Reporte() {
     };
 
     return (
-        <Grid2 container rowSpacing={{ xs: '20px', md: '34px' }}>
+        <Grid2 container rowSpacing={{ xs: '20px', md: '34px' }}
+            sx={{
+                margin: '21px 0'
+            }}
+        >
+            <Grid2 size={12}>
+                <DateFilter />
+            </Grid2>
             <Grid2
                 size={12}
                 sx={{
