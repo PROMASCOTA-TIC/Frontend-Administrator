@@ -2,7 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form";
 import { Button, Typography, TextField, Grid2 } from "@mui/material";
-
+import "@/assets/styles/styles.css";
 
 interface NameFormValues {
     ownerName: string;

@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Button, Typography, Grid2 } from "@mui/material";
+import "dayjs/locale/es";
 
 interface DateFormValues {
     startDate: Dayjs | null;
@@ -33,9 +34,9 @@ export const DateFilter = () => {
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
             <Grid2 container spacing={2}>
-                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px" }}>
+                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px", maxWidth: "200px" }}>
                     <Controller
                         name="startDate"
                         control={controlDate}
@@ -58,7 +59,7 @@ export const DateFilter = () => {
                         )}
                     />
                 </Grid2>
-                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px" }}>
+                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px", maxWidth: "200px"}}>
                     <Controller
                         name="endDate"
                         control={controlDate}
