@@ -1,6 +1,5 @@
 import { pieArcLabelClasses, PieChart } from "@mui/x-charts";
-import { useEffect, useState } from "react";
-import { desktopOS, valueFormatter } from "./webUsageStats";
+import { datosMovimientos, valueFormatter } from "./Datos";
 import { Box } from "@mui/material";
 
 interface Props {
@@ -70,6 +69,6 @@ const size = {
 };
 
 const data = {
-    data: desktopOS,
+    data: datosMovimientos,
     valueFormatter,
 };
