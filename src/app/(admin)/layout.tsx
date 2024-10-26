@@ -1,5 +1,4 @@
-import { Box } from "@mui/material";
-import Dashboard from "../../components/dashboard/Dashboard";
+import Dashboard from "@/components/ui/dashboard/Dashboard";
 
 export default function AdminLayout({
     children,
