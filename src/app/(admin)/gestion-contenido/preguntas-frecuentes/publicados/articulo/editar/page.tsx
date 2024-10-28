@@ -1,8 +1,7 @@
 import PieDePagina from "@/components/ui/footer/PieDePagina";
-import Btn_EditarEliminar from "@/components/gestionContenido/barraBotones/Btn_EditarEliminar";
-import { Box, Divider } from "@mui/material";
-import PF_Articulo from "@/components/gestionContenido/PF_Articulo";
-import VotosYComentarios from "./VotosYComentarios";
+import { Box } from "@mui/material";
+import EntradaArticulo from "@/components/gestionContenido/EI_Articulo";
+import Btn_GuardarCancelar from "@/components/gestionContenido/barraBotones/Btn_GuardarCancelar";
 
 const page = () => {
     return (
@@ -15,19 +14,17 @@ const page = () => {
                 }}
             >
                 <h1 className='h1-bold txtcolor-primary'>Categoria</h1>
-                <PF_Articulo />
-
+                <EntradaArticulo />
                 <div style={{ paddingTop: '34px' }}>
-                    <Btn_EditarEliminar />
+                    <Btn_GuardarCancelar
+                        linkGuardar="/gestion-contenido/preguntas-frecuentes/publicados/articulo"
+                        linkCancelar="/gestion-contenido/preguntas-frecuentes/publicados/articulo"
+                    />
                 </div>
-
-                <Divider sx={{ marginY: '21px', borderColor: '#00AA28' }} />
-
-                <VotosYComentarios />
             </Box>
             <PieDePagina />
         </div>
     );
 }
- 
+
 export default page

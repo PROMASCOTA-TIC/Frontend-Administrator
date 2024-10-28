@@ -171,32 +171,23 @@ input::placeholder {
     /* Establece el tamaño del placeholder */
     font-weight: 400;
     /* Peso de la fuente */
-    text-align: center;
-    /* Alineación del texto del placeholder */
 }
 
 /* Media Queries para pantallas xs */
 @media (max-width: 600px) {
     :root {
         --font-size-h1: 24px;
-        /* Ajusta el tamaño según sea necesario */
         --font-size-h2: 20px;
-        /* Ajusta el tamaño según sea necesario */
         --font-size-n: 16px;
-        /* Ajusta el tamaño según sea necesario */
         --font-size-minima: 12px;
-        /* Ajusta el tamaño según sea necesario */
         --font-size-miniatura: 10px;
-        /* Ajusta el tamaño según sea necesario */
     }
 
     /* Estilos del placeholder para pantallas xs */
     input::placeholder {
         font-size: var(--font-size-minima);
-        /* Cambia el tamaño según la pantalla */
     }
 }
-
 
 /***********************************************************************************************************************/
 /**************** Padding ***********************/
