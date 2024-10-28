@@ -8,7 +8,7 @@ import Link from 'next/link';
 const PR_Articulo = () => {
     return (
         <Box
-        className='flex-column'
+            className='flex-column'
             sx={{
                 gap: '21px'
             }}
@@ -30,12 +30,13 @@ const PR_Articulo = () => {
                 }}
             >
                 <p className='n-regular'><b>De venta en: </b>Hola</p>
-                <span className="n-semiBold">
-                    Para descubrir recursos útiles y consejos sobre el bienestar de tu mascota, explora nuestra sección de{" "}
-                    <Link className="n-semiBold txtcolor-secondary" href={""}>
-                        Enlaces de Interés.
-                    </Link>
-                </span>
+                <div className="n-semiBold">
+                    <p>
+                        Para descubrir recursos útiles y consejos sobre el bienestar de tu mascota, explora nuestra sección de
+                        <span className="txtcolor-secondary"> Enlaces de Interés.</span>
+                    </p>
+                </div>
+
             </Box>
         </Box>
     )
