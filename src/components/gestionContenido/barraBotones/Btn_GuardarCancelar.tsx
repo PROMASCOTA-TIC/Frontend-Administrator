@@ -1,6 +1,9 @@
+"use client";
+
 import { Box } from '@mui/material';
 import React, { FC } from 'react';
-import BotonAzul from '../botones/BotonAzul';
+import BotonGuardar from '../botones/BotonGuardar';
+import BotonCancelar from '../botones/BotonCancelar';
 
 interface Btn_GuardarCancelarProps {
     linkGuardar: string;
@@ -8,6 +11,11 @@ interface Btn_GuardarCancelarProps {
 }
 
 const Btn_GuardarCancelar: FC<Btn_GuardarCancelarProps> = ({ linkGuardar, linkCancelar }) => {
+    const handleDelete = () => {
+        // Lógica para eliminar el elemento
+        console.log("Elemento eliminado");
+    };
+
     return (
         <Box
             className="flex-center"
@@ -18,14 +26,13 @@ const Btn_GuardarCancelar: FC<Btn_GuardarCancelarProps> = ({ linkGuardar, linkCa
                 },
             }}
         >
-            <BotonAzul
-                name="Guardar"
-                link={linkGuardar}
+            <BotonGuardar
+                mensaje='Guardado con éxito'
             />
 
-            <BotonAzul
-                name="Cancelar"
+            <BotonCancelar
                 link={linkCancelar}
+                onConfirm={handleDelete}
             />
         </Box>
     );
