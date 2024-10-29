@@ -107,7 +107,7 @@ const Form_CrearPregunta: React.FC = () => {
                 <div style={{ paddingTop: '21px' }}>
                     <Btn_GuardarCancelar
                         linkGuardar="/gestion-contenido/preguntas-frecuentes/crear-pregunta"
-                        linkCancelar="/gestion-contenido/publireportajes/publicados/pregunta"
+                        linkCancelar="/gestion-contenido/preguntas-frecuentes"
                     />
                 </div>
 

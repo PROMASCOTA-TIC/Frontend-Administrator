@@ -66,7 +66,10 @@ const VotosYComentarios = () => {
                             value={filterVote}
                             onChange={handleFilterChange}
                             displayEmpty
-                            sx={{ minWidth: 200 }}
+                            sx={{
+                                minWidth: 200,
+                                borderRadius: '15px',
+                            }}
                         >
                             <MenuItem value=""><em>Filtrar por tipo de voto</em></MenuItem>
                             <MenuItem value="positivo">Positivo</MenuItem>
