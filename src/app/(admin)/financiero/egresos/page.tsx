@@ -1,10 +1,24 @@
 'use client';
 
-import "@/assets/styles/styles.css"
-import { Grid2 } from "@mui/material";
-import { DateFilter, DownloadButton, } from "../components";
-import { Tables } from "../components/Tables";
+import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, FormLabel, Grid2, TextField, Typography } from "@mui/material";
+import { DateFilter, Tables, FilterSelector } from "../components";
 import { GridColDef } from "@mui/x-data-grid";
+import { theme, themePalette } from "@/config/theme.config";
+import { AddCircleOutline } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { outcomeSchema } from '@/app/validations/financiero/outcomeSchema';
+import "@/assets/styles/styles.css"
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+const categories = [
+    { label: 'Todos', value: '' },
+    { label: 'Ropa', value: 'clothing' },
+    { label: 'Alimentos', value: 'food' },
+];
 
 interface RowData {
     id: number;
@@ -38,7 +52,47 @@ const columns: GridColDef[] = [
     { field: "total", headerName: "Total", flex: 1, minWidth: 80 },
 ];
 
-export default function Ventas() {
+type Inputs = {
+    descripcion: string;
+    categoria: string;
+    fecha: Date;
+    valor: number;
+}
+
+export default function Egresos() {
+    const [open, setOpen] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+
+    const { register, handleSubmit, control, formState: { errors }, reset, setValue } = useForm<Inputs>({
+        resolver: zodResolver(outcomeSchema),
+        mode: 'onChange',
+    });
+
+    useEffect(() => {
+        setValue('categoria', selectedCategory);
+    }, [selectedCategory, setValue]);
+    
+
+    const handleCategoryChange = (category: string) => {
+        setSelectedCategory(category);
+    };
+
+    const handleClickOpen = () => {
+        reset();
+        setOpen(true);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+    }
+
+    const onSubmit = (data: Inputs) => {
+        console.log({
+            ...data,
+        });
+        handleClose();
+    };
+
     return (
         <Grid2
             container
@@ -50,33 +104,245 @@ export default function Ventas() {
                 margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
             }}
         >
-            {/* <Grid2 size={12}
-                sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    width: "100%",
-                }}
-            > */}
             <Grid2 size={12}>
                 <DateFilter />
             </Grid2>
-            {/* <Grid2 size={{xs: 12, md: 2 }}>
-                    <FilterSelector label={"Categoría"} options={[]} onFilterChange={function (value: any): void {
-                        throw new Error("Function not implemented.");
-                    } } />
+            <Grid2 size={12}
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    gap: "10px",
+                    boxSizing: "border-box",
+                    padding: "0 10px",
+                }}
+            >
+                <Grid2 size={{ xs: 12, sm: 4 }}
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        minWidth: '100px',
+                    }}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            width: "100px",
+                            textTransform: "none",
+                            backgroundColor: theme.palette.primary.main,
+                        }}
+                        startIcon={<AddCircleOutline />}
+                        onClick={handleClickOpen}
+                    >
+                        Nuevo
+                    </Button>
                 </Grid2>
-                <Grid2 size={{xs: 12,  md: 5}}>
-                    <NameFilter searchParameter="Nombre del producto" />
-                </Grid2>
-            </Grid2> */}
-
-            {/* Tabla con 10 columnas */}
+            </Grid2>
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "30px" }}>
                 <Tables rows={rows} columns={columns} />
             </Grid2>
-            <Grid2 size={12} sx={{ marginTop: "20px" }}>
-                <DownloadButton />
-            </Grid2>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle
+                    sx={{
+                        display: 'flex',
+                        fontWeight: 'bold',
+                        justifyContent: 'center',
+                        padding: '13px 0px',
+                        fontSize: '24px',
+                        background: theme.palette.primary.main,
+                        color: themePalette.cwhite
+                    }}
+                >
+                    Nuevo Egreso
+                </DialogTitle>
+                <DialogContent
+                >
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+                        <FormControl
+                            component="form"
+                            onSubmit={handleSubmit(onSubmit)}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                width: { sm: '500px' },
+                                padding: '21px'
+                            }}
+                        >
+                            <FormLabel
+                                htmlFor="categoria"
+                                sx={{
+                                    color: themePalette.black,
+                                    textAlign: 'left',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    margin: '13px 0',
+                                }}
+                            >
+                                Categoría
+                            </FormLabel>
+                            <Box id='categoria' width={'300px'}>
+                                <FilterSelector
+                                    label={'Categoría'}
+                                    options={categories}
+                                    onFilterChange={(newValue) => {
+                                        setSelectedCategory(newValue);
+                                        handleCategoryChange(newValue);
+                                    }}
+                                    sx={'100%'}
+                                    md={'100%'}
+                                />
+                                {errors.categoria && (
+                                    <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                        Por favor, seleccione una categoría
+                                    </Typography>
+                                )}
+                            </Box>
+                            <FormLabel
+                                htmlFor="descripcion"
+                                sx={{
+                                    color: themePalette.black,
+                                    textAlign: 'left',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    margin: '8px 0 ',
+                                }}
+                            >
+                                Descripción
+                            </FormLabel>
+                            <TextField
+                                id="descripcion"
+                                error={!!errors.descripcion}
+                                placeholder="Ingrese la descripción del egreso"
+                                {...register('descripcion', { required: 'La descripción es requerida' })}
+                                multiline
+                                minRows={4}
+                                sx={{
+                                    marginLeft: '21px',
+                                    width: { xs: '100%', sm: '90%' },
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '120px',
+                                    },
+                                }}
+                            />
+                            {errors.descripcion && (
+                                <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                    {errors.descripcion.message}
+                                </Typography>
+                            )}
+                            <FormLabel
+                                htmlFor="fecha"
+                                sx={{
+                                    color: themePalette.black,
+                                    textAlign: 'left',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    margin: '8px 0',
+                                }}
+                            >
+                                Fecha
+                            </FormLabel>
+
+                            <Controller
+                                name="fecha"
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <DatePicker
+                                            {...field}
+                                            format="DD/MM/YYYY"
+                                            sx={{ marginLeft: '21px', width: { xs: '100%', sm: '90%' } }}
+                                            onChange={(date) => {
+                                                if (date) {
+                                                    field.onChange(date.toDate());
+                                                } else {
+                                                    field.onChange(null);
+                                                }
+                                            }}
+                                            value={field.value ? dayjs(field.value) : null}
+                                        />
+                                        {errors.fecha && (
+                                            <Typography color="error" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                                Por favor, ingrese una fecha válida
+                                            </Typography>
+                                        )}
+                                    </>
+                                )}
+                            />
+                            <FormLabel
+                                htmlFor="valor"
+                                sx={{
+                                    color: themePalette.black,
+                                    textAlign: 'left',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    margin: '8px 0 ',
+                                }}
+                            >
+                                Valor
+                            </FormLabel>
+                            <TextField
+                                {...register('valor', { valueAsNumber: true })}
+                                label="Valor"
+                                type="number"
+                                sx={{
+                                    marginLeft: '21px',
+                                    width: { xs: '100%', sm: '90%' },
+                                }}
+                                slotProps={{ htmlInput: { step: '0.01' } }}
+                                error={!!errors.valor}
+                            />
+
+                            {errors.valor && (
+                                <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                    {errors.valor.message}
+                                </Typography>
+                            )}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    margin: { xs: '0 13px', sm: '0 68px' },
+                                }}
+                            >
+                                <Button
+                                    variant="contained"
+                                    type="submit"
+                                    sx={{
+                                        backgroundColor: theme.palette.primary.main,
+                                        color: themePalette.cwhite,
+                                        borderRadius: '20px',
+                                        padding: '5px 0',
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        marginTop: '21px',
+                                        width: { xs: '120px', md: '120px' },
+                                    }}
+                                >
+                                    Guardar
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleClose}
+                                    sx={{
+                                        backgroundColor: theme.palette.primary.main,
+                                        color: themePalette.cwhite,
+                                        borderRadius: '20px',
+                                        padding: '5px 0',
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'none',
+                                        marginTop: '21px',
+                                        width: '120px',
+                                    }}
+                                >
+                                    Cancelar
+                                </Button>
+                            </Box>
+                        </FormControl>
+                    </LocalizationProvider>
+                </DialogContent>
+            </Dialog>
         </Grid2>
     );
 };
