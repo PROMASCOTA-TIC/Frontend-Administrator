@@ -48,9 +48,6 @@ export default function Ventas() {
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "30px" }}>
                 <Tables rows={rows} columns={columns} />
             </Grid2>
-            <Grid2 size={12} sx={{ marginTop: "20px" }}>
-                <DownloadButton />
-            </Grid2>
         </Grid2>
     );
 };
