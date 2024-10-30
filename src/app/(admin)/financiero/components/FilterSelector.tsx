@@ -12,9 +12,11 @@ interface Props {
     label: string;
     options: FilterOption[];
     onFilterChange: (value: any) => void;
+    sx: string;
+    md: string;
 }
 
-export default function FilterSelector({ label, options, onFilterChange }: Props) {
+export const FilterSelector = ({ label, options, onFilterChange, sx, md }: Props) => {
     const [selectedValue, setSelectedValue] = useState(options[0]?.value || '');
 
     const handleChange = (event: { target: { value: any; }; }) => {
@@ -26,7 +28,7 @@ export default function FilterSelector({ label, options, onFilterChange }: Props
     return (
         <Box
             sx={{
-                width: { xs: '200px', md: '60%'},
+                width: { xs: sx, md: md },
                 marginLeft: '21px',
             }}>
             <FormControl fullWidth>
@@ -48,6 +50,7 @@ export default function FilterSelector({ label, options, onFilterChange }: Props
                         height: '40px',
                     }}
                 >
+
                     {options.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.label}
