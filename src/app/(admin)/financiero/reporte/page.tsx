@@ -5,14 +5,28 @@ import { Box, Grid2, Typography } from '@mui/material';
 import { themePalette } from '@/config/theme.config';
 import { TendenciaGeneral } from './graficas/TendenciaGeneral';
 import { Movimientos } from './graficas/Movimientos';
-import FilterSelector from '../components/FilterSelector';
-import { DateFilter } from '../components';
+import { FilterSelector } from '../components/FilterSelector';
+import { DateFilter, DownloadButton } from '../components';
 
 const categories = [
     { label: 'Todos', value: '' },
     { label: 'Ropa', value: 'clothing' },
     { label: 'Alimentos', value: 'food' },
 ];
+
+const data = {
+    ingresos: [
+        { category: 'Ropa', amount: 100, description: 'Compra de ropa' },
+        { category: 'Alimentos', amount: 200, description: 'Compra de alimentos' },
+    ],
+    egresos: [
+        { category: 'Ropa', amount: 50, description: 'Compra de ropa' },
+        { category: 'Alimentos', amount: 150, description: 'Compra de alimentos' },
+    ],
+    totalIngresos: 300,
+    totalEgresos: 200,
+    balance: 100,
+}
 
 export default function Reporte() {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -27,7 +41,11 @@ export default function Reporte() {
                 margin: '21px 0'
             }}
         >
-            <Grid2 size={12}>
+            <Grid2 size={{ xs: 12, sm: 6 }}
+                sx={{
+                    marginLeft: '64px',
+                }}
+            >
                 <DateFilter />
             </Grid2>
             <Grid2
@@ -91,6 +109,8 @@ export default function Reporte() {
                                 label="Categoría"
                                 options={categories}
                                 onFilterChange={handleCategoryChange}
+                                sx={'200px'}
+                                md={'60%'}
                             />
                             <Typography
                                 sx={{
@@ -149,6 +169,8 @@ export default function Reporte() {
                                 label="Categoría"
                                 options={categories}
                                 onFilterChange={handleCategoryChange}
+                                sx={'200px'}
+                                md={'60%'}
                             />
                             <Typography
                                 sx={{
@@ -176,7 +198,6 @@ export default function Reporte() {
                         width: { xs: '95%', md: '90%' },
                         border: '1px solid black',
                         borderRadius: '15px',
-                        marginBottom: '20px',
                     }}
                 >
                     <Box
@@ -214,6 +235,8 @@ export default function Reporte() {
                             label="Categoría"
                             options={categories}
                             onFilterChange={handleCategoryChange}
+                            sx={'200px'}
+                            md={'60%'}
                         />
                         <Typography
                             sx={{
@@ -238,6 +261,9 @@ export default function Reporte() {
                         <TendenciaGeneral selectedCategory={selectedCategory} />
                     </Box>
                 </Box>
+            </Grid2>
+            <Grid2 size={12} sx={{ marginLeft: "64px" }}>
+                <DownloadButton financialData={data} />
             </Grid2>
         </Grid2>
     );
