@@ -28,7 +28,7 @@ interface RowData {
     total: string;
 }
 
-const rows: RowData[] = [
+let rows: RowData[] = [
     {
         id: 1,
         fecha: new Date("2024-08-31T00:00:00").toLocaleDateString('es-ES',
@@ -71,11 +71,6 @@ export default function Egresos() {
     useEffect(() => {
         setValue('categoria', selectedCategory);
     }, [selectedCategory, setValue]);
-    
-
-    const handleCategoryChange = (category: string) => {
-        setSelectedCategory(category);
-    };
 
     const handleClickOpen = () => {
         reset();
@@ -88,8 +83,20 @@ export default function Egresos() {
 
     const onSubmit = (data: Inputs) => {
         console.log({
-            ...data,
+            data,
         });
+        const newRow: RowData = {
+            id: rows.length + 1,
+            fecha: data.fecha.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+            }),
+            descripcion: data.descripcion,
+            categoria: data.categoria,
+            total: data.valor.toFixed(2),
+        };
+        rows = [...rows, newRow];
         handleClose();
     };
 
@@ -157,7 +164,7 @@ export default function Egresos() {
                 <DialogContent
                 >
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-                        <FormControl
+                        <Box
                             component="form"
                             onSubmit={handleSubmit(onSubmit)}
                             sx={{
@@ -181,15 +188,20 @@ export default function Egresos() {
                                 Categoría
                             </FormLabel>
                             <Box id='categoria' width={'300px'}>
-                                <FilterSelector
-                                    label={'Categoría'}
-                                    options={categories}
-                                    onFilterChange={(newValue) => {
-                                        setSelectedCategory(newValue);
-                                        handleCategoryChange(newValue);
-                                    }}
-                                    sx={'100%'}
-                                    md={'100%'}
+                                <Controller
+                                    name="categoria"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FilterSelector
+                                            label={'Categoría'}
+                                            options={categories}
+                                            onFilterChange={(newValue) => {
+                                                field.onChange(newValue);
+                                            }}
+                                            sx={'100%'}
+                                            md={'100%'}
+                                        />
+                                    )}
                                 />
                                 {errors.categoria && (
                                     <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
@@ -339,7 +351,7 @@ export default function Egresos() {
                                     Cancelar
                                 </Button>
                             </Box>
-                        </FormControl>
+                        </Box>
                     </LocalizationProvider>
                 </DialogContent>
             </Dialog>
