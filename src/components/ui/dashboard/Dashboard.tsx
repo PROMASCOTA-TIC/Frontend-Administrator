@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { Grid2 } from "@mui/material";
 import MarginWidthWrapper from "../wrapper/Margin-width-wrapper";
 import PageWrapper from "../wrapper/Page-wrapper";
+import TopNavbar from "../top-navbar/TopNavbar";
+import PieDePagina from "../footer/PieDePagina";
 
 
 
@@ -20,7 +22,8 @@ export default function Dashboard({
         <html lang="en">
             <body>
                 <Grid2 container spacing={1}>
-                    <Grid2
+                    <TopNavbar />
+                    <Grid2 className="absolute"
                         size={{ xs: isOpen ? 1 : 0, sm: isOpen ? 2 : 0, md: isOpen ? 2 : 0 }}
                         maxWidth={isOpen ? "250px" : "0px"}
                     >
@@ -32,21 +35,15 @@ export default function Dashboard({
                         maxWidth={{ md: isOpen ? "calc(100% - 250px)" : "100%"}}
                         marginLeft={{md: isOpen ? "250px" : "0px"}}
                         >
-                        
                         <main>
-                            <div style={{height: '50px', border: '1px solid'}}>
-                                Header....
-                            </div>
                             <MarginWidthWrapper>
                                 <PageWrapper>
                                     {children}
                                 </PageWrapper>
                             </MarginWidthWrapper>
-                            <div style={{height: '150px', border: '1px solid'}}>
-                                footer...    
-                            </div>
                         </main>
                     </Grid2>
+                    <PieDePagina isOpen={isOpen} />
                 </Grid2>
             </body>
         </html>

@@ -44,9 +44,9 @@ const SIDEBAR_ITEMS: SideBarItem[] = [
         path: '/gestor-de-contenido',
         submenu: true,
         subMenuItems: [
-            { title: 'Enlaces de interés', path: '/gestor-de-contenido/enlaces-de-interes' },
-            { title: 'Publi-Reportajes', path: '/gestor-de-contenido/publi-reportajes' },
-            { title: 'Preguntas Frecuentes', path: '/gestor-de-contenido/preguntas-frecuentes' },
+            { title: 'Enlaces de interés', path: '/gestion-contenido/enlaces-interes' },
+            { title: 'Publi-Reportajes', path: '/gestion-contenido/publireportajes' },
+            { title: 'Preguntas Frecuentes', path: '/gestion-contenido/preguntas-frecuentes' },
         ],
     },
     {
@@ -95,14 +95,14 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     display: 'flex',
                     alignItems: 'center',
                     zIndex: 11,
-                    position: 'fixed',
+                    position: 'absolute',
                     color: isOpen ? '#fff' : themePalette.primary,
                     '&:hover': {
                         backgroundColor: 'transparent',
                     },
                 }}
             >
-                <MenuIcon sx={{ fontSize: '25px' }} />
+                <MenuIcon sx={{ fontSize: '25px', marginLeft: !isOpen ? '21px' : '0px' }} />
                 {!isOpen && (
                     <>
                         <Image src={LogoVerde} alt='Logo de un perro y un gato' width={40} height={40} priority style={{ marginLeft: '10px' }} />

@@ -4,18 +4,24 @@ import { Facebook, Instagram, X } from '@mui/icons-material';
 
 import '/src/assets/styles/gestionContenido/general.css';
 
-const PieDePagina = () => {
+interface PieDePaginaProps {
+    isOpen: boolean;
+}
+
+const PieDePagina: React.FC<PieDePaginaProps> = ({ isOpen }) => {
     return (
         <Box
             component="footer"
-            className='bg-black10 txtcolor-primary txt-center'
+            className="bg-black10 txtcolor-primary txt-center"
             sx={{
+                width: isOpen ? 'calc(100% - 250px)' : '100%',
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: { xs: '20px', md: '0' },
-                padding: '20px 30px'
+                padding: '20px 30px',
+                margin: { xs: '0', md: isOpen ? '0 0 0 250px ' : '0' },
             }}
         >
             <div>
