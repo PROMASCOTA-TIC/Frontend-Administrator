@@ -29,7 +29,7 @@ const PieDePagina = () => {
 
             <div>
                 <p className='n-bold'>Redes Sociales</p>
-                <div style={{ display: 'flex' }}>
+                <div className='flex-around'>
                     <IconButton href="https://www.facebook.com" target="_blank" color='inherit'>
                         <Facebook />
                     </IconButton>
