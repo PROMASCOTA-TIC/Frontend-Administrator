@@ -3,6 +3,7 @@ import { generateMetadata } from "./metadata";
 
 export const metadata = generateMetadata("My App", "My app description");
 
+// Definición del componente RootLayout
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -1,0 +1,192 @@
+/**************** BACKGROUND COLOR ***********************/
+.bg-primary {
+    background-color: #004040;
+}
+
+.bg-secondary {
+    background-color: #00AA28;
+}
+
+.bg-tertiary {
+    background-color: #46DA69;
+}
+
+.bg-tertiary20 {
+    background-color: #46DA6933;
+}
+
+.bg-black10 {
+    background-color: #0000001A;
+}
+
+/* .bg-primarydos{
+    background-color: #00404099;
+}
+
+.bg-secondary40 {
+    background-color: #00AA2866;
+}
+
+.bg-quarternary {
+    background-color: #002828;
+}
+
+.bg-quarternary40 {
+    background-color: #00282866;
+}
+
+.bg-quintenary {
+    background-color: #006060;
+}
+
+.bg-quinary50 {
+    background-color: #00606080;
+}
+
+ */
+
+/***********************************************************************************************************************/
+                                        /**************** Text Color ***********************/
+.txtcolor-primary{
+    color: #004040;
+}
+
+.txtcolor-secondary {
+    color: #00AA28;
+}
+
+.txtcolor-tertiary {
+    color: #46DA69;
+}
+
+.txtcolor-white {
+    color: white;
+}
+
+.txtcolor-black {
+    color: black;
+}
+
+/***********************************************************************************************************************/
+                                        /**************** FONTS ***********************/
+/*H1*/
+.h1-bold{
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.h1-semiBold {
+    font-size: 36px;
+    font-weight: 600;
+}
+
+.h1-regular {
+    font-size: 36px;
+    font-weight: 400;
+}
+
+/*H2*/
+.h2-bold{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.h2-semiBold {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.h2-regular {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+/*Normal*/
+.n-bold{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.n-semiBold {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.n-regular {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.n-subrayado {
+    font-size: 18px;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+/*Minima*/
+.minima-bold{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.minima-semiBold {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.minima-regular {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/*Miniatura*/
+.miniatura-bold{
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.miniatura-semiBold {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.miniatura-regular {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/***********************************************************************************************************************/
+                                        /**************** Padding ***********************/
+.p-5 {
+    padding: 5px;
+}
+
+.p-8 {
+    padding: 8px;
+}
+
+.p-13 {
+    padding: 13px;
+}
+
+.p-21 {
+    padding: 21px;
+}
+
+.p-34 {
+    padding: 34px;
+}
+
+.p-55 {
+    padding: 55px;
+}
+
+.p-63 {
+    padding: 63px;
+}
+
+/***********************************************************************************************************************/
+                                        /**************** Padding ***********************/
+.txt-center {
+    text-align: center;
+}
