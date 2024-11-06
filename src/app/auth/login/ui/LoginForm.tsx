@@ -4,7 +4,7 @@ import { loginSchema } from '@/app/validations/financiero/loginSchema';
 import { theme, themePalette } from '@/config/theme.config';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, Button, FormControl, FormLabel, IconButton, InputAdornment, OutlinedInput, TextField, Typography } from '@mui/material';
+import { Box, Button, FormLabel, IconButton, InputAdornment, OutlinedInput, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
@@ -24,14 +24,14 @@ export const LoginForm = () => {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleClickShowPassword: () => void = () => setShowPassword((show) => !show);
 
     const onSubmit = (data: Inputs) => {
         console.log({ ...data });
     };
 
     return (
-        <FormControl component="form" onSubmit={handleSubmit(onSubmit)}
+        <Box component="form" onSubmit={handleSubmit(onSubmit)}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -48,7 +48,6 @@ export const LoginForm = () => {
                     fontWeight: 'bold',
                     marginBottom: '10px',
                 }}
-                required
             >
                 Correo electrónico
             </FormLabel>
@@ -57,12 +56,12 @@ export const LoginForm = () => {
                 error={!!errors.email}
                 placeholder="Ingrese su correo electrónico"
                 {...register('email')}
-                required
             />
             {errors.email &&
                 <Typography className="text-red-500"
                     style={{ textAlign: 'left' }}>{errors.email.message}
-                </Typography>}
+                </Typography>
+            }
             <FormLabel htmlFor="password"
                 sx={{
                     color: themePalette.black,
@@ -72,7 +71,6 @@ export const LoginForm = () => {
                     marginBottom: '10px',
                     marginTop: '20px',
                 }}
-                required
             >
                 Contraseña
             </FormLabel>
@@ -92,8 +90,12 @@ export const LoginForm = () => {
                     </InputAdornment>
                 }
                 inputProps={{ placeholder: "Ingrese su contraseña" }}
-                required
             />
+            {errors.password &&
+                <Typography className="text-red-500"
+                    style={{ textAlign: 'left' }}>{errors.password.message}
+                </Typography>
+            }
             <Link href="/auth/forgot-password"
                 style={{
                     color: themePalette.secondary,
@@ -130,6 +132,6 @@ export const LoginForm = () => {
                     Iniciar Sesión
                 </Button>
             </Box>
-        </FormControl>
+        </Box>
     )
 }
