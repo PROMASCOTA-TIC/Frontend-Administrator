@@ -39,7 +39,7 @@ const BotonCancelar: React.FC<BotonCancelarProps> = ({ link, onConfirm }) => {
                 onClick={handleClickOpen} // Agregamos el evento onClick aquí
                 sx={{
                     textTransform: 'none',
-                    width: { xs: '100%', md: 'auto' }, // Ajusta el ancho según el tamaño de pantalla
+                    width: 'auto', // Ajusta el ancho según el tamaño de pantalla
                     height: { xs: '40px', md: '50px' }, // Ajusta la altura según el tamaño de pantalla
                 }}
             >
