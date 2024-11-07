@@ -95,7 +95,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     display: 'flex',
                     alignItems: 'center',
                     zIndex: 11,
-                    position: 'absolute',
+                    position: isOpen ? 'fixed' : 'absolute',
                     color: isOpen ? '#fff' : themePalette.primary,
                     '&:hover': {
                         backgroundColor: 'transparent',
