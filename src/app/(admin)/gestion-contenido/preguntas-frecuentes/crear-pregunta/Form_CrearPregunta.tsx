@@ -3,25 +3,22 @@
 import React from 'react';
 import { Box, Grid2, MenuItem, Select, TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import '/src/assets/styles/gestionContenido/general.css';
 import '/src/assets/styles/gestionContenido/estilos.css';
 import Btn_GuardarCancelar from '@/components/gestionContenido/barraBotones/Btn_GuardarCancelar';
+import { crearPreguntaSchema } from '@/app/validations/gestion-contenido/crearPreguntaSchema';
 
-// Esquema de validación
-const registerSchema = z.object({
-    categoria: z.string().nonempty("La categoría es obligatoria"),
-    titulo: z.string().nonempty("El título es obligatorio"),
-    descripcion: z.string().nonempty("La descripción es obligatoria"),
-});
-
-type Inputs = z.infer<typeof registerSchema>;
+type Inputs = {
+    categoria: string;
+    titulo: string;
+    descripcion: string;
+}
 
 const Form_CrearPregunta: React.FC = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
-        resolver: zodResolver(registerSchema),
+        resolver: zodResolver(crearPreguntaSchema),
         mode: 'onChange', // Valida en tiempo real
     });
 
@@ -38,7 +35,7 @@ const Form_CrearPregunta: React.FC = () => {
             <Box
                 className='bg-black10 flex-column p-34'
                 sx={{
-                    width: { xs: '80%', sm: '70%', md: '60%' },
+                    width: { xs: '90%', sm: '80%', md: '70%' },
                     border: '1px solid #004040',
                     borderRadius: '10px',
                     gap: '21px'
