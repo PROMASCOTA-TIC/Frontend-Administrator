@@ -1,4 +1,4 @@
-import { Box, IconButton, Link } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import React from 'react'
 import { Facebook, Instagram, X } from '@mui/icons-material';
 
@@ -14,14 +14,15 @@ const PieDePagina: React.FC<PieDePaginaProps> = ({ isOpen }) => {
             component="footer"
             className="bg-black10 txtcolor-primary txt-center"
             sx={{
-                width: isOpen ? 'calc(100% - 250px)' : '100%',
+                width: { xs: '100%', md: isOpen ? 'calc(100% - 250px)' : '100%' },
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: { xs: '20px', md: '0' },
                 padding: '20px 30px',
-                margin: { xs: '0', md: isOpen ? '0 0 0 250px ' : '0' },
+                marginLeft: { xs: '0', md: isOpen ? '250px' : '0' },
+                marginTop: 'auto',
             }}
         >
             <div>

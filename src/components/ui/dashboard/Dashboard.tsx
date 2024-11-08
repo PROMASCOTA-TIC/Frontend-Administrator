@@ -8,9 +8,6 @@ import PageWrapper from "../wrapper/Page-wrapper";
 import TopNavbar from "../top-navbar/TopNavbar";
 import PieDePagina from "../footer/PieDePagina";
 
-
-
-
 export default function Dashboard({
     children,
 }: Readonly<{
@@ -21,7 +18,7 @@ export default function Dashboard({
     return (
         <html lang="en">
             <body>
-                <Grid2 container spacing={1}>
+                <Grid2 container spacing={1} sx={{minHeight: "100vh"}}>
                     <TopNavbar />
                     <Grid2 className="absolute"
                         size={{ xs: isOpen ? 1 : 0, sm: isOpen ? 2 : 0, md: isOpen ? 2 : 0 }}
@@ -30,11 +27,11 @@ export default function Dashboard({
                         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
                     </Grid2>
                     <Grid2
-                        size={{ xs: isOpen ? 11 : 12, sm: isOpen ? 10 : 12, md: isOpen ? 10 : 12 }}
+                        size={{ xs: 12, md: isOpen ? 10 : 12 }}
                         sx={{ transition: "all 0.3s ease" }}
-                        maxWidth={{ md: isOpen ? "calc(100% - 250px)" : "100%"}}
-                        marginLeft={{md: isOpen ? "250px" : "0px"}}
-                        >
+                        maxWidth={{ md: isOpen ? "calc(100% - 250px)" : "100%" }}
+                        marginLeft={{ md: isOpen ? "250px" : "0px" }}
+                    >
                         <main>
                             <MarginWidthWrapper>
                                 <PageWrapper>
@@ -43,7 +40,7 @@ export default function Dashboard({
                             </MarginWidthWrapper>
                         </main>
                     </Grid2>
-                    <PieDePagina isOpen={isOpen} />
+                        <PieDePagina isOpen={isOpen} />
                 </Grid2>
             </body>
         </html>
