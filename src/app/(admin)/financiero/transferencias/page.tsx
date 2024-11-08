@@ -7,7 +7,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import { Check, Clear, EditNote, Receipt } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, useForm } from "react-hook-form";
-import { transferSchema } from "@/app/validations/financiero/transferSchema";
+import { transferSchema } from "@/validations/financiero/transferSchema";
 import Image from "next/image";
 import Imagen from "@/assets/images/ejemploTransferencia.png";
 import { themePalette } from "@/config/theme.config";
