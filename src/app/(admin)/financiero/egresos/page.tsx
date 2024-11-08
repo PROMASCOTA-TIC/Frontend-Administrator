@@ -8,7 +8,7 @@ import { AddCircleOutline } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { outcomeSchema } from '@/app/validations/financiero/outcomeSchema';
+import { outcomeSchema } from '@/validations/financiero/outcomeSchema';
 import "@/assets/styles/styles.css"
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";

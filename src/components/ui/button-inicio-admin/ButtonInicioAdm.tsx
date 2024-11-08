@@ -68,10 +68,10 @@ const ButtonInicioAdm: React.FC<ButtonInicioAdmProps> = ({ name, icon: Icon, lin
 
 export const ButtonMosaic = () => {
   const buttons = [
-    { name: 'Emprendedores', icon: StoreIcon, link: '/emprendedores' }, 
-    { name: 'Financiero', icon: LeaderboardIcon, link: '/financiero' }, 
-    { name: 'Gestión de contenido', icon: BackupTableIcon, link: '/inventarios' }, 
-    { name: 'Envíos', icon: LocalShippingIcon, link: '/envios' }, 
+    { name: 'Emprendedores', icon: StoreIcon, link: '/emprendedores/solicitudes' }, 
+    { name: 'Financiero', icon: LeaderboardIcon, link: '/financiero/reporte' }, 
+    { name: 'Gestión de contenido', icon: BackupTableIcon, link: '/gestion-contenido/enlaces-interes' }, 
+    { name: 'Envíos', icon: LocalShippingIcon, link: '/pedidos/recoleccion-de-productos' }, 
   ];
 
   return (

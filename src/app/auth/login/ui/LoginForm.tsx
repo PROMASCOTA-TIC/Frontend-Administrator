@@ -1,6 +1,6 @@
 'use client';
 
-import { loginSchema } from '@/app/validations/financiero/loginSchema';
+import { loginSchema } from '@/validations/financiero/loginSchema';
 import { theme, themePalette } from '@/config/theme.config';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
