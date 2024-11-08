@@ -13,9 +13,8 @@ const page = () => {
         <div>
             <Box
                 className='flex-center p-55'
-
                 sx={{
-                    flexWrap: 'wrap',
+                    flexDirection: 'column',
                     gap: '30px',
                 }}
             >
