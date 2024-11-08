@@ -17,7 +17,7 @@ const BotonEditar: FC<BotonEditarProps> = ({ link }) => {
                     variant="contained"
                     className="bg-primary"
                     sx={{
-                        width: { xs: '100%', md: 'auto' },
+                        width: 'auto',
                         height: { xs: '40px', md: '50px' },
                         color: 'white',
                         borderRadius: '8px',

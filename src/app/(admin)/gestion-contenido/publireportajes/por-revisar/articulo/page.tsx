@@ -1,6 +1,5 @@
 "use client";
 
-import PieDePagina from "@/components/ui/footer/PieDePagina";
 import { Box } from "@mui/material";
 import PR_Articulo from "@/components/gestionContenido/PR_Articulo";
 import Btn_PorRevisar from "@/components/gestionContenido/barraBotones/Btn_PorRevisar";
@@ -21,7 +20,6 @@ const page = () => {
                     <Btn_PorRevisar link="/gestion-contenido/publireportajes/por-revisar/articulo/editar" />
                 </div>
             </Box>
-            <PieDePagina />
         </div>
     );
 }
