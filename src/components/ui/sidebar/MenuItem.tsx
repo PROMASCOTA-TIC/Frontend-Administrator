@@ -1,4 +1,3 @@
-import React from 'react'
 import { SideBarItem } from '../../../interfaces';
 import { usePathname } from 'next/navigation';
 import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
