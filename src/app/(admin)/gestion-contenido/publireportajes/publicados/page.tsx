@@ -1,6 +1,5 @@
 import ArticulosConFoto from '@/components/gestionContenido/ArticulosConFoto';
 import PR_Filtro from '@/components/gestionContenido/filtros/PR_Filtro';
-import PieDePagina from '@/components/ui/footer/PieDePagina';
 import React from 'react'
 
 const articulos = [
@@ -30,9 +29,9 @@ const articulos = [
 const page = () => {
   return (
     <div>
+        <h1 className='h1-bold txtcolor-primary txt-center' style={{ paddingTop: '13px' }}>Publi-Reportajes: Publicados</h1>
         <PR_Filtro />
         <ArticulosConFoto articulos={articulos} />
-        <PieDePagina />
     </div>
   )
 }

@@ -27,11 +27,14 @@ const BotonGuardar: React.FC<BotonGuardarProps> = ({ mensaje }) => {
         <>
             <Button 
                 variant="contained" 
+                // Esto hay que revisaaaaaaaar
+                type="submit"
+                
                 className='bg-primary n-regular'
                 onClick={handleClick} // Agregamos el evento onClick aquí
                 sx={{
                     textTransform: 'none',
-                    width: { xs: '100%', md: 'auto' }, // Ajusta el ancho según el tamaño de pantalla
+                    width: 'auto',
                     height: { xs: '40px', md: '50px' }, // Ajusta la altura según el tamaño de pantalla
                 }}
             >

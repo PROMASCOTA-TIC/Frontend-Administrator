@@ -41,7 +41,7 @@ const SIDEBAR_ITEMS: SideBarItem[] = [
     },
     {
         title: 'Gestor de contenido',
-        path: '/gestor-de-contenido',
+        path: '/gestion-contenido',
         submenu: true,
         subMenuItems: [
             { title: 'Enlaces de interés', path: '/gestion-contenido/enlaces-interes' },
@@ -95,7 +95,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     display: 'flex',
                     alignItems: 'center',
                     zIndex: 11,
-                    position: 'absolute',
+                    position: isOpen ? 'fixed' : 'absolute',
                     color: isOpen ? '#fff' : themePalette.primary,
                     '&:hover': {
                         backgroundColor: 'transparent',
@@ -153,7 +153,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                                 key={idx}
                                 item={item}
                                 isOpen={openSubMenuIndex === idx}
-                                onToggle={() => handleSubMenuToggle(idx)}
+                                onToggle={() => {handleSubMenuToggle(idx); console.log(idx);}}
                             />
                         ))}
                     </List>

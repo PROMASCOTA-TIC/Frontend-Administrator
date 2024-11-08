@@ -22,6 +22,7 @@ const Btn_GuardarCancelar: FC<Btn_GuardarCancelarProps> = ({ linkGuardar, linkCa
             sx={{
                 gap: {
                     xs: '15px',   // Gap para pantallas extra pequeñas
+                    sm: '50px',
                     md: '100px',
                 },
             }}

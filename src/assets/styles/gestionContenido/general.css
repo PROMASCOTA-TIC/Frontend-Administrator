@@ -189,6 +189,22 @@ input::placeholder {
     }
 }
 
+/* Media Queries para pantallas sm */
+@media (min-width: 600px) and (max-width: 960px) {
+    :root {
+        --font-size-h1: 24px;
+        --font-size-h2: 20px;
+        --font-size-n: 16px;
+        --font-size-minima: 12px;
+        --font-size-miniatura: 10px;
+    }
+
+    /* Estilos del placeholder para pantallas sm */
+    input::placeholder {
+        font-size: var(--font-size-minima);
+    }
+}
+
 /***********************************************************************************************************************/
 /**************** Padding ***********************/
 .p-5 {

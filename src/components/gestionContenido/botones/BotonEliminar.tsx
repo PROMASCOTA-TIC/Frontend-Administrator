@@ -35,7 +35,7 @@ const BotonEliminar: React.FC<BotonEliminarProps> = ({ onConfirm }) => {
                 variant="contained"
                 onClick={handleClickOpen} // Este evento abre el diálogo de confirmación
                 sx={{
-                    width: { xs: '100%', md: 'auto' },
+                    width: 'auto',
                     height: { xs: '40px', md: '50px' },
                     backgroundColor: 'red',
                     color: 'white',
@@ -52,17 +52,17 @@ const BotonEliminar: React.FC<BotonEliminarProps> = ({ onConfirm }) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title" style={{ textAlign: 'center' }} >{"Confirmar Eliminación"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                <DialogTitle id="alert-dialog-title" className='bg-primary txtcolor-white p-13' >{"Confirmar Eliminación"}</DialogTitle>
+                <DialogContent style={{ padding: '0px' }}>
+                    <DialogContentText id="alert-dialog-description" className='txtcolor-black txt-justify n-bold p-21'>
                         ¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions className='flex-center'>
-                    <Button onClick={handleConfirm} color="error" autoFocus>
+                <DialogActions className='flex-center p-13' style={{ gap: '34px' }}>
+                    <Button onClick={handleConfirm} autoFocus className='bg-secondary txtcolor-white'>
                         Eliminar
                     </Button>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleClose} className='bg-primary txtcolor-white' style={{ margin: '0px' }}>
                         Cancelar
                     </Button>
                 </DialogActions>

@@ -1,4 +1,3 @@
-import PieDePagina from "@/components/ui/footer/PieDePagina";
 import Btn_EditarEliminar from "@/components/gestionContenido/barraBotones/Btn_EditarEliminar";
 import { Box, Divider } from "@mui/material";
 import PF_Articulo from "@/components/gestionContenido/PF_Articulo";
@@ -27,7 +26,6 @@ const page = () => {
 
                 <VotosYComentarios />
             </Box>
-            <PieDePagina />
         </div>
     );
 }
