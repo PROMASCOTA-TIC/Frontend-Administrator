@@ -19,7 +19,7 @@ const BotonCategoria: React.FC<BotonCategoriaProps> = ({ name, icon: Icon, link 
                     flexDirection: 'column',
                     padding: 0,
                     width: { xs: '200px', md: '400px' }, // Ancho: 100% en pantallas pequeñas, 400px en pantallas medianas y más
-                    height: { xs: '150px', md: '200px' }, // Altura: 150px en pantallas pequeñas, 200px en pantallas medianas y más
+                    height: { xs: '200px', md: '200px' }, // Altura: 150px en pantallas pequeñas, 200px en pantallas medianas y más
                     borderRadius: '15px',
                 }}
             >
@@ -44,7 +44,7 @@ const BotonCategoria: React.FC<BotonCategoriaProps> = ({ name, icon: Icon, link 
                 >
                     <Icon
                         sx={{
-                            fontSize: {xs: '40px', md: '80px'}
+                            fontSize: { xs: '50px', md: '80px' }
                         }} />
                 </Box>
             </Button>
