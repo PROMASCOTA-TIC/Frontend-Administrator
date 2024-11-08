@@ -30,7 +30,7 @@ const BotonCheck: React.FC<BotonCheckProps> = ({ mensaje }) => {
                 variant="contained"
                 onClick={handleClick} // Agregamos el evento onClick aquí
                 sx={{
-                    width: { xs: '100%', md: 'auto' }, // Ajusta el ancho según el tamaño de pantalla
+                    width: 'auto', // Ajusta el ancho según el tamaño de pantalla
                     height: { xs: '40px', md: '50px' },
                     backgroundColor: 'green',
                     color: 'white',

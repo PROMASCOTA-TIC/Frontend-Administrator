@@ -1,4 +1,3 @@
-import PieDePagina from "@/components/ui/footer/PieDePagina";
 import { Box } from "@mui/material";
 import Btn_GuardarCancelar from "@/components/gestionContenido/barraBotones/Btn_GuardarCancelar";
 import PR_Articulo from "@/components/gestionContenido/PR_Articulo";
@@ -22,7 +21,6 @@ const page = () => {
                     />
                 </div>
             </Box>
-            <PieDePagina />
         </div>
     );
 }

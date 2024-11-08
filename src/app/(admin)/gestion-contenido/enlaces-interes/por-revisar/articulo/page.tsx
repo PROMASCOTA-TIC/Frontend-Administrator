@@ -1,10 +1,8 @@
 "use client";
 
-import PieDePagina from "@/components/ui/footer/PieDePagina";
 import { Box } from "@mui/material";
 import EI_Articulo from "@/components/gestionContenido/EI_Articulo";
-import Btn_PorRevisar from "@/components/gestionContenido/barraBotones/Btn_PorRevisar";
-
+import Btn_EditarEliminar from "@/components/gestionContenido/barraBotones/Btn_EditarEliminar";
 
 const page = () => {
     return (
@@ -21,10 +19,11 @@ const page = () => {
 
                 {/********************** REVISAR LOGICA DE ESTE LINK ***************************/}
                 <div style={{ paddingTop: '34px' }}>
-                    <Btn_PorRevisar link="/gestion-contenido/enlaces-interes/por-revisar/articulo/editar" />
+                    <Btn_EditarEliminar
+                        linkEditar="/gestion-contenido/enlaces-interes/por-revisar/articulo/editar"
+                    />
                 </div>
             </Box>
-            <PieDePagina />
         </div>
     );
 }

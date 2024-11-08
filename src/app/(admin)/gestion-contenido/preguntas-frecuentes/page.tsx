@@ -1,5 +1,4 @@
 import BotonCategoria from '@/components/gestionContenido/botones/BotonCategoria';
-import PieDePagina from '@/components/ui/footer/PieDePagina'
 import { AddBox, Assignment, AssignmentTurnedIn } from '@mui/icons-material';
 import { Box } from '@mui/material'
 import React from 'react'
@@ -26,7 +25,6 @@ const page = () => {
                     </Box>
                 ))}
             </Box>
-            <PieDePagina />
         </div>
     )
 }

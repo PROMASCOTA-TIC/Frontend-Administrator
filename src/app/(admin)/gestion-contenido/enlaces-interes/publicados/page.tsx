@@ -1,6 +1,5 @@
 import ArticulosConFoto from '@/components/gestionContenido/ArticulosConFoto';
 import EI_Filtro from '@/components/gestionContenido/filtros/EI_Filtro'
-import PieDePagina from '@/components/ui/footer/PieDePagina';
 import React from 'react'
 
 const articulos = [
@@ -32,7 +31,6 @@ const page = () => {
     <div>
         <EI_Filtro />
         <ArticulosConFoto articulos={articulos} />
-        <PieDePagina />
     </div>
   )
 }
