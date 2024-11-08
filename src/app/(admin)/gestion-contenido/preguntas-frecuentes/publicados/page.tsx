@@ -29,6 +29,7 @@ const articulos = [
 const page = () => {
   return (
     <div>
+        <h1 className='h1-bold txtcolor-primary txt-center' style={{ paddingTop: '13px' }}>Preguntas Frecuentes: Publicadas</h1>
         <PF_Filtro />
         <ArticulosConFoto articulos={articulos} />
     </div>
