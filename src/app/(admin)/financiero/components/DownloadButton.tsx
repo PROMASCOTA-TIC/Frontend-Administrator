@@ -6,8 +6,7 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import React from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
-import * as XLSX from 'xlsx';
-
+import ExcelJS from 'exceljs';
 
 interface Ingreso {
     category: string;
@@ -46,46 +45,54 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         setOpen(false);
     };
 
-    const downloadExcel = ({ financialData }: FinancialData) => {
+    const downloadExcel = async ({ financialData }: FinancialData) => {
         if (!financialData || !financialData.ingresos || !financialData.egresos) {
             console.error('No hay datos financieros para exportar.');
             return;
         }
-    
-        const wb = XLSX.utils.book_new();
-    
-        const ingresosSheet = [
-            ['Categoría', 'Monto', 'Descripción'],
-            ...financialData.ingresos.map((item) => [item.category, item.amount, item.description]),
-        ];
-        const wsIngresos = XLSX.utils.aoa_to_sheet(ingresosSheet);
-        XLSX.utils.book_append_sheet(wb, wsIngresos, 'Ingresos');
-    
-        const egresosSheet = [
-            ['Categoría', 'Monto', 'Descripción'],
-            ...financialData.egresos.map((item) => [item.category, item.amount, item.description]),
-        ];
-        const wsEgresos = XLSX.utils.aoa_to_sheet(egresosSheet);
-        XLSX.utils.book_append_sheet(wb, wsEgresos, 'Egresos');
-    
-        const resumenSheet = [
-            ['Total Ingresos', financialData.totalIngresos],
-            ['Total Egresos', financialData.totalEgresos],
-            ['Balance', financialData.balance],
-        ];
-        const wsResumen = XLSX.utils.aoa_to_sheet(resumenSheet);
-        XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
-    
-        const addTableFormatting = (ws: XLSX.WorkSheet, range: XLSX.Range) => {
-            const ref = XLSX.utils.encode_range(range);
-            ws['!ref'] = ref;
-            ws['!autofilter'] = { ref };
-        };
 
-        addTableFormatting(wsIngresos, XLSX.utils.decode_range(wsIngresos['!ref']!));
-        addTableFormatting(wsEgresos, XLSX.utils.decode_range(wsEgresos['!ref']!));
-    
-        XLSX.writeFile(wb, 'reporte_financiero.xlsx');
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Your App';
+        workbook.created = new Date();
+
+        const ingresosSheet = workbook.addWorksheet('Ingresos');
+        ingresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        financialData.ingresos.forEach(item => {
+            ingresosSheet.addRow([item.category, item.amount, item.description]);
+        });
+
+        const egresosSheet = workbook.addWorksheet('Egresos');
+        egresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        financialData.egresos.forEach(item => {
+            egresosSheet.addRow([item.category, item.amount, item.description]);
+        });
+
+        const resumenSheet = workbook.addWorksheet('Resumen');
+        resumenSheet.addRow(['Total Ingresos', financialData.totalIngresos]);
+        resumenSheet.addRow(['Total Egresos', financialData.totalEgresos]);
+        resumenSheet.addRow(['Balance', financialData.balance]);
+
+        [ingresosSheet, egresosSheet, resumenSheet].forEach(sheet => {
+            sheet.columns.forEach(column => {
+                if (column && column.eachCell) {
+                    column.eachCell((cell, rowNumber) => {
+                        if (rowNumber === 1) {
+                            cell.font = { bold: true };
+                            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                        }
+                    });
+                }
+            });
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'reporte_financiero.xlsx';
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
 
