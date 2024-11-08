@@ -38,7 +38,7 @@ let rows: RowData[] = [
                 year: 'numeric'
             }),
         descripcion: "Pago de hosting de base de datos en la nube",
-        categoria: "Alimento",
+        categoria: "Hosting",
         total: "100.00",
     },
 ];
@@ -108,9 +108,18 @@ export default function Egresos() {
                 flexDirection: { xs: "column", sm: "row" },
                 boxSizing: "border-box",
                 minWidth: "300px",
-                margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
+                margin: { xs: "13px 25px", sm: "13px 30px", md: "13px 60px" },
             }}
         >
+            <Grid2 size={12} className="flex justify-center">
+                <Typography className="font-bold text-primary mb-e21"
+                    sx={{
+                        fontSize: {xs: "26px", md: "34px"},
+                    }}
+                >
+                    Egresos
+                </Typography>
+            </Grid2>
             <Grid2 size={12}>
                 <DateFilter />
             </Grid2>
@@ -204,7 +213,7 @@ export default function Egresos() {
                                     )}
                                 />
                                 {errors.categoria && (
-                                    <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                    <Typography className="text-red-500 text-fs12 ms-e21">
                                         Por favor, seleccione una categoría
                                     </Typography>
                                 )}
@@ -225,7 +234,7 @@ export default function Egresos() {
                                 id="descripcion"
                                 error={!!errors.descripcion}
                                 placeholder="Ingrese la descripción del egreso"
-                                {...register('descripcion', { required: 'La descripción es requerida' })}
+                                {...register('descripcion')}
                                 multiline
                                 minRows={4}
                                 sx={{
@@ -237,7 +246,7 @@ export default function Egresos() {
                                 }}
                             />
                             {errors.descripcion && (
-                                <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                <Typography className="text-red-500 text-fs12 ms-e21">
                                     {errors.descripcion.message}
                                 </Typography>
                             )}
@@ -273,7 +282,7 @@ export default function Egresos() {
                                             value={field.value ? dayjs(field.value) : null}
                                         />
                                         {errors.fecha && (
-                                            <Typography color="error" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                            <Typography className="text-red-500 text-fs12 ms-e21">
                                                 Por favor, ingrese una fecha válida
                                             </Typography>
                                         )}
@@ -305,7 +314,7 @@ export default function Egresos() {
                             />
 
                             {errors.valor && (
-                                <Typography className="text-red-500" sx={{ fontSize: '14px', marginLeft: '21px' }}>
+                                <Typography className="text-red-500 text-fs12 ms-e21">
                                     {errors.valor.message}
                                 </Typography>
                             )}

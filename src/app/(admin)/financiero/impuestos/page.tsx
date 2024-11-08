@@ -1,8 +1,7 @@
 'use client';
 
 import "@/assets/styles/styles.css"
-import { Grid2 } from "@mui/material";
-import { DateFilter, DownloadButton, } from "../components";
+import { Grid2, Typography } from "@mui/material";
 import { Tables } from "../components/Tables";
 import { GridColDef } from "@mui/x-data-grid";
 
@@ -45,7 +44,16 @@ export default function Ventas() {
                 margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
             }}
         >
-            <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "30px" }}>
+            <Grid2 size={12} className="flex justify-center">
+                <Typography className="font-bold text-primary mb-e13"
+                    sx={{
+                        fontSize: {xs: "26px", md: "34px"},
+                    }}
+                >
+                    Impuestos
+                </Typography>
+            </Grid2>
+            <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
                 <Tables rows={rows} columns={columns} />
             </Grid2>
         </Grid2>

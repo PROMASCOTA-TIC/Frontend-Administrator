@@ -41,9 +41,18 @@ export default function Reporte() {
                 margin: '21px 0'
             }}
         >
-            <Grid2 size={{ xs: 12, sm: 6 }}
+            <Grid2 size={12} className="flex justify-center">
+                <Typography className="font-bold text-primary mb-e8"
+                    sx={{
+                        fontSize: { xs: "26px", md: "34px" },
+                    }}
+                >
+                    Reporte financiero
+                </Typography>
+            </Grid2>
+            <Grid2 size={{ xs: 12, md: 6 }}
                 sx={{
-                    marginLeft: '64px',
+                    marginLeft: {xs: '13px', md: '64px'},
                 }}
             >
                 <DateFilter />
