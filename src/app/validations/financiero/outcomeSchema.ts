@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const outcomeSchema = z.object({
     descripcion: z
         .string()
-        .min(1, { message: 'La descripción es requerida' }),
+        .min(1, { message: 'Por favor, ingrese la descripción' }),
     categoria: z
         .string()
         .min(1, { message: 'Por favor, seleccione una categoría' }),

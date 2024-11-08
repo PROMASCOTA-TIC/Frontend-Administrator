@@ -28,6 +28,7 @@ export const LoginForm = () => {
 
     const onSubmit = (data: Inputs) => {
         console.log({ ...data });
+        window.location.href = '/';
     };
 
     return (
@@ -58,7 +59,7 @@ export const LoginForm = () => {
                 {...register('email')}
             />
             {errors.email &&
-                <Typography className="text-red-500"
+                <Typography className="text-red-500 text-fs12"
                     style={{ textAlign: 'left' }}>{errors.email.message}
                 </Typography>
             }
@@ -92,7 +93,7 @@ export const LoginForm = () => {
                 inputProps={{ placeholder: "Ingrese su contraseña" }}
             />
             {errors.password &&
-                <Typography className="text-red-500"
+                <Typography className="text-red-500 text-fs12"
                     style={{ textAlign: 'left' }}>{errors.password.message}
                 </Typography>
             }
