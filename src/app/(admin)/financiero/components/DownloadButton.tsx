@@ -175,8 +175,8 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
                     horizontal: 'left',
                 }}
             >
-                <MenuItem onClick={() => handleDownload('excel')}>EXCEL</MenuItem>
-                <MenuItem onClick={() => handleDownload('pdf')}>PDF</MenuItem>
+                <MenuItem onClick={() => handleDownload('excel')}>Descargar como XLSX</MenuItem>
+                <MenuItem onClick={() => handleDownload('pdf')}>Imprimir</MenuItem>
             </Menu>
         </>
     );
