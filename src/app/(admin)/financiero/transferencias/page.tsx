@@ -40,16 +40,16 @@ export default function Transferencias() {
             fecha: new Date("2024-08-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
             nombre: "Juan Pérez",
             total: "100.00",
-            estado: openRowId === 1 ? estado : 'Pendiente',
-            observacion: "Sin observaciones"
+            estado: 'Pendiente',
+            observacion: ""
         },
         {
             id: 2,
             fecha: new Date("2024-07-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
             nombre: "María López",
             total: "20.00",
-            estado: openRowId === 2 ? estado : 'Pendiente',
-            observacion: "Sin observaciones"
+            estado: 'Pendiente',
+            observacion: ""
         },
     ]);
     const columns: GridColDef[] = [
