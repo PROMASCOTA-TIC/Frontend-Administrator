@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import '/src/assets/styles/gestionContenido/general.css';
 import '/src/assets/styles/gestionContenido/estilos.css';
 import Btn_GuardarCancelar from '@/components/gestionContenido/barraBotones/Btn_GuardarCancelar';
-import { crearPreguntaSchema } from '@/app/validations/gestion-contenido/crearPreguntaSchema';
+import { crearPreguntaSchema } from '@/validations/gestion-contenido/crearPreguntaSchema';
 
 type Inputs = {
     categoria: string;

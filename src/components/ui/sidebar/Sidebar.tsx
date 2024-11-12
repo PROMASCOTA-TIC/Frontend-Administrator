@@ -153,7 +153,9 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                                 key={idx}
                                 item={item}
                                 isOpen={openSubMenuIndex === idx}
-                                onToggle={() => {handleSubMenuToggle(idx); console.log(idx);}}
+                                onToggle={() => {
+                                    handleSubMenuToggle(idx);
+                                }}
                             />
                         ))}
                     </List>
