@@ -141,6 +141,7 @@ export default function Transferencias() {
         setOpenRowId(id);
         setEdit(true);
     };
+
     const handleSaveComment = () => {
         setRows((prevRows) =>
             prevRows.map((row) => {
@@ -149,6 +150,7 @@ export default function Transferencias() {
         );
         handleClose();
     };
+    
     return (
         <Grid2
             container

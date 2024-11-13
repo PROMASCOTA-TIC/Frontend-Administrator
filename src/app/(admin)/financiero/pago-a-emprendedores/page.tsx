@@ -3,14 +3,14 @@
 import { useState } from "react";
 import {
     Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
-    FormControl, Grid2, IconButton, TextField, Typography
+    Grid2, IconButton, TextField, Typography
 } from "@mui/material";
 import { Tables, } from "../components";
 import { GridColDef } from "@mui/x-data-grid";
-import { Check, Clear, EditNote, Receipt } from "@mui/icons-material";
+import { EditNote, } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
-import { transferSchema } from "@/app/validations/financiero/transferSchema";
+import { useForm } from "react-hook-form";
+import { transferSchema } from "@/validations/financiero/transferSchema";
 import "@/assets/styles/styles.css"
 
 interface RowData {
@@ -30,11 +30,8 @@ type Inputs = {
 export default function PagoEmprendedores() {
 
     const [open, setOpen] = useState(false)
-    const [estado, setEstado] = useState('Pendiente')
-    const [showCommentField, setShowCommentField] = useState(false);
     const [comment, setComment] = useState('');
     const [openRowId, setOpenRowId] = useState(0);
-    const [edit, setEdit] = useState(false);
     const [rows, setRows] = useState<RowData[]>([
         {
             id: 1,
@@ -42,7 +39,7 @@ export default function PagoEmprendedores() {
             nombrePropietario: "Juan Pérez",
             estado: 'Pendiente',
             total: "100.00",
-            fechaPago: new Date("2024-10-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            fechaPago: "",
             comentario: ""
         },
         {
@@ -51,7 +48,7 @@ export default function PagoEmprendedores() {
             nombrePropietario: "María Lopez",
             estado: 'Pendiente',
             total: "100.00",
-            fechaPago: new Date("2024-10-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            fechaPago: "",
             comentario: ""
         },
     ]);
@@ -72,7 +69,7 @@ export default function PagoEmprendedores() {
                 <div>
                     <Checkbox
                         checked={params.row.estado === "Pagado"}
-                        onClick={() => handleComment(params.row.id)}
+                        onClick={() => handleOpenDialog(params.row.id)}
                         disabled={params.row.estado === "Pagado"}
                     />
                 </div>
@@ -92,10 +89,10 @@ export default function PagoEmprendedores() {
                     }}
                 >
                     <Typography variant="body2">
-                        {params.row.estado === 'Pagado' && !params.row.observacion ? "Sin observaciones"
-                            : params.row.estado === 'Pendiente' ? "" : params.row.observacion}
+                        {params.row.estado === 'Pagado' && !params.row.comentario ? "Sin observaciones"
+                            : params.row.estado === 'Pendiente' ? "" : params.row.comentario}
                     </Typography>
-                    <IconButton onClick={() => handleComment(params.row.id)}
+                    <IconButton onClick={() => handleOpenDialog(params.row.id)}
                         disabled={params.row.estado == 'Pendiente'}>
                         <EditNote />
                     </IconButton>
@@ -104,40 +101,41 @@ export default function PagoEmprendedores() {
         },
     ];
 
-    const { register, formState: { errors } } = useForm<Inputs>({
+    const { formState: { errors } } = useForm<Inputs>({
         resolver: zodResolver(transferSchema),
         mode: 'onChange',
     });
 
-    const handleClose = () => {
+    const handleCancel = () => {
+        setComment('');
         setOpen(false);
-        setEdit(false);
-        setShowCommentField(false);
     }
 
-    const handleComment = (id: number) => {
-        const rowToEdit = rows.find(row => row.id === id);
-        if (rowToEdit) {
-            setComment(rowToEdit.comentario || "");
+    const handleOpenDialog = (id: number) => {
+        const selectedRow = rows.find(row => row.id === id);
+        if (selectedRow) {
+            setOpenRowId(id);
+            setComment(selectedRow.comentario || "");
         }
-        setRows((prevRows) =>
-            prevRows.map((row) =>
-                row.id === id && row.estado === 'Pendiente'
-                    ? { ...row, estado: 'Pagado' }
-                    : row
-            )
-        );
-        setOpenRowId(id);
-        setEdit(true);
+        setOpen(true);
     };
 
     const handleSaveComment = () => {
-        setRows((prevRows) =>
-            prevRows.map((row) => {
-                return row.id === openRowId ? { ...row, observacion: comment } : row;
-            })
-        );
-        handleClose();
+        if (openRowId !== null) {
+            setRows(prevRows =>
+                prevRows.map(row =>
+                    row.id === openRowId
+                        ? {
+                            ...row,
+                            comentario: comment.trim() === '' ? 'Sin observaciones' : comment,
+                            estado: 'Pagado',
+                            fechaPago: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                        }
+                        : row
+                )
+            );
+        }
+        setOpen(false);
     };
 
     return (
@@ -163,7 +161,7 @@ export default function PagoEmprendedores() {
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
                 <Tables rows={rows} columns={columns} />
             </Grid2>
-            <Dialog open={edit} onClose={handleClose}
+            <Dialog open={open} onClose={handleCancel}
             >
                 <DialogTitle>
                     Comentario
@@ -182,7 +180,6 @@ export default function PagoEmprendedores() {
                         value={comment}
                         error={!!errors.comment}
                         helperText={errors.comment ? errors.comment.message : ''}
-                        {...register("comment", { required: "El comentario es obligatorio" })}
                         onChange={(e) => setComment(e.target.value)}
                     />
                 </DialogContent>
@@ -195,7 +192,7 @@ export default function PagoEmprendedores() {
                     >
                         Guardar
                     </Button>
-                    <Button className="bg-primary text-white mb-e13" onClick={handleClose}
+                    <Button className="bg-primary text-white mb-e13" onClick={handleCancel}
                         variant="outlined"
                         sx={{
                             textTransform: "none",
