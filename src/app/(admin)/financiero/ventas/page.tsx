@@ -1,7 +1,7 @@
 'use client';
 
 import "@/assets/styles/styles.css"
-import { Grid2 } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { DateFilter } from "../components";
 import { Tables } from "../components/Tables";
 import { GridColDef } from "@mui/x-data-grid";
@@ -51,7 +51,7 @@ const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
     { field: "fecha", headerName: "Fecha", flex: 1, minWidth: 100 },
     { field: "nombre", headerName: "Nombre", flex: 2, minWidth: 150 },
-    { field: "tipoProducto", headerName: "Categoría", flex: 1.5, minWidth: 150 },
+    { field: "categoria", headerName: "Categoría", flex: 1.5, minWidth: 150 },
     { field: "precioUnitario", headerName: "Precio unitario", flex: 1, minWidth: 120 },
     { field: "cantidad", headerName: "Cantidad", flex: 0.8, minWidth: 100 },
     { field: "total", headerName: "Total", flex: 1, minWidth: 100 },
@@ -66,13 +66,22 @@ export default function Ventas() {
                 flexDirection: { xs: "column", sm: "row" },
                 boxSizing: "border-box",
                 minWidth: "300px",
-                margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
+                margin: { xs: "13px 25px", sm: "13px 30px", md: "13px 60px" },
             }}
         >
+            <Grid2 size={12} className="flex justify-center">
+                <Typography className="font-bold text-primary mb-e13"
+                    sx={{
+                        fontSize: { xs: "26px", md: "34px" },
+                    }}
+                >
+                    Ventas
+                </Typography>
+            </Grid2>
             <Grid2 size={12}>
                 <DateFilter />
             </Grid2>
-            <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "30px" }}>
+            <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
                 <Tables rows={rows} columns={columns} />
             </Grid2>
         </Grid2>

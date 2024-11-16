@@ -14,7 +14,6 @@ interface DateFormValues {
 }
 
 export const DateFilter = () => {
-    // Hook form para las fechas
     const {
         handleSubmit: handleDateSubmit,
         control: controlDate,
@@ -36,7 +35,7 @@ export const DateFilter = () => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
             <Grid2 container spacing={2}>
-                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px", maxWidth: "200px" }}>
+                <Grid2 size={{ xs: 6, md: 4 }} sx={{ minWidth: "170px", maxWidth: "200px" }}>
                     <Controller
                         name="startDate"
                         control={controlDate}
@@ -59,7 +58,7 @@ export const DateFilter = () => {
                         )}
                     />
                 </Grid2>
-                <Grid2 size={{ xs: 6, sm: 4 }} sx={{ minWidth: "170px", maxWidth: "200px"}}>
+                <Grid2 size={{ xs: 6, md: 4 }} sx={{ minWidth: "170px", maxWidth: "200px"}}>
                     <Controller
                         name="endDate"
                         control={controlDate}
@@ -92,7 +91,7 @@ export const DateFilter = () => {
                     />
                 </Grid2>
                 {/* Botón Filtrar después de los campos de fechas */}
-                <Grid2 size={{ xs: 12, sm: 4 }}
+                <Grid2 size={{ xs: 12, md: 4 }}
                     sx={{
                         minWidth: '80px',
                         marginBottom: { xs: '21px', md: '0px' },
