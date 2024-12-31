@@ -8,22 +8,29 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
 import ExcelJS from 'exceljs';
 
-interface Ingreso {
-    category: string;
-    amount: number;
-    description: string;
-}
-
-interface Egreso {
-    category: string;
-    amount: number;
-    description: string;
-}
-
 interface FinancialData {
     financialData: {
-        ingresos: Ingreso[];
-        egresos: Egreso[];
+        ingresos: {
+            id: string;
+            userName: string;
+            amount: number;
+            incomeDate: Date;
+        }[];
+        egresos: {
+            id: string;
+            category: string;
+            description: string;
+            expenseDate: Date;
+            price: number;
+        }[];
+        ventas: {
+            id: string;
+            entrepreneurName: string;
+            productName: string;
+            productCategory: string;
+            amount: number;
+            saleDate: Date;
+        }[];
         totalIngresos: number;
         totalEgresos: number;
         balance: number;
@@ -52,19 +59,26 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         }
 
         const workbook = new ExcelJS.Workbook();
-        workbook.creator = 'Your App';
+        workbook.creator = 'PROMASKOTA';
         workbook.created = new Date();
 
         const ingresosSheet = workbook.addWorksheet('Ingresos');
-        ingresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        ingresosSheet.addRow(['Id', 'Nombre del usuario', 'Monto', 'Fecha del Ingreso']);
         financialData.ingresos.forEach(item => {
-            ingresosSheet.addRow([item.category, item.amount, item.description]);
+            ingresosSheet.addRow([item.id, item.userName, new Date(item.incomeDate).toLocaleDateString(), item.amount]);
+        });
+
+        const ventasSheet = workbook.addWorksheet('Ventas');
+        ventasSheet.addRow(['Id', 'Emprendedor', 'Producto', 'Categoría', 'Precio', 'Fecha de la venta']);
+        console.log(financialData.ventas);
+        financialData.ventas.forEach(item => {
+            ventasSheet.addRow([item.id, item.entrepreneurName, item.productName, item.productCategory, new Date(item.saleDate).toLocaleDateString(),  item.amount,]);
         });
 
         const egresosSheet = workbook.addWorksheet('Egresos');
-        egresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        egresosSheet.addRow(['Id', 'Categoría', 'Descripción', 'Monto', 'Fecha del Gasto',]);
         financialData.egresos.forEach(item => {
-            egresosSheet.addRow([item.category, item.amount, item.description]);
+            egresosSheet.addRow([item.id, item.category, item.description, new Date(item.expenseDate).toLocaleDateString(), item.price]);
         });
 
         const resumenSheet = workbook.addWorksheet('Resumen');
@@ -113,8 +127,21 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
 
         autoTable(doc, {
             startY: startY,
-            head: [['Categoría', 'Monto', 'Descripción']],
-            body: financialData.ingresos.map(item => [item.category, `$${item.amount}`, item.description]),
+            head: [['Id', 'Nombre del usuario', 'Monto', 'Fecha del Ingreso']],
+            body: financialData.ingresos.map(item => [item.id, item.userName, `$${item.amount}`, new Date(item.incomeDate).toLocaleDateString()]),
+        });
+
+        startY = (doc as any).autoTable.previous.finalY + 10;
+        doc.setFontSize(14);
+        doc.text('Ventas', 14, startY);
+
+        startY += 5;
+        doc.setFontSize(12);
+
+        autoTable(doc, {
+            startY: startY,
+            head: [['Id', 'Emprendedor', 'Producto', 'Categoría', 'Precio', 'Fecha de la venta']],
+            body: financialData.ventas.map(item => [item.id, item.entrepreneurName, item.productName, item.productCategory, `$${item.amount}`, new Date(item.saleDate).toLocaleDateString()]),
         });
 
         startY = (doc as any).autoTable.previous.finalY + 10;
@@ -126,8 +153,8 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
 
         autoTable(doc, {
             startY: startY,
-            head: [['Categoría', 'Monto', 'Descripción']],
-            body: financialData.egresos.map(item => [item.category, `$${item.amount}`, item.description]),
+            head: [['Id', 'Categoría', 'Descripción', 'Monto', 'Fecha del Gasto']],
+            body: financialData.egresos.map(item => [item.id, item.category, item.description, `$${item.price}`, new Date(item.expenseDate).toLocaleDateString()]),
         });
 
         startY = (doc as any).autoTable.previous.finalY + 10;
