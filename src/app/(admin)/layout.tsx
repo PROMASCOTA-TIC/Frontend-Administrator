@@ -7,11 +7,9 @@ export default function AdminLayout({
 }>) {
     return (
         <html lang="en">
-            <body>
-                <Dashboard>
-                    {children}
-                </Dashboard>
-            </body>
+            <Dashboard>
+                {children}
+            </Dashboard>
         </html>
     );
 }

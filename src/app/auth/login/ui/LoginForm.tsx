@@ -8,6 +8,10 @@ import { Box, Button, FormLabel, IconButton, InputAdornment, OutlinedInput, Text
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { URL_BASE } from '@/config/config';
+import Notification from '@/components/ui/notifications/Notification';
+import { useRouter } from 'next/navigation';
 
 type Inputs = {
     email: string;
@@ -17,18 +21,51 @@ type Inputs = {
 
 export const LoginForm = () => {
 
+    const [notification, setNotification] = useState<{
+        open: boolean;
+        message: string;
+        type: 'success' | 'error' | 'info' | 'warning';
+    }>({ open: false, message: '', type: 'info' });
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: zodResolver(loginSchema),
         mode: 'onChange',
     });
-
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter()
 
     const handleClickShowPassword: () => void = () => setShowPassword((show) => !show);
 
-    const onSubmit = (data: Inputs) => {
-        console.log({ ...data });
-        window.location.href = '/';
+    const onSubmit = async (data: Inputs) => {
+        try {
+            const response = await axios.post(`${URL_BASE}auth/login-admin`,
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            )
+
+            if (response.status === 200 || response.status === 201) {
+                setNotification({
+                    open: true,
+                    message: 'Inicio de sesión exitoso',
+                    type: 'success',
+                });
+            }
+            const expirationTime = new Date(new Date().getTime() + 3600 * 1000);
+            document.cookie = `auth_cookie=${response.data.token}; expires=${expirationTime.toUTCString()}; path=/`;
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user_id', response.data.id);
+            router.push('/')
+        } catch (error) {
+            setNotification({
+                open: true,
+                message: 'Credenciales incorrectas',
+                type: 'error',
+            });
+            console.log('error',error);
+        }
     };
 
     return (
@@ -40,7 +77,14 @@ export const LoginForm = () => {
                 width: '100%',
                 marginBottom: '21px',
             }}
+            noValidate
         >
+            <Notification
+                open={notification.open}
+                onClose={() => setNotification({ ...notification, open: false })}
+                message={notification.message}
+                type={notification.type}
+            />
             <FormLabel htmlFor="email"
                 sx={{
                     color: themePalette.black,
