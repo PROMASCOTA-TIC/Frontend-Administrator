@@ -1,6 +1,7 @@
 "use client"; // Indica que este componente es un Client Component
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Box, Button, Select, MenuItem, SelectChangeEvent, TableContainer, Paper, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Box, Button, Select, MenuItem, SelectChangeEvent, TableContainer, Paper, CircularProgress, Divider, InputLabel } from '@mui/material';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface FeedbackSummary {
@@ -25,7 +26,8 @@ const VotosYComentarios = () => {
     const [loadingSummary, setLoadingSummary] = useState(true);
     const [loadingDetails, setLoadingDetails] = useState(true);
 
-    const faqId = "ID_DEL_FAQ"; // Asegúrate de pasar el ID del FAQ correspondiente
+    const { id: faqId } = useParams();
+    console.log("ID del FAQ desde la URL:", faqId);
 
     useEffect(() => {
         const fetchFeedbackSummary = async () => {
@@ -80,7 +82,9 @@ const VotosYComentarios = () => {
 
     return (
         <Box className='flex-column' sx={{ width: '100%', gap: '21px' }}>
-            <p className='h2-semiBold txtcolor-primary txt-center'>¿Esta respuesta fue útil?</p>
+
+            {/* Línea divisoria */}
+            <Divider sx={{ marginY: "21px", borderColor: "#00AA28" }} />
 
             {/* Tabla de estadísticas */}
             <TableContainer component={Paper}>
@@ -98,7 +102,12 @@ const VotosYComentarios = () => {
                             <TableCell className='n-regular txt-center'>{feedbackSummary?.totalVotes || 0}</TableCell>
                             <TableCell className='n-regular txt-center'>{feedbackSummary?.positiveVotes || 0}</TableCell>
                             <TableCell className='n-regular txt-center'>{feedbackSummary?.negativeVotes || 0}</TableCell>
-                            <TableCell className='n-regular txt-center'>{feedbackSummary ? `${feedbackSummary.satisfaction.toFixed(1)}%` : '0%'}</TableCell>
+                            <TableCell className='n-regular txt-center'>
+                                {feedbackSummary && typeof feedbackSummary.satisfaction === 'number'
+                                    ? `${feedbackSummary.satisfaction.toFixed(1)}%`
+                                    : '0%'}
+                            </TableCell>
+
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -123,6 +132,7 @@ const VotosYComentarios = () => {
             {showComments && (
                 <>
                     <div>
+                        <InputLabel style={{ paddingBottom: '8px' }}>Filtrar por tipo de voto:</InputLabel>
                         <Select
                             value={filterVote}
                             onChange={handleFilterChange}
@@ -132,7 +142,7 @@ const VotosYComentarios = () => {
                                 borderRadius: '15px',
                             }}
                         >
-                            <MenuItem value=""><em>Filtrar por tipo de voto</em></MenuItem>
+                            <MenuItem value=""><em>Todos</em></MenuItem>
                             <MenuItem value="positivo">Positivo</MenuItem>
                             <MenuItem value="negativo">Negativo</MenuItem>
                         </Select>
@@ -160,10 +170,10 @@ const VotosYComentarios = () => {
                                         .filter((detail) => !filterVote || detail.vote === filterVote)
                                         .map((detail, index) => (
                                             <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                                                <TableCell align="center">{detail.vote}</TableCell>
-                                                <TableCell align="center">{detail.rating}</TableCell>
-                                                <TableCell align="center">{detail.feedbackOptions.join(', ')}</TableCell>
-                                                <TableCell align="center">{detail.comment}</TableCell>
+                                                <TableCell align="center">{detail.vote || '-'}</TableCell>
+                                                <TableCell align="center">{detail.rating || '-'}</TableCell>
+                                                <TableCell align="center">{detail.feedbackOptions.join(', ') || '-'}</TableCell>
+                                                <TableCell align="center">{detail.comment || '-'}</TableCell>
                                             </TableRow>
                                         ))}
                                 </TableBody>

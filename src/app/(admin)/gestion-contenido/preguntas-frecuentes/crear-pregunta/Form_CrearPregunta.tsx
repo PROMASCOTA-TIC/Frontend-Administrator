@@ -28,7 +28,11 @@ const categoryMap: Record<string, number> = {
 };
 
 const Form_CrearPregunta: React.FC = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<Inputs>({
         resolver: zodResolver(crearPreguntaSchema),
         mode: 'onChange', // Valida en tiempo real
     });
@@ -108,11 +112,6 @@ const Form_CrearPregunta: React.FC = () => {
                         {/* SECCION DE TIPO DE CONTENIDO */}
                         <Grid2 size={12}>
                             <h2 className='h2-bold txtcolor-primary txt-center'>Tipo de contenido</h2>
-                        </Grid2>
-
-                        {/* Categoria */}
-                        <Grid2 size={{ xs: 12, sm: 4, md: 4 }}>
-                            <h2 className='h2-bold txtcolor-primary'>Categoría</h2>
                         </Grid2>
 
                         {/* Categoria */}

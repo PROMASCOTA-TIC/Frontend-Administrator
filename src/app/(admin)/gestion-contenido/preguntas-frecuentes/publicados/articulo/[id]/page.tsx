@@ -30,8 +30,8 @@ const Page = () => {
                     <Btn_EditarEliminar
                         linkEditar={`/gestion-contenido/preguntas-frecuentes/publicados/articulo/editar/${id}`}
                         id={id} // Ahora siempre es un string
-                        endpointEliminar="http://localhost:3001/api/links/delete"
-                        redirectPath="/gestion-contenido/enlaces-interes/publicados"
+                        endpointEliminar="http://localhost:3001/api/faqs/delete"
+                        redirectPath="/gestion-contenido/preguntas-frecuentes/publicados"
                     />
                 </div>
 

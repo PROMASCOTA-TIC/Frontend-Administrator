@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
 import PR_Filtro from '@/components/gestionContenido/filtros/PR_Filtro';
 import ArticulosSinFoto from '@/components/gestionContenido/ArticulosSinFoto';
+import PF_Filtro from '@/components/gestionContenido/filtros/PF_Filtro';
 
 const PF_Categorias = () => {
   const [articulos, setArticulos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // ** Función para obtener todos los publireportajes **
-  const fetchApprovedLinks = async () => {
+  const fetchApprovedFaqs = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/faqs/all');
       const data = await response.json();
@@ -33,9 +34,9 @@ const PF_Categorias = () => {
   };
 
   // Función para obtener publireportajes por categoría
-  const fetchAdvertorialsByCategory = async (categoryId: string | null) => {
+  const fetchFaqsByCategory = async (categoryId: string | null) => {
     if (categoryId === "none" || categoryId === null) {
-      fetchApprovedLinks();
+      fetchApprovedFaqs();
       return;
     }
 
@@ -45,25 +46,25 @@ const PF_Categorias = () => {
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
       const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.advertorialId,
+        id: articulo.id || articulo.faqId,
         titulo: articulo.title || "Sin título",
         descripcion: articulo.description || "Sin descripción",
       }));
 
       setArticulos(articulosAdaptados);
     } catch (error) {
-      console.error(`Error al obtener publireportajes de la categoría ${categoryId}:`, error);
+      console.error(`Error al obtener preguntas de la categoría ${categoryId}:`, error);
       setArticulos([]);
     }
   };
 
   // Cargar todos los publireportajes por defecto al abrir la página
   useEffect(() => {
-    fetchApprovedLinks();
+    fetchApprovedFaqs();
   }, []);
 
   const handleCategoryChange = (categoryId: string | null) => {
-    fetchAdvertorialsByCategory(categoryId);
+    fetchFaqsByCategory(categoryId);
   };
 
   // Render de carga o error
@@ -85,10 +86,10 @@ const PF_Categorias = () => {
 
   return (
     <div>
-      <PR_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
+      <PF_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
       <div
         style={{
-          height: "406px",   // el alto máximo que desees
+          height: "435px",   // el alto máximo que desees
           overflowY: "auto",    // scroll en vertical
           overflowX: "hidden",  // si no quieres scroll horizontal
         }}

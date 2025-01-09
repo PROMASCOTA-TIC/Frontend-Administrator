@@ -6,6 +6,9 @@ import { Box, CircularProgress, TextField, Button, MenuItem, Select, FormControl
 import { useRouter } from "next/navigation";
 import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
 
+import "/src/assets/styles/gestionContenido/general.css";
+import "/src/assets/styles/gestionContenido/estilos.css";
+
 interface Articulo {
     title: string;
     description: string;
@@ -77,7 +80,7 @@ const EditarArticulo = () => {
 
         setOpenSnackbar(true);
         setTimeout(() => {
-            router.push(`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`);
+            router.push(`/gestion-contenido/preguntas-frecuentes/publicados/articulo/${id}`);
         }, 4000);
     };
 
@@ -153,8 +156,8 @@ const EditarArticulo = () => {
                         </Button>
 
                         <BotonCancelar
-                            link={`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`}
-                            onConfirm={() => router.push(`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`)}
+                            link={`/gestion-contenido/preguntas-frecuentes/publicados/articulo/${id}`}
+                            onConfirm={() => router.push(`/gestion-contenido/preguntas-frecuentes/publicados/articulo/${id}`)}
                         />
                     </div>
 

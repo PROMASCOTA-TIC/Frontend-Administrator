@@ -28,7 +28,7 @@ const EntradaPregunta: React.FC = () => {
 
                 // Adaptación de las propiedades del backend al formato esperado en el frontend
                 setArticulo({
-                    id: data.linkId, // Propiedad `linkId` del backend
+                    id: data.faqId, // Propiedad `linkId` del backend
                     categoria: data.category?.name || "Sin categoría", // Nombre de la categoría
                     titulo: data.title || "Título no disponible",
                     descripcion: data.description || "Descripción no disponible",
@@ -68,10 +68,10 @@ const EntradaPregunta: React.FC = () => {
     }
 
     return (
-        <Box sx={{ padding: "34px 55px", gap: "21px" }}>
+        <Box sx={{ gap: "21px" }}>
             <h1 className="h1-bold txtcolor-primary" style={{ padding: '21px 0px' }}>{articulo?.categoria}</h1>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div className="flex-column txt-justify" style={{ width: "80%", gap: "21px", paddingRight: "34px" }}>
+                <div className="flex-column txt-justify" style={{ gap: "21px" }}>
                     <h2 className="h2-semiBold txtcolor-secondary">{articulo?.titulo}</h2>
                     <p className="n-regular">{articulo?.descripcion}</p>
                 </div>
