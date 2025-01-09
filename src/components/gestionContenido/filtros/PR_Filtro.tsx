@@ -21,7 +21,7 @@ const PR_Filtro: React.FC<PR_FiltroProps> = ({ onChangeCategory, defaultCategory
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '34px 34px 0px 0px' }}>
       <FormControl sx={{ minWidth: '250px' }} size="small">
-        <InputLabel id="demo-simple-select-autowidth-label">Seleccione la categoría</InputLabel>
+        <InputLabel id="demo-simple-select-autowidth-label">Categoría</InputLabel>
         <Select
           labelId="demo-simple-select-autowidth-label"
           id="demo-simple-select-autowidth"
@@ -35,7 +35,7 @@ const PR_Filtro: React.FC<PR_FiltroProps> = ({ onChangeCategory, defaultCategory
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#004040' },
           }}
         >
-          <MenuItem value="none">Todos los publireportajes</MenuItem>
+          <MenuItem value="none">Todos</MenuItem>
           <MenuItem value="1">Nuevos Productos</MenuItem>
           <MenuItem value="2">Nuevos Servicios</MenuItem>
           <MenuItem value="3">Eventos</MenuItem>
