@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Box, CircularProgress, TextField, Button, MenuItem, Select, FormControl, InputLabel, Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
 
 interface Articulo {
     title: string;
     description: string;
+    sourceLink: string;
     categoryId: number;
+    publishDate: string | null; // Fecha y hora de publicación opcional
 }
 
 const EditarArticulo = () => {
@@ -21,10 +24,13 @@ const EditarArticulo = () => {
 
     const router = useRouter();
 
+    // Obtener la fecha y hora actual en formato ISO para usar como `min` en el input
+    const now = dayjs().format("YYYY-MM-DDTHH:mm");
+
     useEffect(() => {
         const fetchArticulo = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/faqs/detail/${id}`);
+                const response = await fetch(`http://localhost:3001/api/links/detail/${id}`);
                 if (!response.ok) {
                     throw new Error("Error al obtener los datos del artículo");
                 }
@@ -32,7 +38,9 @@ const EditarArticulo = () => {
                 setArticulo({
                     title: data.title,
                     description: data.description,
+                    sourceLink: data.sourceLink,
                     categoryId: data.categoryId,
+                    publishDate: data.publishDate || null, // Se obtiene la fecha de publicación si existe
                 });
             } catch (error) {
                 console.error("Error al cargar el artículo:", error);
@@ -43,7 +51,7 @@ const EditarArticulo = () => {
 
         const fetchCategorias = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/faqs/categories/all`);
+                const response = await fetch(`http://localhost:3001/api/links/categories/all`);
                 const data = await response.json();
                 setCategorias(data); // Obtiene las categorías disponibles para mostrar en el <Select>
             } catch (error) {
@@ -59,27 +67,47 @@ const EditarArticulo = () => {
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Verificar que el artículo tenga los datos necesarios antes de enviarlo
+        if (!articulo || !articulo.title || !articulo.description || !articulo.categoryId) {
+            alert("Por favor, completa todos los campos obligatorios.");
+            return;
+        }
+
+        // Convertir la fecha a UTC
+        const publishDateUTC = articulo.publishDate ? new Date(articulo.publishDate).toISOString() : null;
+
+        // Preparar los datos para enviarlos al backend
+        const updatedArticulo = {
+            ...articulo,
+            publishDate: publishDateUTC,
+        };
+
+        console.log("Datos enviados en UTC:", updatedArticulo);  // Verificar los datos enviados
+
         try {
-            const response = await fetch(`http://localhost:3001/api/faqs/update/${id}`, {
+            // Actualiza los datos del artículo
+            const responseUpdate = await fetch(`http://localhost:3001/api/links/update/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(articulo),
+                body: JSON.stringify(updatedArticulo),
             });
 
-            if (!response.ok) {
-                console.error("Error al actualizar el artículo");
+            if (!responseUpdate.ok) {
+                throw new Error("Error al actualizar el artículo");
             }
+
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                router.push(`/gestion-contenido/enlaces-interes/por-revisar/articulo/${id}`);
+            }, 4000);
         } catch (error) {
             console.error("Error al enviar los datos:", error);
         }
-
-        setOpenSnackbar(true);
-        setTimeout(() => {
-            router.push(`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`);
-        }, 4000);
     };
+
 
     if (loading) {
         return (
@@ -108,7 +136,7 @@ const EditarArticulo = () => {
                 <TextField
                     fullWidth
                     label="Título"
-                    value={articulo.title || ""}
+                    value={articulo!.title || ""}
                     onChange={(e) => setArticulo({ ...articulo, title: e.target.value })}
                     sx={{ marginBottom: "20px" }}
                 />
@@ -117,15 +145,22 @@ const EditarArticulo = () => {
                     multiline
                     rows={4}
                     label="Descripción"
-                    value={articulo.description || ""}
+                    value={articulo!.description || ""}
                     onChange={(e) => setArticulo({ ...articulo, description: e.target.value })}
+                    sx={{ marginBottom: "20px" }}
+                />
+                <TextField
+                    fullWidth
+                    label="Fuente"
+                    value={articulo!.sourceLink || ""}
+                    onChange={(e) => setArticulo({ ...articulo, sourceLink: e.target.value })}
                     sx={{ marginBottom: "20px" }}
                 />
 
                 <FormControl fullWidth variant="outlined" sx={{ marginBottom: "20px" }}>
                     <InputLabel>Categoría</InputLabel>
                     <Select
-                        value={articulo.categoryId || ""}
+                        value={articulo!.categoryId || ""}
                         onChange={(e) => setArticulo({ ...articulo, categoryId: Number(e.target.value) })}
                         label="Categoría"
                     >
@@ -136,6 +171,22 @@ const EditarArticulo = () => {
                         ))}
                     </Select>
                 </FormControl>
+
+                {/* Campo de Fecha y Hora de Publicación */}
+                <TextField
+                    fullWidth
+                    type="datetime-local"
+                    label="Fecha y hora de publicación"
+                    value={articulo!.publishDate ? dayjs(articulo.publishDate).format("YYYY-MM-DDTHH:mm") : ""}
+                    onChange={(e) => setArticulo({ ...articulo, publishDate: e.target.value })}
+                    sx={{ marginBottom: "20px" }}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    inputProps={{
+                        min: now, // Evita que se seleccionen fechas anteriores
+                    }}
+                />
 
                 <div className="flex-center">
                     <div className="flex-center gap-10">
@@ -153,8 +204,8 @@ const EditarArticulo = () => {
                         </Button>
 
                         <BotonCancelar
-                            link={`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`}
-                            onConfirm={() => router.push(`/gestion-contenido/enlaces-interes/publicados/articulo/${id}`)}
+                            link={`/gestion-contenido/enlaces-interes/por-revisar/articulo/${id}`}
+                            onConfirm={() => router.push(`/gestion-contenido/enlaces-interes/por-revisar/articulo/${id}`)}
                         />
                     </div>
 

@@ -9,6 +9,7 @@ import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
 interface Articulo {
     title: string;
     description: string;
+    sourceLink: string;
     categoryId: number;
 }
 
@@ -24,7 +25,7 @@ const EditarArticulo = () => {
     useEffect(() => {
         const fetchArticulo = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/faqs/detail/${id}`);
+                const response = await fetch(`http://localhost:3001/api/links/detail/${id}`);
                 if (!response.ok) {
                     throw new Error("Error al obtener los datos del artículo");
                 }
@@ -32,6 +33,7 @@ const EditarArticulo = () => {
                 setArticulo({
                     title: data.title,
                     description: data.description,
+                    sourceLink: data.sourceLink,
                     categoryId: data.categoryId,
                 });
             } catch (error) {
@@ -43,7 +45,7 @@ const EditarArticulo = () => {
 
         const fetchCategorias = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/faqs/categories/all`);
+                const response = await fetch(`http://localhost:3001/api/links/categories/all`);
                 const data = await response.json();
                 setCategorias(data); // Obtiene las categorías disponibles para mostrar en el <Select>
             } catch (error) {
@@ -60,7 +62,7 @@ const EditarArticulo = () => {
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:3001/api/faqs/update/${id}`, {
+            const response = await fetch(`http://localhost:3001/api/links/update/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -119,6 +121,13 @@ const EditarArticulo = () => {
                     label="Descripción"
                     value={articulo.description || ""}
                     onChange={(e) => setArticulo({ ...articulo, description: e.target.value })}
+                    sx={{ marginBottom: "20px" }}
+                />
+                <TextField
+                    fullWidth
+                    label="Fuente"
+                    value={articulo.sourceLink || ""}
+                    onChange={(e) => setArticulo({ ...articulo, sourceLink: e.target.value })}
                     sx={{ marginBottom: "20px" }}
                 />
 
