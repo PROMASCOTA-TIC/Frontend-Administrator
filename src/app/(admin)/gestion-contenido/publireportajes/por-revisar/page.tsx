@@ -1,39 +1,109 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import ArticulosConFoto from '@/components/gestionContenido/ArticulosConFoto';
-import EI_Filtro from '@/components/gestionContenido/filtros/EI_Filtro'
-import React from 'react'
+import { CircularProgress } from '@mui/material';
+import PR_Filtro from '@/components/gestionContenido/filtros/PR_Filtro';
 
-const articulos = [
-    {
-        id: 1,
-        titulo: 'Título del Artículo 1 ',
-        descripcion: 'Lorem ipsum dolor sit amet consectetur adipiscing elit nulla, lectus feugiat tristique per dui erat nullam posuere conubia, interdum parturient tempor quam aliquet dictumst cubilia. Iaculis risus quisque duis fusce sem vestibulum odio, penatibus nibh euismod dictum sodales porta laoreet, class orci venenatis porttitor tortor curae. Aliquet faucibus volutpat laoreet parturient erat feugiat blandit habitant penatibus quisque lacus augue nascetur proin primis, pretium nam accumsan gravida rhoncus ligula ac vivamus arcu quis eu praesent massa risus.',
-        link: '/articulo/1',
-        imagen: 'https://via.placeholder.com/100', // Usa una imagen de prueba
-    },
-    {
-        id: 2,
-        titulo: 'Título del Artículo 2',
-        descripcion: 'Descripción del Artículo 2Lorem ipsum dolor sit amet consectetur adipiscing elit nulla, lectus feugiat tristique per dui erat nullam posuere conubia, interdum parturient tempor quam aliquet dictumst cubilia. Iaculis risus quisque duis fusce sem vestibulum odio, penatibus nibh euismod dictum sodales porta laoreet, class orci venenatis porttitor tortor curae. Aliquet faucibus volutpat laoreet parturient erat feugiat blandit habitant penatibus quisque lacus augue nascetur proin primis, pretium nam accumsan gravida rhoncus ligula ac vivamus arcu quis eu praesent massa risus.',
-        link: '/articulo/2',
-        imagen: 'https://via.placeholder.com/100',
-    },
-    {
-        id: 3,
-        titulo: 'Título del Artículo 3',
-        descripcion: 'Lorem ipsum dolor sit amet consectetur adipiscing elit nulla, lectus feugiat tristique per dui erat nullam posuere conubia, interdum parturient tempor quam aliquet dictumst cubilia. Iaculis risus quisque duis fusce sem vestibulum odio, penatibus nibh euismod dictum sodales porta laoreet, class orci venenatis porttitor tortor curae. Aliquet faucibus volutpat laoreet parturient erat feugiat blandit habitant penatibus quisque lacus augue nascetur proin primis, pretium nam accumsan gravida rhoncus ligula ac vivamus arcu quis eu praesent massa risus.',
-        link: '/articulo/3',
-        imagen: 'https://via.placeholder.com/100',
-    },
-];
+const PR_Categorias = () => {
+  const [articulos, setArticulos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const page = () => {
+  // ** Función para obtener todos los publireportajes **
+  const fetchApprovedAdvertorials = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/advertorials/status/pending');
+      const data = await response.json();
+      console.log('Datos recibidos:', data); // Log para ver los datos de la API
+
+      // Adaptar los datos para el componente
+      const articulosAdaptados = data.map((articulo: any) => ({
+        id: articulo.id || articulo.advertorialId,
+        titulo: articulo.title || "Sin título",
+        descripcion: articulo.description || "Sin descripción",
+        link: articulo.link || "#",
+        imagen: articulo.image || "https://via.placeholder.com/100",
+      }));
+
+      setArticulos(articulosAdaptados);
+    } catch (error) {
+      console.error('Error al obtener los publireportajes:', error);
+      setArticulos([]); // Si hay error, se limpia la lista
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener publireportajes por categoría
+  const fetchAdvertorialsByCategory = async (categoryId: string | null) => {
+    if (categoryId === "none" || categoryId === null) {
+      fetchApprovedAdvertorials();
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/advertorials/categories/${categoryId}/advertorials`);
+      const data = await response.json();
+      console.log(`Publireportajes de la categoría ${categoryId}:`, data);
+
+      const articulosAdaptados = data.map((articulo: any) => ({
+        id: articulo.id || articulo.advertorialId,
+        titulo: articulo.title || "Sin título",
+        descripcion: articulo.description || "Sin descripción",
+        link: articulo.link || "#",
+        imagen: articulo.image || "https://via.placeholder.com/100",
+      }));
+
+      setArticulos(articulosAdaptados);
+    } catch (error) {
+      console.error(`Error al obtener publireportajes de la categoría ${categoryId}:`, error);
+      setArticulos([]);
+    }
+  };
+
+  // Cargar todos los publireportajes por defecto al abrir la página
+  useEffect(() => {
+    fetchApprovedAdvertorials();
+  }, []);
+
+  const handleCategoryChange = (categoryId: string | null) => {
+    fetchAdvertorialsByCategory(categoryId);
+  };
+
+  // Render de carga o error
+  if (loading) {
+    return (
+      <div
+        className="flex-center"
+        style={{
+          height: "100vh",
+          flexDirection: "column",
+          gap: "20px",
+        }}
+      >
+        <CircularProgress style={{ color: "#004040" }} size={60} />
+        <h1 className="h1-bold txtcolor-primary">Cargando...</h1>
+      </div>
+    );
+  }
+
   return (
     <div>
-        <h1 className='h1-bold txtcolor-primary txt-center' style={{ paddingTop: '13px' }}>Publi-Reportajes: Por Revisar</h1>
-        <EI_Filtro />
-        <ArticulosConFoto articulos={articulos} />
+      <PR_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
+      <div
+        style={{
+          height: "435px",   // el alto máximo que desees
+          overflowY: "auto",    // scroll en vertical
+          overflowX: "hidden",  // si no quieres scroll horizontal
+        }}
+      >
+        <ArticulosConFoto
+          articulos={articulos}
+          basePath="/gestion-contenido/publireportajes/por-revisar/articulo"
+        />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default PR_Categorias;
