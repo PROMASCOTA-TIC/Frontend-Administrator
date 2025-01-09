@@ -47,7 +47,7 @@ const EI_Categorias = () => {
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
       const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.advertorialId,
+        id: articulo.id || articulo.linkId,
         titulo: articulo.title || "Sin título",
         descripcion: articulo.description || "Sin descripción",
         link: articulo.link || "#",
@@ -92,7 +92,7 @@ const EI_Categorias = () => {
       <PR_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
       <div
         style={{
-          height: "406px",   // el alto máximo que desees
+          height: "435px",   // el alto máximo que desees
           overflowY: "auto",    // scroll en vertical
           overflowX: "hidden",  // si no quieres scroll horizontal
         }}

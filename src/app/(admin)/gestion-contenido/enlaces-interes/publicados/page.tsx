@@ -35,7 +35,7 @@ const EI_Categorias = () => {
   };
 
   // Función para obtener publireportajes por categoría
-  const fetchAdvertorialsByCategory = async (categoryId: string | null) => {
+  const fetchLinksByCategory = async (categoryId: string | null) => {
     if (categoryId === "none" || categoryId === null) {
       fetchApprovedLinks();
       return;
@@ -47,7 +47,7 @@ const EI_Categorias = () => {
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
       const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.advertorialId,
+        id: articulo.id || articulo.linkId,
         titulo: articulo.title || "Sin título",
         descripcion: articulo.description || "Sin descripción",
         link: articulo.link || "#",
@@ -56,7 +56,7 @@ const EI_Categorias = () => {
 
       setArticulos(articulosAdaptados);
     } catch (error) {
-      console.error(`Error al obtener publireportajes de la categoría ${categoryId}:`, error);
+      console.error(`Error al obtener links de la categoría ${categoryId}:`, error);
       setArticulos([]);
     }
   };
@@ -67,7 +67,7 @@ const EI_Categorias = () => {
   }, []);
 
   const handleCategoryChange = (categoryId: string | null) => {
-    fetchAdvertorialsByCategory(categoryId);
+    fetchLinksByCategory(categoryId);
   };
 
   // Render de carga o error
@@ -92,7 +92,7 @@ const EI_Categorias = () => {
       <PR_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
       <div
         style={{
-          height: "406px",   // el alto máximo que desees
+          height: "435px",   // el alto máximo que desees
           overflowY: "auto",    // scroll en vertical
           overflowX: "hidden",  // si no quieres scroll horizontal
         }}
