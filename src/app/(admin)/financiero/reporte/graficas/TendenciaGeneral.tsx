@@ -2,39 +2,44 @@ import { LineChart } from '@mui/x-charts';
 import React, { useEffect, useState } from 'react'
 
 interface Props {
-    selectedCategory: string;
+    dataIngresos: {
+        label: string;
+        value: number;
+    }[];
+    dataEgresos: {
+        label: string;
+        value: number;
+    }[];
 }
 
-export const TendenciaGeneral = (selectedCategory: Props) => {
+//TODO: Cambiar el fetch por axios y pedir los datos desde el page.tsx
+export const TendenciaGeneral = ({dataIngresos, dataEgresos}: Props) => {
 
     const [loading, setLoading] = useState(false);
     const [ingresos, setIngresos] = useState<number[]>([]);
     const [egresos, setEgresos] = useState<number[]>([]);
+    const [xAxis, setXAxis] = useState<String[]>(['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']);
 
     loading ? <div>Cargando...</div> : null;
 
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            setIngresos(dataIngresos.length > 0 ? dataIngresos.map(item => item.value) : [0]);
+            setEgresos(dataEgresos.length > 0 ? dataEgresos.map(item => item.value) : [0]);
+            setXAxis(dataEgresos.length > 0 ? dataEgresos.map(item => item.label) : ['']);
+        } catch (error) {
+            console.error('Error al obtener los datos:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const responseIngresos = await fetch(`/api/ingresos?year=${selectedCategory}`);
-                const dataIngresos = await responseIngresos.json();
-
-                const responseEgresos = await fetch(`/api/egresos?year=${selectedCategory}`);
-                const dataEgresos = await responseEgresos.json();
-
-                setIngresos(dataIngresos.length > 0 ? dataIngresos : [0]);
-                setEgresos(dataEgresos.length > 0 ? dataEgresos : [0]);
-            } catch (error) {
-                console.error('Error al obtener los datos:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
         const interval = setInterval(fetchData, 100000000);
         return () => clearInterval(interval);
-    }, [selectedCategory]);
+    }, [dataEgresos]);
 
     return (
         <>
@@ -45,7 +50,7 @@ export const TendenciaGeneral = (selectedCategory: Props) => {
                 ]}
                 xAxis={[
                     {
-                        data: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        data: xAxis,
                         scaleType: 'band',
                     },
                 ]}

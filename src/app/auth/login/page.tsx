@@ -6,7 +6,6 @@ import { LoginForm } from "./ui/LoginForm";
 
 export default function Login() {
   return (
-    <div>
       <Grid2 container
         sx={{
           textAlign: 'center',
@@ -95,6 +94,5 @@ export default function Login() {
           />
         </Grid2>
       </Grid2>
-    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle,
     Grid2, IconButton, TextField, Typography
@@ -12,15 +12,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { transferSchema } from "@/validations/financiero/transferSchema";
 import "@/assets/styles/styles.css"
+import axios from "axios";
+import { URL_BASE } from "@/config/config";
+import Notification from "@/components/ui/notifications/Notification";
 
 interface RowData {
-    id: number;
-    fecha: string;
-    nombrePropietario: string;
-    estado: string;
-    total: string;
-    fechaPago: string;
-    comentario: string;
+    no: number;
+    transactionDate: string;
+    entrepreneurName: string;
+    state: string;
+    amount: string;
+    paymentDate: string;
+    coment: string;
 }
 
 type Inputs = {
@@ -31,36 +34,54 @@ export default function PagoEmprendedores() {
 
     const [open, setOpen] = useState(false)
     const [comment, setComment] = useState('');
-    const [openRowId, setOpenRowId] = useState(0);
-    const [rows, setRows] = useState<RowData[]>([
-        {
-            id: 1,
-            fecha: new Date("2024-08-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-            nombrePropietario: "Juan Pérez",
-            estado: 'Pendiente',
-            total: "100.00",
-            fechaPago: "",
-            comentario: ""
-        },
-        {
-            id: 2,
-            fecha: new Date("2024-08-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-            nombrePropietario: "María Lopez",
-            estado: 'Pendiente',
-            total: "100.00",
-            fechaPago: "",
-            comentario: ""
-        },
-    ]);
+    const [openRowNo, setOpenRowNo] = useState<number>(1);
+    const [rows, setRows] = useState<RowData[]>([]);
+    const [transactionsIds, setTransactionsIds] = useState<string[]>(['']);
+
+    const [notification, setNotification] = useState<{
+        open: boolean;
+        message: string;
+        type: 'success' | 'error' | 'info' | 'warning';
+    }>({ open: false, message: '', type: 'info' });
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${URL_BASE}transactions`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = response.status === 200 ? response.data : [];
+            const transactionsIds = data.map((item: any) => item.id);
+            setTransactionsIds(transactionsIds);
+            data.forEach((item: RowData, index: number) => {
+                item.no = index + 1;
+                item.transactionDate = new Date(item.transactionDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                item.state = item.state === 'S' ? 'Pagado' : 'Pendiente';
+                item.paymentDate = item.paymentDate ? new Date(item.paymentDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                item.coment = item.coment ? item.coment : '';
+            });
+            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
+            setRows(data);
+        } catch (error) {
+            setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
+            setRows([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const columns: GridColDef[] = [
-        { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
-        { field: "fecha", headerName: "Fecha", flex: 1, minWidth: 100 },
-        { field: "nombrePropietario", headerName: "Nombre", flex: 1, minWidth: 180 },
-        { field: "total", headerName: "Total", flex: 0.5, minWidth: 100 },
-        { field: "estado", headerName: "Estado", flex: 1, minWidth: 100 },
-        { field: "fechaPago", headerName: "Fecha de Pago", flex: 1, minWidth: 100 },
+        { field: "no", headerName: "No", flex: 0.5, minWidth: 50 },
+        { field: "transactionDate", headerName: "Fecha", flex: 1, minWidth: 100 },
+        { field: "entrepreneurName", headerName: "Nombre", flex: 1, minWidth: 180 },
+        { field: "amount", headerName: "Total", flex: 0.5, minWidth: 100 },
+        { field: "state", headerName: "Estado", flex: 1, minWidth: 100 },
+        { field: "paymentDate", headerName: "Fecha de Pago", flex: 1, minWidth: 100 },
         {
-            field: "registrarPago",
+            field: "resgisterPayment",
             headerName: "Registrar pago",
             flex: 0.5,
             minWidth: 120,
@@ -68,15 +89,17 @@ export default function PagoEmprendedores() {
             renderCell: (params) => (
                 <div>
                     <Checkbox
-                        checked={params.row.estado === "Pagado"}
-                        onClick={() => handleOpenDialog(params.row.id)}
-                        disabled={params.row.estado === "Pagado"}
+                        checked={params.row.state === "Pagado"}
+                        onClick={() =>{ handleOpenDialog(params.row.no);
+                            setOpenRowNo(params.row.no)
+                        }}
+                        disabled={params.row.state === "Pagado"}
                     />
                 </div>
             ),
         },
         {
-            field: "comentario",
+            field: "coment",
             headerName: "Comentario",
             flex: 1.5, minWidth: 150,
             renderCell: (params) => (
@@ -89,10 +112,10 @@ export default function PagoEmprendedores() {
                     }}
                 >
                     <Typography variant="body2">
-                        {params.row.estado === 'Pagado' && !params.row.comentario ? "Sin observaciones"
-                            : params.row.estado === 'Pendiente' ? "" : params.row.comentario}
+                        {params.row.state === 'Pagado' && !params.row.coment ? "Sin observaciones"
+                            : params.row.state === 'Pendiente' ? "" : params.row.coment}
                     </Typography>
-                    <IconButton onClick={() => handleOpenDialog(params.row.id)}
+                    <IconButton onClick={() => handleOpenDialog(params.row.no)}
                         disabled={params.row.estado == 'Pendiente'}>
                         <EditNote />
                     </IconButton>
@@ -111,29 +134,35 @@ export default function PagoEmprendedores() {
         setOpen(false);
     }
 
-    const handleOpenDialog = (id: number) => {
-        const selectedRow = rows.find(row => row.id === id);
+    const handleOpenDialog = (no: number) => {
+        console.log(no);
+        const selectedRow = rows.find(row => row.no === no);
         if (selectedRow) {
-            setOpenRowId(id);
-            setComment(selectedRow.comentario || "");
+            setOpenRowNo(no);
+            setComment(selectedRow.coment);
         }
         setOpen(true);
     };
 
-    const handleSaveComment = () => {
-        if (openRowId !== null) {
-            setRows(prevRows =>
-                prevRows.map(row =>
-                    row.id === openRowId
-                        ? {
-                            ...row,
-                            comentario: comment.trim() === '' ? 'Sin observaciones' : comment,
-                            estado: 'Pagado',
-                            fechaPago: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-                        }
-                        : row
-                )
-            );
+    const handleSaveComment = async (transactionId: string) => {
+        if (openRowNo !== null) {
+            const data = {
+                id: transactionId,
+                coment: comment.trim() === '' ? 'Sin observaciones' : comment,
+                state: 'S',
+                paymentDate: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString()
+            };
+            try{
+                const response = await axios.patch(`${URL_BASE}transactions/${transactionId}`, {...data}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                setNotification({ open: true, message: 'Comentario guardado', type: 'success' });
+                fetchData();
+            } catch(error){
+                setNotification({ open: true, message: 'Error al guardar el comentario', type: 'error' });
+            }
         }
         setOpen(false);
     };
@@ -149,6 +178,12 @@ export default function PagoEmprendedores() {
                 margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
             }}
         >
+            <Notification
+                open={notification.open}
+                onClose={() => setNotification({ ...notification, open: false })}
+                message={notification.message}
+                type={notification.type}
+            />
             <Grid2 size={12} className="flex justify-center">
                 <Typography className="font-bold text-primary mb-e8"
                     sx={{
@@ -177,14 +212,17 @@ export default function PagoEmprendedores() {
                         label="Comentario"
                         type="text"
                         fullWidth
-                        value={comment}
+                        value={comment || ''}
                         error={!!errors.comment}
                         helperText={errors.comment ? errors.comment.message : ''}
                         onChange={(e) => setComment(e.target.value)}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button className="bg-primary text-white mb-e13" onClick={handleSaveComment}
+                    <Button className="bg-primary text-white mb-e13"
+                        onClick={() => {
+                                handleSaveComment(transactionsIds[openRowNo - 1]);
+                        }}
                         variant="outlined"
                         sx={{
                             textTransform: "none",

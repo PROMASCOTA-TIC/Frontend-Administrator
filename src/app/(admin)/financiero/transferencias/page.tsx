@@ -1,25 +1,29 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid2, IconButton, TextField, Typography } from "@mui/material";
 import { Tables, } from "../components";
 import { GridColDef } from "@mui/x-data-grid";
 import { Check, Clear, EditNote, Receipt } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { transferSchema } from "@/validations/financiero/transferSchema";
 import Image from "next/image";
 import Imagen from "@/assets/images/ejemploTransferencia.png";
 import { themePalette } from "@/config/theme.config";
 import "@/assets/styles/styles.css"
+import axios from "axios";
+import { URL_BASE } from "@/config/config";
+import Notification from "@/components/ui/notifications/Notification";
 
 interface RowData {
-    id: number;
-    fecha: string;
-    nombre: string;
-    total: string;
-    estado: string;
-    observacion: string;
+    id: string;
+    no: number;
+    date: string;
+    name: string;
+    amount: string;
+    state: string;
+    observation: string;
 }
 
 type Inputs = {
@@ -29,36 +33,25 @@ type Inputs = {
 export default function Transferencias() {
 
     const [open, setOpen] = useState(false)
-    const [estado, setEstado] = useState('Pendiente')
     const [showCommentField, setShowCommentField] = useState(false);
     const [comment, setComment] = useState('');
     const [openRowId, setOpenRowId] = useState(0);
+    const [transferIds, setTransferIds] = useState<string[]>([]);
     const [edit, setEdit] = useState(false);
-    const [rows, setRows] = useState<RowData[]>([
-        {
-            id: 1,
-            fecha: new Date("2024-08-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-            nombre: "Juan Pérez",
-            total: "100.00",
-            estado: 'Pendiente',
-            observacion: ""
-        },
-        {
-            id: 2,
-            fecha: new Date("2024-07-31T00:00:00").toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-            nombre: "María López",
-            total: "20.00",
-            estado: 'Pendiente',
-            observacion: ""
-        },
-    ]);
+    const [notification, setNotification] = useState<{
+        open: boolean;
+        message: string;
+        type: 'success' | 'error' | 'info' | 'warning';
+    }>({ open: false, message: '', type: 'info' });
+
+    const [rows, setRows] = useState<RowData[]>([]);
     const columns: GridColDef[] = [
-        { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
-        { field: "fecha", headerName: "Fecha", flex: 1, minWidth: 100 },
-        { field: "nombre", headerName: "Nombre", flex: 1, minWidth: 180 },
-        { field: "total", headerName: "Total", flex: 0.5, minWidth: 100 },
+        { field: "no", headerName: "ID", flex: 0.5, minWidth: 50 },
+        { field: "transferDate", headerName: "Fecha", flex: 1, minWidth: 100 },
+        { field: "name", headerName: "Nombre", flex: 1, minWidth: 180 },
+        { field: "amount", headerName: "Total", flex: 0.5, minWidth: 100 },
         {
-            field: "comprobante",
+            field: "voucher",
             headerName: "Comprobante",
             flex: 0.5, minWidth: 120,
             align: "center",
@@ -70,7 +63,7 @@ export default function Transferencias() {
                 </IconButton>
             ),
         },
-        { field: "estado", headerName: "Estado", flex: 1, minWidth: 100 },
+        { field: "state", headerName: "Estado", flex: 1, minWidth: 100 },
         {
             field: "observacion",
             headerName: "Observación",
@@ -95,10 +88,38 @@ export default function Transferencias() {
             ),
         },
     ];
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm<Inputs>({
         resolver: zodResolver(transferSchema),
         mode: 'onChange',
     });
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${URL_BASE}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = response.status === 200 ? response.data : [];
+            data.forEach((item: RowData, index: number) => {
+                item.no = index + 1;
+                item.date = new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                item.observation = item.observation ? item.observation : '';
+            });
+            setTransferIds(data.map((item: RowData) => item.id));
+            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
+            setRows(data);
+        } catch (error) {
+            setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
+            setRows([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const handleClickOpen = (id: number) => {
         reset();
         setOpenRowId(id);
@@ -109,20 +130,38 @@ export default function Transferencias() {
         setEdit(false);
         setShowCommentField(false);
     }
-    const handleApprove = () => {
-        setRows((prevRows) =>
-            prevRows.map((row) =>
-                row.id === openRowId ? { ...row, estado: 'Aprobado' } : row
-            )
-        );
-        handleClose();
+    const handleApprove = async () => {
+        const transferId = transferIds[openRowId - 1];
+        //TODO: llamar a la API para aprobar la transferencia  (coordinar con el JSON)
+        const response = await axios.post(`${URL_BASE}transactions/validate-transfer/${transferId}`, {
+            id: transferId,
+            state: 'Aprobado',
+            observation: comment
+        },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        if (response.status === 200) {
+            setRows((prevRows) =>
+                prevRows.map((row) =>
+                    row.no === openRowId ? { ...row, estado: 'Aprobado', observacion: comment } : row
+                )
+            );
+            fetchData();
+            handleClose();
+            setNotification({ open: true, message: 'Transferencia validad con éxito', type: 'success' });
+        } else {
+            setNotification({ open: true, message: 'Error al validar la transferencia', type: 'error' });
+        }
     }
     const handleReject = () => {
         if (showCommentField) {
             handleSubmit(() => {
                 setRows((prevRows) =>
                     prevRows.map((row) =>
-                        row.id === openRowId ? { ...row, estado: 'Rechazado', observacion: comment } : row
+                        row.no === openRowId ? { ...row, estado: 'Rechazado', observacion: comment } : row
                     )
                 );
                 handleClose();
@@ -134,23 +173,24 @@ export default function Transferencias() {
     }
 
     const handleEditComment = (id: number) => {
-        const rowToEdit = rows.find(row => row.id === id);
+        const rowToEdit = rows.find(row => row.no === id);
         if (rowToEdit) {
-            setComment(rowToEdit.observacion || "");
+            setComment(rowToEdit.observation || "");
         }
         setOpenRowId(id);
         setEdit(true);
     };
 
     const handleSaveComment = () => {
+        //TODO: llamar update de la venta (JSON)
         setRows((prevRows) =>
             prevRows.map((row) => {
-                return row.id === openRowId ? { ...row, observacion: comment } : row;
+                return row.no === openRowId ? { ...row, observacion: comment } : row;
             })
         );
         handleClose();
     };
-    
+
     return (
         <Grid2
             container
@@ -162,6 +202,12 @@ export default function Transferencias() {
                 margin: { xs: "30px 25px", sm: "30px 30px", md: "30px 60px" },
             }}
         >
+            <Notification
+                open={notification.open}
+                onClose={() => setNotification({ ...notification, open: false })}
+                message={notification.message}
+                type={notification.type}
+            />
             <Grid2 size={12} className="flex justify-center">
                 <Typography className="font-bold text-primary mb-e8"
                     sx={{
@@ -228,7 +274,7 @@ export default function Transferencias() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {
-                        handleApprove();
+                        handleApprove;
                     }}
                         variant="outlined"
                         sx={{
