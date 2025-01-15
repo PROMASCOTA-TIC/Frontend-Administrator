@@ -103,9 +103,9 @@ export default function RecoleccionProductos() {
                     </Box>
                 </Grid2>
             ))}
-            <Grid2 size={12} >
+            {/* <Grid2 size={12} >
                 <DownloadButton />
-            </Grid2>
+            </Grid2> */}
         </Grid2>
     );
 }
