@@ -11,21 +11,16 @@ interface Props {
 
 export const PieChartIngresos = ({ dataIngresos }: Props) => {
 
-    const [loading, setLoading] = useState(false);
     const [ingresos, setIngresos] = useState<{ label: string, value: number; }[]>([{ label: '', value: 0 }]);
 
-    loading ? <div>Cargando...</div> : null;
     const fetchData = async () => {
         try {
-            setLoading(true);
             setIngresos(dataIngresos.length > 0 ? dataIngresos : [{ label: '', value: 0 }]);
         } catch (error) {
             console.error('Error al obtener los datos:', error);
-        } finally {
-            setLoading(false);
         }
     };
-
+    
     useEffect(() => {
         fetchData();
         const interval = setInterval(fetchData, 100000000);
@@ -61,6 +56,7 @@ export const PieChartIngresos = ({ dataIngresos }: Props) => {
                     },
                 }}
                 {...size}
+                loading={ingresos.length === 0}
             />
         </Box>
     );

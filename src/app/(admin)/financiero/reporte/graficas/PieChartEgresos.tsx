@@ -10,20 +10,14 @@ interface Props {
 }
 
 export const PieChartEgresos = ({ dataEgresos }: Props) => {
-    const [loading, setLoading] = useState(false);
     const [egresos, setEgresos] = useState<{ label: string, value: number; }[]>([]);
-
-    loading ? <div>Cargando...</div> : null;
 
     const fetchData = async () => {
         try {
-            setLoading(true);
             setEgresos(dataEgresos.length > 0 ? dataEgresos : [{ label: '', value: 0 }]);
         } catch (error) {
             console.error('Error al obtener los datos:', error);
-        } finally {
-            setLoading(false);
-        }
+        } 
     };
 
     useEffect(() => {
@@ -61,6 +55,7 @@ export const PieChartEgresos = ({ dataEgresos }: Props) => {
                     },
                 }}
                 {...size}
+                loading={egresos.length === 0}
             />
         </Box>
     );

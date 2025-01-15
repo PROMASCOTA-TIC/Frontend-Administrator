@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Box } from '@mui/material';
 import { esES } from '@mui/x-data-grid/locales';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { themePalette } from '@/config/theme.config';
+import LoadingSpinner from '@/components/ui/LoadingSpinner/LoadingSpinner';
 
 interface Props {
     rows: any;
@@ -25,44 +26,47 @@ const CustomToolbar = () => {
 };
 
 export const Tables = ({ rows, columns }: Props) => {
+    if (!rows || rows.length === 0) {
+        return <LoadingSpinner />;
+    }
     return (
         <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <DataGrid
-                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: { pageSize: 5 },
-                    },
-                }}
-                pageSizeOptions={[5, 10, 25]}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
-                slotProps={{
-                    toolbar: {
-                        showQuickFilter: true,
-                        quickFilterProps: { debounceMs: 500 },
-                    },
-                }}
-                sx={{
-                    flexGrow: 1,
-                    '& .MuiDataGrid-toolbarContainer': {
-                        backgroundColor: themePalette.cwhite,
-                        padding: '0.5rem',
-                        border: '0px solid',
-                    },
-                    '& .MuiDataGrid-columnHeader': {
-                        backgroundColor: themePalette.black10,
-                        fontWeight: 'bold',
-                    },
-                    '& .MuiDataGrid-footerContainer': {
-                        backgroundColor: themePalette.black10,
-                        fontWeight: 'bold',
-                    },
-                }}
-            />
+                <DataGrid
+                    localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                        pagination: {
+                            paginationModel: { pageSize: 5 },
+                        },
+                    }}
+                    pageSizeOptions={[5, 10, 25]}
+                    slots={{
+                        toolbar: CustomToolbar,
+                    }}
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                            quickFilterProps: { debounceMs: 500 },
+                        },
+                    }}
+                    sx={{
+                        flexGrow: 1,
+                        '& .MuiDataGrid-toolbarContainer': {
+                            backgroundColor: themePalette.cwhite,
+                            padding: '0.5rem',
+                            border: '0px solid',
+                        },
+                        '& .MuiDataGrid-columnHeader': {
+                            backgroundColor: themePalette.black10,
+                            fontWeight: 'bold',
+                        },
+                        '& .MuiDataGrid-footerContainer': {
+                            backgroundColor: themePalette.black10,
+                            fontWeight: 'bold',
+                        },
+                    }}
+                />
         </Box>
     );
 };

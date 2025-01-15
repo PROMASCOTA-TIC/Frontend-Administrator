@@ -12,28 +12,23 @@ interface Props {
     }[];
 }
 
-//TODO: Cambiar el fetch por axios y pedir los datos desde el page.tsx
+//TODO: ver que aparezca la leyenda.
+
 export const TendenciaGeneral = ({dataIngresos, dataEgresos}: Props) => {
 
-    const [loading, setLoading] = useState(false);
     const [ingresos, setIngresos] = useState<number[]>([]);
     const [egresos, setEgresos] = useState<number[]>([]);
     const [xAxis, setXAxis] = useState<String[]>(['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']);
 
-    loading ? <div>Cargando...</div> : null;
-
     const fetchData = async () => {
         try {
-            setLoading(true);
-            setIngresos(dataIngresos.length > 0 ? dataIngresos.map(item => item.value) : [0]);
-            setEgresos(dataEgresos.length > 0 ? dataEgresos.map(item => item.value) : [0]);
+            setIngresos(dataIngresos.length > 0 ? dataIngresos.map(item => item.value) : []);
+            setEgresos(dataEgresos.length > 0 ? dataEgresos.map(item => item.value) : []);
             setXAxis(dataEgresos.length > 0 ? dataEgresos.map(item => item.label) : ['']);
         } catch (error) {
             console.error('Error al obtener los datos:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+        } 
+    }
 
     useEffect(() => {
         fetchData();
@@ -45,8 +40,8 @@ export const TendenciaGeneral = ({dataIngresos, dataEgresos}: Props) => {
         <>
             <LineChart
                 series={[
-                    { curve: 'linear', data: ingresos },
-                    { curve: 'linear', data: egresos },
+                    { curve: 'linear', data: ingresos, label: "Ingresos", color: '#008f39' },
+                    { curve: 'linear', data: egresos, label: "Egresos", color: '#ff0100' },
                 ]}
                 xAxis={[
                     {
@@ -54,6 +49,10 @@ export const TendenciaGeneral = ({dataIngresos, dataEgresos}: Props) => {
                         scaleType: 'band',
                     },
                 ]}
+                tooltip={{
+                    trigger: 'item',
+                }}
+                loading={ingresos.length === 0 || egresos.length === 0} 
             />
         </>
     )
