@@ -11,6 +11,7 @@ import { URL_BASE } from '@/config/config';
 import axios from 'axios';
 import Notification from '@/components/ui/notifications/Notification';
 import { Dayjs } from 'dayjs';
+import LoadingSpinner from '@/components/ui/LoadingSpinner/LoadingSpinner';
 
 const timePeriods = [
     { label: 'Año en curso', value: '0' },
@@ -40,6 +41,7 @@ export default function Reporte() {
         new Date(Date.UTC(new Date().getFullYear(), 0, 1, 0, 0, 0, 0)).toISOString(),
         new Date(Date.UTC(new Date().getFullYear() + 1, 0, 1, 0, 0, 0, 0)).toISOString()
     ]);
+    const [loading, setLoading] = useState(false)
 
     const [notification, setNotification] = useState<{
         open: boolean;
@@ -48,10 +50,22 @@ export default function Reporte() {
     }>({ open: false, message: '', type: 'info' });
 
     useEffect(() => {
-        fetchData(selectedTimePeriod[0], selectedTimePeriod[1]);
+        const loadData = async () => {
+            setLoading(true);
+            await fetchData(selectedTimePeriod[0], selectedTimePeriod[1]);
+        };
+        loadData();
     }, []);
 
-    const fetchData = async (startDate:string, endDate:string) => {
+    if (loading) {
+        return (
+            <Box className="pt-e55">
+                <LoadingSpinner />
+            </Box>
+        );
+    }
+
+    const fetchData = async (startDate: string, endDate: string) => {
         await fetchGeneralData(startDate, endDate);
         await fetchIngresosTG(startDate, endDate);
         await fetchEgresosTG(startDate, endDate);
@@ -60,6 +74,7 @@ export default function Reporte() {
         await fetchTotalIncomes(startDate, endDate);
         await fetchTotalExpenses(startDate, endDate);
         await fetchBalance(startDate, endDate);
+        setLoading(false);
     };
 
     const fetchGeneralData = async (startDate?: string, endDate?: string) => {
@@ -258,6 +273,8 @@ export default function Reporte() {
     }
 
     const fetchDataByType = async (type: string, startDate: string, endDate: string) => {
+        console.log('startDateTYPE', startDate);
+            console.log('endDateTYPE', endDate);
         if (type === 'ingresos') {
             await fetchIngresosPC(startDate, endDate);
             await fetchTotalIncomes(startDate, endDate);
@@ -283,6 +300,8 @@ export default function Reporte() {
                 startDate = new Date(Date.UTC(now.getFullYear(), 0, 1, 0, 0, 0, 0)).toISOString();
                 endDate = new Date(Date.UTC(now.getFullYear(), 11, 31, 23, 59, 59, 999)).toISOString();
                 fetchDataByType(type, startDate, endDate);
+                console.log('startDate', startDate);
+                console.log('endDate', endDate);
                 break;
             case '1':
                 const startOfWeek = new Date(Date.UTC(
@@ -300,11 +319,15 @@ export default function Reporte() {
                 const startISODate = startOfWeek.toISOString();
                 const endISODate = endOfWeek.toISOString();
                 fetchDataByType(type, startISODate, endISODate);
+                console.log('startDate', startISODate);
+                console.log('endDate', endISODate);
                 break;
             case '2':
-                startDate = new Date(Date.UTC(now.getFullYear(), currentMonth - 1, 1, 0, 0, 0, 0)).toISOString();
-                endDate = new Date(Date.UTC(now.getFullYear(), currentMonth, 0, 23, 59, 59, 999)).toISOString();
+                startDate = new Date(Date.UTC(now.getFullYear(), currentMonth === 0 ? currentMonth : - 1, 1, 0, 0, 0, 0)).toISOString();
+                endDate = new Date(Date.UTC(now.getFullYear(), currentMonth + 1, 0, 23, 59, 59, 999)).toISOString();
                 fetchDataByType(type, startDate, endDate);
+                console.log('startDate', startDate );
+                console.log('endDate', endDate);
                 break;
             case '3':
                 const currentQuarter = Math.floor(currentMonth / 3);
@@ -313,275 +336,285 @@ export default function Reporte() {
                 const startOfQuarter = new Date(Date.UTC(now.getFullYear(), startMonthT, 1, 0, 0, 0, 0));
                 const endOfQuarter = new Date(Date.UTC(now.getFullYear(), endMonthT + 1, 0, 23, 59, 59, 999));
                 fetchDataByType(type, startOfQuarter.toISOString(), endOfQuarter.toISOString());
+                console.log('startDate', startOfQuarter);
+                console.log('endDate', endOfQuarter);
                 break;
             case '4':
                 const startMonth = currentMonth < 6 ? 0 : 6;
                 const endMonth = startMonth === 0 ? 5 : 11;
-                const startOfLastSemester = new Date(Date.UTC(now.getFullYear(), startMonth, 0, 0, 0, 0, 0));
+                const startOfLastSemester = new Date(Date.UTC(now.getFullYear(), startMonth, 1, 0, 0, 0, 0));
                 const endOfLastSemester = new Date(Date.UTC(now.getFullYear(), endMonth + 1, 0, 23, 59, 59, 999));
                 fetchDataByType(type, startOfLastSemester.toISOString(), endOfLastSemester.toISOString());
+                console.log('startDate', startOfLastSemester);
+                console.log('endDate', endOfLastSemester);
                 break;
             default:
                 fetchData(selectedTimePeriod[0], selectedTimePeriod[1]);
+                console.log('startDate', startDate);
+                console.log('endDate', endDate);
                 break;
         }
     };
 
     const handleDateSubmit = (data: { startDate: Dayjs | null, endDate: Dayjs | null }) => {
+        setLoading(true);
         if (data.startDate && data.endDate) {
             fetchData(data.startDate.toISOString(), data.endDate.toISOString());
         } else {
             setNotification({ open: true, message: 'Fechas no válidas', type: 'error' });
         }
+        setLoading(false);
     };
 
     return (
-        <Grid2 container rowSpacing={{ xs: '20px', md: '34px' }}
-            sx={{
-                margin: '21px 0'
-            }}
-        >
-            <Notification
-                open={notification.open}
-                onClose={() => setNotification({ ...notification, open: false })}
-                message={notification.message}
-                type={notification.type}
-            />
-            <Grid2 size={12} className="flex justify-center">
-                <Typography className="font-bold text-primary mb-e8"
-                    sx={{
-                        fontSize: { xs: "26px", md: "34px" },
-                    }}
-                >
-                    Reporte financiero
-                </Typography>
-            </Grid2>
-            <Grid2 size={{ xs: 12, md: 6 }}
+        <>
+            <Grid2 container rowSpacing={{ xs: '20px', md: '34px' }}
                 sx={{
-                    marginLeft: { xs: '13px', md: '64px' },
+                    margin: '21px 0'
                 }}
             >
-                <DateFilter 
-                    onDateSubmit={handleDateSubmit}
+                <Notification
+                    open={notification.open}
+                    onClose={() => setNotification({ ...notification, open: false })}
+                    message={notification.message}
+                    type={notification.type}
                 />
-            </Grid2>
-            <Grid2
-                size={12}
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                }}
-            >
-                <Box
+                <Grid2 size={12} className="flex justify-center">
+                    <Typography className="font-bold text-primary mb-e8"
+                        sx={{
+                            fontSize: { xs: "26px", md: "34px" },
+                        }}
+                    >
+                        Reporte financiero
+                    </Typography>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}
+                    sx={{
+                        marginLeft: { xs: '13px', md: '64px' },
+                    }}
+                >
+                    <DateFilter
+                        onDateSubmit={handleDateSubmit}
+                    />
+                </Grid2>
+                <Grid2
+                    size={12}
                     sx={{
                         display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row', md: 'row' },
-                        gap: { xs: '21px', sm: '34px', md: '5%' },
-                        alignItems: 'center',
                         justifyContent: 'center',
-                        width: { xs: '95%', md: '90%' },
-                    }}
-                >
-                    <Box
-                        id='Ingresos'
-                        sx={{
-                            height: { xs: '300px', md: '350px' },
-                            width: { xs: '100%', sm: '48%', md: '48%' },
-                            border: '1px solid black',
-                            borderRadius: '15px',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                alignItems: 'left',
-                                justifyContent: 'left',
-                                marginTop: '8px',
-                                marginBottom: '13px',
-                            }}
-                        >
-                            <Typography
-                                sx={{
-                                    textAlign: 'left',
-                                    fontSize: { xs: '18px', md: '24px' },
-                                    fontWeight: 'bold',
-                                    color: themePalette.primary,
-                                    marginLeft: { xs: '16px', md: '21px' },
-                                }}
-                            >
-                                Ingresos
-                            </Typography>
-                        </Box>
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FilterSelector
-                                label="Seleccione"
-                                options={timePeriods}
-                                onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'ingresos')}
-                                sx={'200px'}
-                                md={'60%'}
-                            />
-                            <Typography
-                                sx={{
-                                    fontSize: '18px',
-                                    fontWeight: 'bold',
-                                    color: themePalette.primary,
-                                    marginRight: { xs: '16px', md: '13px' },
-                                }}
-                            >
-                                ${totalIngresos}
-                            </Typography>
-                        </Box>
-                        <PieChartIngresos dataIngresos={ingresosPC} />
-                    </Box>
-                    <Box
-                        id='Egresos'
-                        sx={{
-                            height: { xs: '300px', md: '350px' },
-                            width: { xs: '100%', sm: '48%', md: '48%' },
-                            border: '1px solid black',
-                            borderRadius: '15px',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                alignItems: 'left',
-                                justifyContent: 'left',
-                                marginTop: '8px',
-                                marginBottom: '13px',
-                            }}
-                        >
-                            <Typography
-                                sx={{
-                                    textAlign: 'left',
-                                    fontSize: { xs: '18px', md: '24px' },
-                                    fontWeight: 'bold',
-                                    color: themePalette.primary,
-                                    marginLeft: { xs: '16px', md: '21px' },
-                                }}
-                            >
-                                Egresos
-                            </Typography>
-                        </Box>
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FilterSelector
-                                label="Seleccione"
-                                options={timePeriods}
-                                onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'egresos')}
-                                sx={'200px'}
-                                md={'60%'}
-                            />
-                            <Typography
-                                sx={{
-                                    fontSize: '18px',
-                                    fontWeight: 'bold',
-                                    color: themePalette.primary,
-                                    marginRight: { xs: '16px', md: '13px' },
-                                }}
-                            >
-                                ${totalEgresos}
-                            </Typography>
-                        </Box>
-                        <PieChartEgresos dataEgresos={egresosPC} />
-                    </Box>
-                </Box>
-            </Grid2>
-            <Grid2 size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Box
-                    id='TendenciaGeneral'
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        height: '350px',
-                        width: { xs: '95%', md: '90%' },
-                        border: '1px solid black',
-                        borderRadius: '15px',
                     }}
                 >
                     <Box
                         sx={{
-                            width: '100%',
                             display: 'flex',
-                            alignItems: 'left',
-                            justifyContent: 'left',
-                            marginTop: '8px',
-                            marginBottom: '13px',
-                        }}
-                    >
-                        <Typography
-                            sx={{
-                                textAlign: 'left',
-                                fontSize: { xs: '18px', md: '24px' },
-                                fontWeight: 'bold',
-                                color: themePalette.primary,
-                                marginLeft: { xs: '16px', md: '32px' },
-                            }}
-                        >
-                            Tendencia General
-                        </Typography>
-                    </Box>
-                    <Box
-                        sx={{
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'space-between',
+                            flexDirection: { xs: 'column', sm: 'row', md: 'row' },
+                            gap: { xs: '21px', sm: '34px', md: '5%' },
                             alignItems: 'center',
-                            px: { xs: '16px', md: '32px' },
-                        }}
-                    >
-                        <FilterSelector
-                            label="Seleccione"
-                            options={timePeriods}
-                            onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'tendency')}
-                            sx={'200px'}
-                            md={'60%'}
-                        />
-                        <Typography
-                            sx={{
-                                fontSize: '18px',
-                                fontWeight: 'bold',
-                                color: themePalette.primary,
-                            }}
-                        >
-                            ${balance}
-                        </Typography>
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
                             justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '95%',
-                            height: '200px',
-                            marginTop: '18px',
+                            width: { xs: '95%', md: '90%' },
                         }}
                     >
-                        <TendenciaGeneral dataEgresos={egresosTG} dataIngresos={ingresosTG} />
+                        <Box
+                            id='Ingresos'
+                            sx={{
+                                height: { xs: '300px', md: '350px' },
+                                width: { xs: '100%', sm: '48%', md: '48%' },
+                                border: '1px solid black',
+                                borderRadius: '15px',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'left',
+                                    justifyContent: 'left',
+                                    marginTop: '8px',
+                                    marginBottom: '13px',
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        textAlign: 'left',
+                                        fontSize: { xs: '18px', md: '24px' },
+                                        fontWeight: 'bold',
+                                        color: themePalette.primary,
+                                        marginLeft: { xs: '16px', md: '21px' },
+                                    }}
+                                >
+                                    Ingresos
+                                </Typography>
+                            </Box>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FilterSelector
+                                    label="Seleccione"
+                                    options={timePeriods}
+                                    onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'ingresos')}
+                                    sx={'200px'}
+                                    md={'60%'}
+                                />
+                                <Typography
+                                    sx={{
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                        color: themePalette.primary,
+                                        marginRight: { xs: '16px', md: '13px' },
+                                    }}
+                                >
+                                    ${totalIngresos}
+                                </Typography>
+                            </Box>
+                            <PieChartIngresos dataIngresos={ingresosPC} />
+                        </Box>
+                        <Box
+                            id='Egresos'
+                            sx={{
+                                height: { xs: '300px', md: '350px' },
+                                width: { xs: '100%', sm: '48%', md: '48%' },
+                                border: '1px solid black',
+                                borderRadius: '15px',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'left',
+                                    justifyContent: 'left',
+                                    marginTop: '8px',
+                                    marginBottom: '13px',
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        textAlign: 'left',
+                                        fontSize: { xs: '18px', md: '24px' },
+                                        fontWeight: 'bold',
+                                        color: themePalette.primary,
+                                        marginLeft: { xs: '16px', md: '21px' },
+                                    }}
+                                >
+                                    Egresos
+                                </Typography>
+                            </Box>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FilterSelector
+                                    label="Seleccione"
+                                    options={timePeriods}
+                                    onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'egresos')}
+                                    sx={'200px'}
+                                    md={'60%'}
+                                />
+                                <Typography
+                                    sx={{
+                                        fontSize: '18px',
+                                        fontWeight: 'bold',
+                                        color: themePalette.primary,
+                                        marginRight: { xs: '16px', md: '13px' },
+                                    }}
+                                >
+                                    ${totalEgresos}
+                                </Typography>
+                            </Box>
+                            <PieChartEgresos dataEgresos={egresosPC} />
+                        </Box>
                     </Box>
-                </Box>
+                </Grid2>
+                <Grid2 size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Box
+                        id='TendenciaGeneral'
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            height: '350px',
+                            width: { xs: '95%', md: '90%' },
+                            border: '1px solid black',
+                            borderRadius: '15px',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'left',
+                                justifyContent: 'left',
+                                marginTop: '8px',
+                                marginBottom: '13px',
+                            }}
+                        >
+                            <Typography
+                                sx={{
+                                    textAlign: 'left',
+                                    fontSize: { xs: '18px', md: '24px' },
+                                    fontWeight: 'bold',
+                                    color: themePalette.primary,
+                                    marginLeft: { xs: '16px', md: '32px' },
+                                }}
+                            >
+                                Tendencia General
+                            </Typography>
+                        </Box>
+                        <Box
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                px: { xs: '16px', md: '32px' },
+                            }}
+                        >
+                            <FilterSelector
+                                label="Seleccione"
+                                options={timePeriods}
+                                onFilterChange={(timePeriod) => handleOptionChange(timePeriod, 'tendency')}
+                                sx={'200px'}
+                                md={'60%'}
+                            />
+                            <Typography
+                                sx={{
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    color: themePalette.primary,
+                                }}
+                            >
+                                ${balance}
+                            </Typography>
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                width: '95%',
+                                height: '200px',
+                                marginTop: '18px',
+                            }}
+                        >
+                            <TendenciaGeneral dataEgresos={egresosTG} dataIngresos={ingresosTG} />
+                        </Box>
+                    </Box>
+                </Grid2>
+                <Grid2 size={12} sx={{ marginLeft: "64px" }}>
+                    <DownloadButton financialData={generalData} />
+                </Grid2>
             </Grid2>
-            <Grid2 size={12} sx={{ marginLeft: "64px" }}>
-                <DownloadButton financialData={generalData} />
-            </Grid2>
-        </Grid2>
+        </>
     );
 }

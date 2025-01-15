@@ -42,11 +42,6 @@ const columns: GridColDef[] = [
     { field: "price", headerName: "Total", flex: 1, minWidth: 80 },
 ];
 
-interface DateFormValues {
-    startDate: Dayjs | null;
-    endDate: Dayjs | null;
-}
-
 type Inputs = {
     description: string;
     category: string;
@@ -63,14 +58,28 @@ export default function Egresos() {
         message: string;
         type: 'success' | 'error' | 'info' | 'warning';
     }>({ open: false, message: '', type: 'info' });
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     const fetchData = async () => {
+        const currentYear = new Date().getFullYear();
+        const startDate = new Date(`${currentYear}-01-01T00:00:00.000Z`).toISOString();
+        const endDate = new Date(`${currentYear}-12-31T23:59:59.999Z`).toISOString();
+        console.log('startDate', startDate);
+        console.log('endDate', endDate);
         try {
-            const response = await axios.get(`${URL_BASE}expenses`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.post(`${URL_BASE}expenses/range`, {
+                startDate: startDate,
+                endDate: endDate,
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
             console.log('response', response.data);
             const data = response.status === 200 || response.status === 201 ? response.data : [];
             console.log('expenses', data);
@@ -219,7 +228,7 @@ export default function Egresos() {
                 </Grid2>
             </Grid2>
             <Grid2 size={12} sx={{ height: 423, width: "100%", marginTop: "21px" }}>
-                <Tables rows={rows} columns={columns} />
+                    <Tables rows={rows} columns={columns} />
             </Grid2>
             <Notification
                 open={notification.open}
@@ -333,7 +342,6 @@ export default function Egresos() {
                             >
                                 Fecha
                             </FormLabel>
-
                             <Controller
                                 name="expenseDate"
                                 control={control}

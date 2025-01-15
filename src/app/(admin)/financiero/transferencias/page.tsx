@@ -19,8 +19,8 @@ import Notification from "@/components/ui/notifications/Notification";
 interface RowData {
     id: string;
     no: number;
-    date: string;
-    name: string;
+    paymentDate: string;
+    entrepreneurName: string;
     amount: string;
     state: string;
     observation: string;
@@ -47,8 +47,8 @@ export default function Transferencias() {
     const [rows, setRows] = useState<RowData[]>([]);
     const columns: GridColDef[] = [
         { field: "no", headerName: "ID", flex: 0.5, minWidth: 50 },
-        { field: "transferDate", headerName: "Fecha", flex: 1, minWidth: 100 },
-        { field: "name", headerName: "Nombre", flex: 1, minWidth: 180 },
+        { field: "paymentDate", headerName: "Fecha", flex: 1, minWidth: 100 },
+        { field: "entrepreneurName", headerName: "Nombre", flex: 1, minWidth: 180 },
         { field: "amount", headerName: "Total", flex: 0.5, minWidth: 100 },
         {
             field: "voucher",
@@ -80,7 +80,7 @@ export default function Transferencias() {
                     <Typography variant="body2">
                         {params.row.estado === 'Rechazado' || params.row.estado === 'Aprobado' ? params.row.observacion : params.row.estado === 'Pendiente' ? "" : "Sin observaciones"}
                     </Typography>
-                    <IconButton onClick={() => handleEditComment(params.row.id)}
+                    <IconButton onClick={() => handleEditComment(params.row.no)}
                         disabled={params.row.estado == 'Pendiente'}>
                         <EditNote />
                     </IconButton>
@@ -96,7 +96,7 @@ export default function Transferencias() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${URL_BASE}`, {
+            const response = await axios.get(`${URL_BASE}transactions`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -104,8 +104,9 @@ export default function Transferencias() {
             const data = response.status === 200 ? response.data : [];
             data.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
-                item.date = new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                item.paymentDate = new Date(item.paymentDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
                 item.observation = item.observation ? item.observation : '';
+                item.state = item.state === 'S' ? 'Aprobado' : item.state === 'R' ? 'Rechazado' :'Pendiente';
             });
             setTransferIds(data.map((item: RowData) => item.id));
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
@@ -145,8 +146,8 @@ export default function Transferencias() {
             });
         if (response.status === 200) {
             setRows((prevRows) =>
-                prevRows.map((row) =>
-                    row.no === openRowId ? { ...row, estado: 'Aprobado', observacion: comment } : row
+                prevRows.map((row) => 
+                    row.no === openRowId ? { ...row, estado: 'Aprobado', observacion: comment  } : row
                 )
             );
             fetchData();
@@ -174,6 +175,7 @@ export default function Transferencias() {
 
     const handleEditComment = (id: number) => {
         const rowToEdit = rows.find(row => row.no === id);
+        console.log('rowToEdit', rowToEdit);
         if (rowToEdit) {
             setComment(rowToEdit.observation || "");
         }

@@ -5,7 +5,7 @@ import { Grid2, Typography } from "@mui/material";
 import { DateFilter } from "../components";
 import { Tables } from "../components/Tables";
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import axios from "axios";
 import { URL_BASE } from "@/config/config";
 import Notification from "@/components/ui/notifications/Notification";
@@ -21,7 +21,7 @@ interface RowData {
 }
 
 const columns: GridColDef[] = [
-    { field: "no", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "no", headerName: "No.", flex: 0.5, minWidth: 50 },
     { field: "salesDate", headerName: "Fecha", flex: 1, minWidth: 100 },
     { field: "entrepreneurName", headerName: "Emprendedor", flex: 2, minWidth: 150 },
     { field: "productName", headerName: "Producto", flex: 1.5, minWidth: 150 },
@@ -38,13 +38,23 @@ export default function Ventas() {
     }>({ open: false, message: '', type: 'info' });
 
     const fetchData = async () => {
+        const currentYear = new Date().getFullYear();
+        const startDate = new Date(`${currentYear}-01-01T00:00:00.000Z`).toISOString();
+        const endDate = new Date(`${currentYear}-12-31T23:59:59.999Z`).toISOString();
+        console.log('startDate', startDate);
+        console.log('endDate', endDate);
         try {
-            const response = await axios.get(`${URL_BASE}incomes`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            const data = response.status === 200 ? response.data : [];
+            const response = await axios.post(`${URL_BASE}incomes/sales-date-range`, {
+                startDate: startDate,
+                endDate: endDate,
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+            console.log('response', response.data);
+            const data = response.status === 200 || response.status === 201 ? response.data : [];
             data.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
                 item.salesDate = new Date(item.salesDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -90,37 +100,37 @@ export default function Ventas() {
     };
 
     return (
-        <Grid2
-            container
-            sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                boxSizing: "border-box",
-                minWidth: "300px",
-                margin: { xs: "13px 25px", sm: "13px 30px", md: "13px 60px" },
-            }}
-        >
-            <Notification
-                open={notification.open}
-                onClose={() => setNotification({ ...notification, open: false })}
-                message={notification.message}
-                type={notification.type}
-            />
-            <Grid2 size={12} className="flex justify-center">
-                <Typography className="font-bold text-primary mb-e13"
-                    sx={{
-                        fontSize: { xs: "26px", md: "34px" },
-                    }}
-                >
-                    Ventas
-                </Typography>
+            <Grid2
+                container
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    boxSizing: "border-box",
+                    minWidth: "300px",
+                    margin: { xs: "13px 25px", sm: "13px 30px", md: "13px 60px" },
+                }}
+            >
+                <Notification
+                    open={notification.open}
+                    onClose={() => setNotification({ ...notification, open: false })}
+                    message={notification.message}
+                    type={notification.type}
+                />
+                <Grid2 size={12} className="flex justify-center">
+                    <Typography className="font-bold text-primary mb-e13"
+                        sx={{
+                            fontSize: { xs: "26px", md: "34px" },
+                        }}
+                    >
+                        Ventas
+                    </Typography>
+                </Grid2>
+                <Grid2 size={12}>
+                    <DateFilter onDateSubmit={handleDateSubmit} />
+                </Grid2>
+                <Grid2 size={12} sx={{ height: 423, width: "100%", marginTop: "21px" }}>
+                    <Tables rows={rows} columns={columns} />
+                </Grid2>
             </Grid2>
-            <Grid2 size={12}>
-                <DateFilter onDateSubmit={handleDateSubmit} />
-            </Grid2>
-            <Grid2 size={12} sx={{ height: 423, width: "100%", marginTop: "21px" }}>
-                <Tables rows={rows} columns={columns} />
-            </Grid2>
-        </Grid2>
     );
 };
