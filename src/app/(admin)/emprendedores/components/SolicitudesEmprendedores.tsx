@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, Typography, Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Button, Typography, Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Snackbar,Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -37,7 +37,7 @@ export const SolicitudesEmprendedores = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [comision, setComision] = React.useState<number | "">("");
   const [comisionError, setComisionError] = React.useState<string | null>(null);
-
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
   const fetchPendingEntrepreneurs = async () => {
     try {
@@ -84,7 +84,7 @@ export const SolicitudesEmprendedores = () => {
       console.log("Respuesta del backend:", response.data);
   
       setRows((prevRows) => prevRows.filter(row => row.id !== selectedId));
-  
+      setSuccessMessage("Emprendedor aprobado exitosamente");
       console.log(`Emprendedor con ID ${selectedId} ha sido aprobado.`);
       handleCloseApproveDialog();
     } catch (error: any) {
@@ -113,6 +113,7 @@ export const SolicitudesEmprendedores = () => {
       setRows((prevRows) => prevRows.filter(row => row.id !== selectedId));
 
       console.log(`Emprendedor con ID ${selectedId} ha sido rechazado.`);
+      setSuccessMessage("Emprendedor rechazado exitosamente");
       handleCloseRejectDialog();
     } catch (error: any) {
       if (error.response) {
@@ -143,6 +144,10 @@ export const SolicitudesEmprendedores = () => {
   const handleCloseRejectDialog = () => {
     setOpenRejectDialog(false);
     setSelectedId(null);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSuccessMessage(null);
   };
 
   const CustomToolbar = () => {
@@ -270,6 +275,9 @@ export const SolicitudesEmprendedores = () => {
     />
       </Box>
   </DialogContent>
+  <Snackbar open={!!successMessage} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="success">{successMessage}</Alert>
+      </Snackbar>
 
   <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
     {/* Botón Cancelar */}
@@ -311,6 +319,9 @@ export const SolicitudesEmprendedores = () => {
             >Aceptar</Button>
           </DialogActions>
         </Dialog>
+        <Snackbar open={!!successMessage} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="success">{successMessage}</Alert>
+      </Snackbar>
       </Box>
     </LocalizationProvider>
   );

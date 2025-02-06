@@ -4,7 +4,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Button, Typography, Box, IconButton, Dialog, DialogContent, DialogActions, DialogTitle } from "@mui/material";
+import { Button, Typography, Box, IconButton, Dialog, DialogContent, DialogActions, DialogTitle,TextField,Snackbar,Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,6 +29,7 @@ export const ListaEmprendedores = () => {
   const [openProductos, setOpenProductos] = React.useState(false);
   const [selectedEntrepreneur, setSelectedEntrepreneur] = React.useState<RowData | null>(null);
   const [openDeactivateDialog, setOpenDeactivateDialog] = React.useState(false); // Estado del modal de desactivación
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
   // 🔹 Obtener los emprendedores aprobados del backend
   const fetchApprovedEntrepreneurs = async () => {
@@ -83,6 +84,10 @@ export const ListaEmprendedores = () => {
     setSelectedEntrepreneur(null);
   };
 
+  const handleCloseSnackbar = () => {
+    setSuccessMessage(null);
+  };
+
   // 🔹 Desactivar emprendedor
   const handleDeactivateEntrepreneur = async () => {
     if (!selectedEntrepreneur) return;
@@ -100,6 +105,7 @@ export const ListaEmprendedores = () => {
       setRows((prevRows) => prevRows.filter(row => row.id !== selectedEntrepreneur.id));
 
       console.log(`Emprendedor con ID ${selectedEntrepreneur.id} ha sido desactivado.`);
+      setSuccessMessage("El emprendedor ha sido desactivado exitosamente.");
       handleCloseDeactivateDialog();
     } catch (error: any) {
       if (error.response) {
@@ -237,6 +243,9 @@ export const ListaEmprendedores = () => {
             <Button onClick={handleDeactivateEntrepreneur} sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}>Aceptar</Button>
           </DialogActions>
         </Dialog>
+         <Snackbar open={!!successMessage} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity="success">{successMessage}</Alert>
+              </Snackbar>
       </Box>
     </LocalizationProvider>
   );
