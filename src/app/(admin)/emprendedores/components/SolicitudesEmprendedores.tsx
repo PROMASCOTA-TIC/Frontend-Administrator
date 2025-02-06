@@ -243,7 +243,6 @@ export const SolicitudesEmprendedores = () => {
     Antes de aprobar esta solicitud, ingresa la comisión acordada con el emprendedor.
     </DialogContentText>
 
-    {/* Input para ingresar la comisión */}
     <Box sx={{ display: "flex", justifyContent: "center", width: "100%", marginTop: 2 }}>
     <TextField
       fullWidth
