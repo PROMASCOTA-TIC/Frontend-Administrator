@@ -9,9 +9,9 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { ProductosRegistrados } from "./ProductosRegistrados";
 import { themePalette } from "@/config/theme.config";
 import { esES } from "@mui/x-data-grid/locales";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface RowData {
   id: string;
@@ -23,13 +23,30 @@ interface RowData {
   estado: string;
 }
 
+interface ProductData {
+  id: string;
+  name: string;
+  description: string;
+  publicationType: string;
+  petType: string;
+  category: string;
+  subcategory: string;
+  stock: number;
+  finalPrice: string;
+}
+
+
 export const ListaEmprendedores = () => {
   const [rows, setRows] = React.useState<RowData[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [openProductos, setOpenProductos] = React.useState(false);
   const [selectedEntrepreneur, setSelectedEntrepreneur] = React.useState<RowData | null>(null);
-  const [openDeactivateDialog, setOpenDeactivateDialog] = React.useState(false); // Estado del modal de desactivación
+  const [productos, setProductos] = React.useState<ProductData[]>([]);
+  const [loadingProducts, setLoadingProducts] = React.useState<boolean>(false);
+  const [openDeactivateDialog, setOpenDeactivateDialog] = React.useState(false); 
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
+  const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<ProductData | null>(null);
 
   // 🔹 Obtener los emprendedores aprobados del backend
   const fetchApprovedEntrepreneurs = async () => {
@@ -62,15 +79,21 @@ export const ListaEmprendedores = () => {
     fetchApprovedEntrepreneurs();
   }, []);
 
-  const handleOpenProductos = (row: RowData) => {
-    setSelectedEntrepreneur(row);
-    setOpenProductos(true);
-  };
+// 🔹 Obtener productos por ID del emprendedor
+const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
+  setLoadingProducts(true);
+  try {
+    const response = await axios.get(`http://localhost:3001/api/products/entrepreneur/${entrepreneurId}`);
+    setProductos(response.data);
+  } catch (error) {
+    console.error("Error al obtener productos del emprendedor:", error);
+  } finally {
+    setLoadingProducts(false);
+  }
+};
 
-  const handleCloseProductos = () => {
-    setOpenProductos(false);
-    setSelectedEntrepreneur(null);
-  };
+
+
 
   // 🔹 Abrir el modal de confirmación de desactivación
   const handleOpenDeactivateDialog = (row: RowData) => {
@@ -88,6 +111,8 @@ export const ListaEmprendedores = () => {
     setSuccessMessage(null);
   };
 
+
+  
   // 🔹 Desactivar emprendedor
   const handleDeactivateEntrepreneur = async () => {
     if (!selectedEntrepreneur) return;
@@ -187,6 +212,74 @@ export const ListaEmprendedores = () => {
     );
   };
 
+   // 🔹 Abrir el modal de productos
+   const handleOpenProductos = (row: RowData) => {
+    setSelectedEntrepreneur(row);
+    fetchProductsByEntrepreneur(row.id);
+    setOpenProductos(true);
+  };
+
+  // 🔹 Cerrar el modal de productos
+  const handleCloseProductos = () => {
+    setOpenProductos(false);
+    setSelectedEntrepreneur(null);
+    setProductos([]);
+  };
+  
+   // 🔹 Abrir el modal de confirmación de eliminación de producto
+   const handleOpenConfirmDeleteDialog = (product: ProductData) => {
+    setSelectedProduct(product);
+    setOpenConfirmDeleteDialog(true);
+  };
+
+    // 🔹 Cerrar el modal de confirmación de eliminación de producto
+    const handleCloseConfirmDeleteDialog = () => {
+      setOpenConfirmDeleteDialog(false);
+      setSelectedProduct(null);
+    };
+
+    
+    // 🔹 Eliminar producto
+    const handleDeleteProduct = async () => {
+      if (!selectedProduct) return;
+  
+      try {
+        console.log(`Eliminando producto con ID: ${selectedProduct.id}`);
+  
+        await axios.delete(`http://localhost:3001/api/products/${selectedProduct.id}`);
+  
+        // ✅ Eliminar el producto de la lista sin recargar la página
+        setProductos((prevProductos) => prevProductos.filter(product => product.id !== selectedProduct.id));
+  
+        setSuccessMessage(`Producto "${selectedProduct.name}" eliminado correctamente.`);
+        handleCloseConfirmDeleteDialog();
+      } catch (error: any) {
+        console.error(`Error al eliminar producto ${selectedProduct.id}:`, error);
+      }
+    };
+
+  const productColumns: GridColDef[] = [
+    { field: "name", headerName: "Nombre", flex: 1.5, minWidth: 150 },
+    { field: "description", headerName: "Descripción", flex: 2, minWidth: 200 },
+    { field: "petType", headerName: "Tipo de Mascota", flex: 0.8, minWidth: 120 },
+    { field: "category", headerName: "Categoría", flex: 0.7, minWidth: 100 },
+    { field: "subcategory", headerName: "Subcategoría", flex: 0.6, minWidth: 100 },
+    { field: "stock", headerName: "Stock", flex: 0.5, minWidth: 80 },
+    { field: "finalPrice", headerName: "Precio Final", flex: 0.5, minWidth: 100 },
+    {
+      field: "desactivar",
+      headerName: "Eliminar",
+      flex: 0.5,
+      minWidth: 80,
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton size="medium" sx={{ color: "red" }} onClick={() => handleOpenConfirmDeleteDialog(params.row)}>
+          <DeleteIcon />
+        </IconButton>
+      ),
+    },
+  ];
+
+  
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: "flex", flexDirection: "column", padding: "0 20px", width: "100%" }}>
@@ -232,6 +325,37 @@ export const ListaEmprendedores = () => {
                         }}
           />
         </Box>
+
+        <Dialog open={openProductos} onClose={handleCloseProductos} maxWidth="lg" fullWidth>
+        <DialogTitle sx={{ textAlign: "center", color: themePalette.primary, fontWeight: "bold" }}>
+          Productos de {selectedEntrepreneur?.nombreComercial}
+        </DialogTitle>
+        <DialogContent>
+          <DataGrid
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+            rows={productos}
+            columns={productColumns}
+            loading={loadingProducts}
+          />
+        </DialogContent>
+        <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+          <Button onClick={handleCloseProductos}   sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
+{/* Modal de Confirmación para Eliminar Producto */}
+<Dialog open={openConfirmDeleteDialog} onClose={handleCloseConfirmDeleteDialog}>
+        <DialogTitle sx={{ textAlign: "center", color: themePalette.primary, fontWeight: "bold" }}>
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent>
+          ¿Estás seguro de que deseas eliminar el producto "{selectedProduct?.name}"?
+        </DialogContent>
+        <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+          <Button onClick={handleCloseConfirmDeleteDialog} sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}>Cancelar</Button>
+          <Button onClick={handleDeleteProduct} sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}>Eliminar</Button>
+        </DialogActions>
+      </Dialog>
 
         <Dialog open={openDeactivateDialog} onClose={handleCloseDeactivateDialog}>
           <DialogTitle sx={{ display: "flex", justifyContent: "center", color: themePalette.primary, fontWeight: "bold" }}>Confirmar Desactivación</DialogTitle>
