@@ -1,27 +1,20 @@
 "use client";
 import * as React from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
+import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, Typography, Box, Grid2, IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Typography, Box, IconButton, Dialog, DialogContent, DialogActions, DialogTitle } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { ProductosRegistrados } from './ProductosRegistrados'; // Importa el componente
+import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
+import CloseIcon from "@mui/icons-material/Close";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { ProductosRegistrados } from "./ProductosRegistrados";
 import { themePalette } from "@/config/theme.config";
-import { esES } from '@mui/x-data-grid/locales';
-
-interface DateFormValues {
-  startDate: Dayjs | null;
-  endDate: Dayjs | null;
-}
+import { esES } from "@mui/x-data-grid/locales";
 
 interface RowData {
-  id: number;
+  id: string;
   nombrePropietario: string;
   email: string;
   telefono: string;
@@ -30,44 +23,91 @@ interface RowData {
   estado: string;
 }
 
-const rows: RowData[] = [
-  {
-    id: 1,
-    nombrePropietario: "Juan Pérez",
-    email: "juan@example.com",
-    telefono: "0991234567",
-    nombreComercial: "Comercial JP",
-    ruc: "1712345678001",
-    estado: "Activo",
-  },
-  // Agrega más emprendedores según sea necesario
-];
-
 export const ListaEmprendedores = () => {
-  const { handleSubmit: handleDateSubmit, control: controlDate, watch: watchDate, formState: { errors: dateErrors } } = useForm<DateFormValues>({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
-  });
+  const [rows, setRows] = React.useState<RowData[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [openProductos, setOpenProductos] = React.useState(false);
+  const [selectedEntrepreneur, setSelectedEntrepreneur] = React.useState<RowData | null>(null);
+  const [openDeactivateDialog, setOpenDeactivateDialog] = React.useState(false); // Estado del modal de desactivación
 
-  const [openProductos, setOpenProductos] = React.useState(false); // Estado para el modal
-  const [selectedEntrepreneur, setSelectedEntrepreneur] = React.useState<RowData | null>(null); // Estado para el emprendedor seleccionado
+  // 🔹 Obtener los emprendedores aprobados del backend
+  const fetchApprovedEntrepreneurs = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("http://localhost:3001/api/users/entrepreneurs/state/APPROVED");
+      const data = response.data;
 
-  const startDate = watchDate("startDate");
+      // 🔹 Formatear los datos para la tabla
+      const formattedData = data.map((entrepreneur: any) => ({
+        id: entrepreneur.idEntrepreneur,
+        nombrePropietario: entrepreneur.name,
+        email: entrepreneur.email,
+        telefono: entrepreneur.numeroCelular,
+        nombreComercial: entrepreneur.nombreEmprendimiento,
+        ruc: entrepreneur.ruc,
+        estado: entrepreneur.status,
+      }));
 
-  const onDateSubmit = (data: DateFormValues) => {
-    console.log("Filtrado por fechas:", data);
+      setRows(formattedData);
+    } catch (error) {
+      console.error("Error al obtener emprendedores aprobados:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // 🔹 Cargar los datos al montar el componente
+  React.useEffect(() => {
+    fetchApprovedEntrepreneurs();
+  }, []);
+
   const handleOpenProductos = (row: RowData) => {
-    setSelectedEntrepreneur(row); // Guarda el emprendedor seleccionado
-    setOpenProductos(true); // Abre el modal
+    setSelectedEntrepreneur(row);
+    setOpenProductos(true);
   };
 
   const handleCloseProductos = () => {
-    setOpenProductos(false); // Cierra el modal
-    setSelectedEntrepreneur(null); // Resetea el emprendedor seleccionado
+    setOpenProductos(false);
+    setSelectedEntrepreneur(null);
+  };
+
+  // 🔹 Abrir el modal de confirmación de desactivación
+  const handleOpenDeactivateDialog = (row: RowData) => {
+    setSelectedEntrepreneur(row);
+    setOpenDeactivateDialog(true);
+  };
+
+  // 🔹 Cerrar el modal de confirmación de desactivación
+  const handleCloseDeactivateDialog = () => {
+    setOpenDeactivateDialog(false);
+    setSelectedEntrepreneur(null);
+  };
+
+  // 🔹 Desactivar emprendedor
+  const handleDeactivateEntrepreneur = async () => {
+    if (!selectedEntrepreneur) return;
+
+    try {
+      console.log(`Desactivando emprendedor con ID: ${selectedEntrepreneur.id}`);
+
+      await axios.patch(
+        `http://localhost:3001/api/users/entrepreneurs/${selectedEntrepreneur.id}/status-and-commission`,
+        { estado: "REJECTED" },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      // ✅ Eliminar el emprendedor desactivado de la lista sin recargar la página
+      setRows((prevRows) => prevRows.filter(row => row.id !== selectedEntrepreneur.id));
+
+      console.log(`Emprendedor con ID ${selectedEntrepreneur.id} ha sido desactivado.`);
+      handleCloseDeactivateDialog();
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`Error al desactivar emprendedor ${selectedEntrepreneur.id}:`, error.response.data);
+      } else {
+        console.error(`Error desconocido al desactivar emprendedor ${selectedEntrepreneur.id}:`, error);
+      }
+    }
   };
 
   const columns: GridColDef[] = [
@@ -77,23 +117,38 @@ export const ListaEmprendedores = () => {
     { field: "telefono", headerName: "Teléfono", flex: 1, minWidth: 100 },
     { field: "nombreComercial", headerName: "Nombre comercial", flex: 1.5, minWidth: 120 },
     { field: "ruc", headerName: "RUC", flex: 1, minWidth: 140 },
-    { field: "estado", headerName: "Estado", flex: 0.5, minWidth: 80 },
     {
-      field: "activar",
-      headerName: "Activar",
-      flex: 0.5, minWidth: 80,
-      renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" sx={{ color: "green" }}>
-          <CheckIcon />
-        </IconButton>
-      ),
-    },
+      field: "estado",
+      headerName: "Estado",
+      flex: 0.5,
+      minWidth: 100,
+      renderCell: (params: GridRenderCellParams) => {
+        const isActive = params.value === "APPROVED";
+        return (
+          <Typography
+            sx={{
+              color: isActive ? "green" : "red",
+              fontWeight: "bold",
+              fontSize: "14px",
+              padding: "5px 10px",
+              borderRadius: "5px",
+              display: "inline-block",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            {isActive ? "Activo" : "Inactivo"}
+          </Typography>
+        );
+      },
+    },    
     {
       field: "desactivar",
       headerName: "Desactivar",
-      flex: 0.5, minWidth: 88,
+      flex: 0.5,
+      minWidth: 88,
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" sx={{ color: "red" }}>
+        <IconButton size="medium" sx={{ color: "red" }} onClick={() => handleOpenDeactivateDialog(params.row)}>
           <CloseIcon />
         </IconButton>
       ),
@@ -104,114 +159,84 @@ export const ListaEmprendedores = () => {
       flex: 0.5,
       minWidth: 88,
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton
-          size="medium"
-          sx={{ color: "blue" }}
-          onClick={() => handleOpenProductos(params.row)} // Abre el modal al hacer clic
-        >
-          <VisibilityIcon sx={{color:themePalette.primary}}/>
+        <IconButton size="medium" sx={{ color: themePalette.primary }} onClick={() => handleOpenProductos(params.row)}>
+          <VisibilityIcon />
         </IconButton>
       ),
     },
   ];
+
   const CustomToolbar = () => {
     return (
-        <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div>
-                <GridToolbarFilterButton />
-                <GridToolbarExport />
-            </div>
-            <GridToolbarQuickFilter 
-                debounceMs={500}
-                sx={{ marginLeft: 'auto' }}
-            />
-        </GridToolbarContainer>
+      <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <GridToolbarFilterButton />
+          <GridToolbarExport />
+        </div>
+        <GridToolbarQuickFilter
+          debounceMs={500}
+          sx={{ marginLeft: 'auto' }}
+        />
+      </GridToolbarContainer>
     );
   };
-
-  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{ display: "flex", flexDirection: "column", padding: "0 20px", width: "100%" }}>
-        <Typography 
-        sx={{ marginBottom: "20px", textAlign: "center",
-        color:themePalette.primary, fontSize: "36px", fontWeight: "bold"
-       }}>
-          Lista de Emprendedores
+        <Typography sx={{ marginBottom: "20px", textAlign: "center", color: themePalette.primary, fontSize: "36px", fontWeight: "bold" }}>
+          Lista de Emprendedores Aprobados
         </Typography>
 
-        {/* Tabla con DataGrid */}
         <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
-        <DataGrid
+          <DataGrid
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             rows={rows}
             columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: { pageSize: 5 },
-              },
-            }}
-            pageSizeOptions={[5, 10, 25]}
-            slots={{
-              toolbar: CustomToolbar,
-            }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: { debounceMs: 500 },
-              },
-            }}
-            sx={{
-              '& .MuiDataGrid-toolbarContainer': {
-                backgroundColor: themePalette.cwhite,
-                padding: '0.5rem',
-                border: '0px solid',
-              },
-              '& .MuiDataGrid-columnHeader': {
-                backgroundColor: themePalette.black10,
-                fontWeight: 'bold',
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: themePalette.black10,
-                fontWeight: 'bold',
-              },
-            }}
+            loading={loading}
+             initialState={{
+                          pagination: {
+                            paginationModel: { pageSize: 10 },
+                          },
+                        }}
+                        pageSizeOptions={[5, 10, 25]}
+                        slots={{
+                          toolbar: CustomToolbar,
+                        }}
+                        slotProps={{
+                          toolbar: {
+                            showQuickFilter: true,
+                            quickFilterProps: { debounceMs: 500 },
+                          },
+                        }}
+                        sx={{
+                          '& .MuiDataGrid-toolbarContainer': {
+                            backgroundColor: themePalette.cwhite,
+                            padding: '0.5rem',
+                            border: '0px solid',
+                          },
+                          '& .MuiDataGrid-columnHeader': {
+                            backgroundColor: themePalette.black10,
+                            fontWeight: 'bold',
+                          },
+                          '& .MuiDataGrid-footerContainer': {
+                            backgroundColor: themePalette.black10,
+                            fontWeight: 'bold',
+                          },
+                        }}
           />
         </Box>
 
-        {/* Modal para mostrar productos */}
-        <Dialog open={openProductos} onClose={handleCloseProductos} maxWidth="xl" fullWidth>
-  <DialogTitle
-    sx={{
-      marginBottom: "20px",
-      textAlign: "center",
-      color: themePalette.primary,
-      fontSize: "36px",
-      fontWeight: "bold",
-      position: "relative",
-    }}
-  >
-    Productos Registrados - {selectedEntrepreneur?.nombreComercial}
-    {/* Botón para cerrar */}
-    <IconButton
-      aria-label="close"
-      onClick={handleCloseProductos}
-      sx={{
-        position: "absolute",
-        right: 8,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-      }}
-    >
-      <CloseIcon />
-    </IconButton>
-  </DialogTitle>
-  <DialogContent>
-    <ProductosRegistrados />
-   
-  </DialogContent>
-</Dialog>      
+        <Dialog open={openDeactivateDialog} onClose={handleCloseDeactivateDialog}>
+          <DialogTitle sx={{ display: "flex", justifyContent: "center", color: themePalette.primary, fontWeight: "bold" }}>Confirmar Desactivación</DialogTitle>
+          <DialogContent>¿Estás seguro de que deseas desactivar este emprendedor?</DialogContent>
+          <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+            <Button onClick={handleCloseDeactivateDialog}
+            sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}
+            >Cancelar</Button>
+            <Button onClick={handleDeactivateEntrepreneur} sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}>Aceptar</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </LocalizationProvider>
   );
