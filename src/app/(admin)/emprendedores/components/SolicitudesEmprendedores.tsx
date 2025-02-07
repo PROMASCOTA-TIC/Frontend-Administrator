@@ -14,6 +14,7 @@ import { themePalette } from "@/config/theme.config";
 import { esES } from '@mui/x-data-grid/locales';
 import axios from 'axios';
 import 'dayjs/locale/es';
+import { URL_BASE } from "@/config/config";
 
 interface DateFormValues {
   startDate: Dayjs | null;
@@ -41,7 +42,8 @@ export const SolicitudesEmprendedores = () => {
 
   const fetchPendingEntrepreneurs = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/users/entrepreneurs/state/PENDING');
+      const response = await axios.get(`${URL_BASE}users/entrepreneurs/state/PENDING`);
+
       const data = response.data;
 
       const formattedData = data.map((entrepreneur: any) => ({
@@ -76,7 +78,7 @@ export const SolicitudesEmprendedores = () => {
       console.log(`Aprobando emprendedor con ID: ${selectedId} y comisión: ${comision}`);
   
       const response = await axios.patch(
-        `http://localhost:3001/api/users/entrepreneurs/${selectedId}/status-and-commission`,
+       `${URL_BASE}users/entrepreneurs/${selectedId}/status-and-commission`,
         { estado: "APPROVED", comision: Number(comision) },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -103,7 +105,7 @@ export const SolicitudesEmprendedores = () => {
       console.log(`Rechazando emprendedor con ID: ${selectedId}`);
 
       const response = await axios.patch(
-        `http://localhost:3001/api/users/update-entrepreneur/${selectedId}`, 
+        `${URL_BASE}users/update-entrepreneur/${selectedId}`, 
         { estado: "REJECTED" },
         { headers: { "Content-Type": "application/json" } } 
       );

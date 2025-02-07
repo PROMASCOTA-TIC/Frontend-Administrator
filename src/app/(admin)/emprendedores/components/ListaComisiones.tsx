@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit"; // Icono de lápiz para editar comisión
 import { themePalette } from "@/config/theme.config";
 import { esES } from "@mui/x-data-grid/locales";
+import { URL_BASE } from "@/config/config";
 
 interface RowData {
   id: string;
@@ -32,7 +33,7 @@ export const ListaComisiones = () => {
   const fetchApprovedEntrepreneurs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/users/entrepreneurs/state/APPROVED");
+      const response = await axios.get(`${URL_BASE}users/entrepreneurs/state/APPROVED`);
       const data = response.data;
 
 
@@ -86,7 +87,7 @@ export const ListaComisiones = () => {
       console.log(`🔄 Actualizando comisión de ID: ${selectedEntrepreneur.id} a ${newCommission}%`);
 
       await axios.patch(
-        `http://localhost:3001/api/users/entrepreneurs/${selectedEntrepreneur.id}/status-and-commission`,
+        `${URL_BASE}users/entrepreneurs/${selectedEntrepreneur.id}/status-and-commission`,
         { estado: "APPROVED", comision: Number(newCommission) },
         { headers: { "Content-Type": "application/json" } }
       );

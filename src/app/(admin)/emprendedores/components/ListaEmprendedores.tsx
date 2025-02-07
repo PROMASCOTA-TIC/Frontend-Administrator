@@ -12,6 +12,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { themePalette } from "@/config/theme.config";
 import { esES } from "@mui/x-data-grid/locales";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { URL_BASE } from "@/config/config";
 
 interface RowData {
   id: string;
@@ -52,7 +53,8 @@ export const ListaEmprendedores = () => {
   const fetchApprovedEntrepreneurs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3001/api/users/entrepreneurs/state/APPROVED");
+      const response = await axios.get(`${URL_BASE}users/entrepreneurs/state/APPROVED`);
+
       const data = response.data;
 
       // 🔹 Formatear los datos para la tabla
@@ -83,7 +85,7 @@ export const ListaEmprendedores = () => {
 const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
   setLoadingProducts(true);
   try {
-    const response = await axios.get(`http://localhost:3001/api/products/entrepreneur/${entrepreneurId}`);
+    const response = await axios.get(`${URL_BASE}products/entrepreneur/${entrepreneurId}`);
     setProductos(response.data);
   } catch (error) {
     console.error("Error al obtener productos del emprendedor:", error);
@@ -121,7 +123,7 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
       console.log(`Desactivando emprendedor con ID: ${selectedEntrepreneur.id}`);
 
       await axios.patch(
-        `http://localhost:3001/api/users/entrepreneurs/${selectedEntrepreneur.id}/status-and-commission`,
+       `${URL_BASE}users/entrepreneurs/${selectedEntrepreneur.id}/status-and-commission`,
         { estado: "REJECTED" },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -246,8 +248,8 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
       try {
         console.log(`Eliminando producto con ID: ${selectedProduct.id}`);
   
-        await axios.delete(`http://localhost:3001/api/products/${selectedProduct.id}`);
-  
+        await axios.delete(`${URL_BASE}products/${selectedProduct.id}`);
+
         // ✅ Eliminar el producto de la lista sin recargar la página
         setProductos((prevProductos) => prevProductos.filter(product => product.id !== selectedProduct.id));
   
