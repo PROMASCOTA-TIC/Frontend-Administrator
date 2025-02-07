@@ -5,7 +5,7 @@ import { Button, Typography, Box, IconButton, Dialog, DialogContent, DialogActio
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
-import EditIcon from "@mui/icons-material/Edit"; // Icono de lápiz para editar comisión
+import EditIcon from "@mui/icons-material/Edit"; 
 import { themePalette } from "@/config/theme.config";
 import { esES } from "@mui/x-data-grid/locales";
 import { URL_BASE } from "@/config/config";

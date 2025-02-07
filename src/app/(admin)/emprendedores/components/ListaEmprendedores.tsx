@@ -49,7 +49,7 @@ export const ListaEmprendedores = () => {
   const [openConfirmDeleteDialog, setOpenConfirmDeleteDialog] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<ProductData | null>(null);
 
-  // 🔹 Obtener los emprendedores aprobados del backend
+
   const fetchApprovedEntrepreneurs = async () => {
     setLoading(true);
     try {
@@ -57,7 +57,7 @@ export const ListaEmprendedores = () => {
 
       const data = response.data;
 
-      // 🔹 Formatear los datos para la tabla
+
       const formattedData = data.map((entrepreneur: any) => ({
         id: entrepreneur.idEntrepreneur,
         nombrePropietario: entrepreneur.name,
@@ -76,12 +76,10 @@ export const ListaEmprendedores = () => {
     }
   };
 
-  // 🔹 Cargar los datos al montar el componente
   React.useEffect(() => {
     fetchApprovedEntrepreneurs();
   }, []);
 
-// 🔹 Obtener productos por ID del emprendedor
 const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
   setLoadingProducts(true);
   try {
@@ -95,15 +93,12 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
 };
 
 
-
-
-  // 🔹 Abrir el modal de confirmación de desactivación
   const handleOpenDeactivateDialog = (row: RowData) => {
     setSelectedEntrepreneur(row);
     setOpenDeactivateDialog(true);
   };
 
-  // 🔹 Cerrar el modal de confirmación de desactivación
+
   const handleCloseDeactivateDialog = () => {
     setOpenDeactivateDialog(false);
     setSelectedEntrepreneur(null);
@@ -114,8 +109,7 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
   };
 
 
-  
-  // 🔹 Desactivar emprendedor
+
   const handleDeactivateEntrepreneur = async () => {
     if (!selectedEntrepreneur) return;
 
@@ -128,7 +122,7 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // ✅ Eliminar el emprendedor desactivado de la lista sin recargar la página
+
       setRows((prevRows) => prevRows.filter(row => row.id !== selectedEntrepreneur.id));
 
       console.log(`Emprendedor con ID ${selectedEntrepreneur.id} ha sido desactivado.`);
@@ -214,34 +208,31 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
     );
   };
 
-   // 🔹 Abrir el modal de productos
    const handleOpenProductos = (row: RowData) => {
     setSelectedEntrepreneur(row);
     fetchProductsByEntrepreneur(row.id);
     setOpenProductos(true);
   };
 
-  // 🔹 Cerrar el modal de productos
   const handleCloseProductos = () => {
     setOpenProductos(false);
     setSelectedEntrepreneur(null);
     setProductos([]);
   };
   
-   // 🔹 Abrir el modal de confirmación de eliminación de producto
+
    const handleOpenConfirmDeleteDialog = (product: ProductData) => {
     setSelectedProduct(product);
     setOpenConfirmDeleteDialog(true);
   };
 
-    // 🔹 Cerrar el modal de confirmación de eliminación de producto
     const handleCloseConfirmDeleteDialog = () => {
       setOpenConfirmDeleteDialog(false);
       setSelectedProduct(null);
     };
 
     
-    // 🔹 Eliminar producto
+
     const handleDeleteProduct = async () => {
       if (!selectedProduct) return;
   
@@ -250,7 +241,7 @@ const fetchProductsByEntrepreneur = async (entrepreneurId: string) => {
   
         await axios.delete(`${URL_BASE}products/${selectedProduct.id}`);
 
-        // ✅ Eliminar el producto de la lista sin recargar la página
+
         setProductos((prevProductos) => prevProductos.filter(product => product.id !== selectedProduct.id));
   
         setSuccessMessage(`Producto "${selectedProduct.name}" eliminado correctamente.`);

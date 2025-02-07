@@ -35,7 +35,7 @@ const rows: ProductData[] = [
     imagen: "imagen1.jpg",
     estado: "Activo",
   },
-  // Puedes agregar más productos aquí...
+
 ];
 
 export const ProductosRegistrados = () => {
@@ -115,7 +115,7 @@ export const ProductosRegistrados = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", padding: "0 20px", width: "100%" }}>
 
-      {/* Tabla con DataGrid */}
+
       <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
          <DataGrid
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
