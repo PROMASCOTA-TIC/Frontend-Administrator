@@ -118,14 +118,15 @@ const EditarArticulo = () => {
                 <TextField
                     fullWidth
                     multiline
-                    rows={4}
+                    rows={5}
                     label="Descripción"
                     value={articulo.description || ""}
                     onChange={(e) => setArticulo({ ...articulo, description: e.target.value })}
                     sx={{ marginBottom: "20px" }}
+                    style={{ whiteSpace: "pre-line" }}
                 />
 
-                <FormControl fullWidth variant="outlined" sx={{ marginBottom: "20px" }}>
+                <FormControl variant="outlined" sx={{ marginBottom: "20px" }}>
                     <InputLabel>Categoría</InputLabel>
                     <Select
                         value={articulo.categoryId || ""}

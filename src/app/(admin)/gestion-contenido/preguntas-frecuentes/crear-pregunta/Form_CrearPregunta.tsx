@@ -208,6 +208,7 @@ const Form_CrearPregunta: React.FC = () => {
                                     placeholder="Ingresar"
                                     {...register('description')}
                                     error={!!errors.description}
+                                    style={{whiteSpace: 'pre-line'}}
                                     sx={{
                                         borderRadius: '15px',
                                         backgroundColor: 'white',
@@ -220,6 +221,7 @@ const Form_CrearPregunta: React.FC = () => {
                                         },
                                         '& .MuiInputBase-input': {
                                             minHeight: '100px',
+                                            whiteSpace: 'pre-line',
                                         },
                                     }}
                                 />
