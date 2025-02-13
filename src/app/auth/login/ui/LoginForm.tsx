@@ -141,21 +141,9 @@ export const LoginForm = () => {
                     style={{ textAlign: 'left' }}>{errors.password.message}
                 </Typography>
             }
-            <Link href="/auth/forgot-password"
-                style={{
-                    color: themePalette.secondary,
-                    textDecoration: 'underline',
-                    fontSize: '14px',
-                    textAlign: 'right',
-                    marginTop: '5px',
-                    marginBottom: '10px',
-                }}
-            >
-                Recuperar contraseña
-            </Link>
             <Box
                 sx={{
-                    margin: '10px 0',
+                    margin: '34px 0 15px 0',
                 }}
             >
                 <Button
