@@ -47,6 +47,7 @@ const SIDEBAR_ITEMS: SideBarItem[] = [
             { title: 'Enlaces de interés', path: '/gestion-contenido/enlaces-interes' },
             { title: 'Publi-Reportajes', path: '/gestion-contenido/publireportajes' },
             { title: 'Preguntas Frecuentes', path: '/gestion-contenido/preguntas-frecuentes' },
+            { title: 'Chatbot', path: '/gestion-contenido/chatbot' },
         ],
     },
     {
