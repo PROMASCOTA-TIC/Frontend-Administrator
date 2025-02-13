@@ -140,6 +140,7 @@ const EditarArticulo = () => {
                     onChange={(e) => setArticulo({ ...articulo, title: e.target.value })}
                     sx={{ marginBottom: "20px" }}
                 />
+                
                 <TextField
                     fullWidth
                     multiline
@@ -147,8 +148,10 @@ const EditarArticulo = () => {
                     label="Descripción"
                     value={articulo!.description || ""}
                     onChange={(e) => setArticulo({ ...articulo, description: e.target.value })}
+                    style={{ whiteSpace: "pre-line" }}
                     sx={{ marginBottom: "20px" }}
                 />
+
                 <TextField
                     fullWidth
                     label="Fuente"
@@ -157,7 +160,7 @@ const EditarArticulo = () => {
                     sx={{ marginBottom: "20px" }}
                 />
 
-                <FormControl fullWidth variant="outlined" sx={{ marginBottom: "20px" }}>
+                <FormControl variant="outlined" sx={{ marginBottom: "20px", display: "block" }}>
                     <InputLabel>Categoría</InputLabel>
                     <Select
                         value={articulo!.categoryId || ""}
@@ -174,7 +177,6 @@ const EditarArticulo = () => {
 
                 {/* Campo de Fecha y Hora de Publicación */}
                 <TextField
-                    fullWidth
                     type="datetime-local"
                     label="Fecha y hora de publicación"
                     value={articulo!.publishDate ? dayjs(articulo.publishDate).format("YYYY-MM-DDTHH:mm") : ""}

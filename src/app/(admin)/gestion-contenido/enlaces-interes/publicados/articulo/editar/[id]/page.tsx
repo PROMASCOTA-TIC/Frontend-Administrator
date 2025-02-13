@@ -122,6 +122,7 @@ const EditarArticulo = () => {
                     value={articulo.description || ""}
                     onChange={(e) => setArticulo({ ...articulo, description: e.target.value })}
                     sx={{ marginBottom: "20px" }}
+                    style={{ whiteSpace: "pre-line" }}
                 />
                 <TextField
                     fullWidth

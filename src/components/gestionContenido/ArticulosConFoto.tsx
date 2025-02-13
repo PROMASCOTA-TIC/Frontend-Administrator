@@ -30,7 +30,13 @@ const ArticulosConFoto: React.FC<ArticulosConFotoProps> = ({ articulos, basePath
           <div key={articulo.id} className="categorias_articulo_contenedor">
             <div className="flex-column" style={{ width: "90%", gap: "8px", paddingRight: "34px" }}>
               <h2 className="h2-semiBold txtcolor-secondary txt-justify">{articulo.titulo || "Sin título"}</h2>
-              <p className="txt-justify">{articulo.descripcion || "Sin descripción"}</p>
+              <p className="txt-justify">
+                {articulo.descripcion
+                  ? articulo.descripcion.length > 415
+                    ? `${articulo.descripcion.substring(0, 415)}...`
+                    : articulo.descripcion
+                  : "Sin descripción"}
+              </p>
               <Link
                 className="h2-semiBold txtcolor-secondary"
                 style={{ textAlign: "right" }}
