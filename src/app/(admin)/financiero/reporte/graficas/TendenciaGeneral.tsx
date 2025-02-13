@@ -12,8 +12,6 @@ interface Props {
     }[];
 }
 
-//TODO: ver que aparezca la leyenda.
-
 export const TendenciaGeneral = ({dataIngresos, dataEgresos}: Props) => {
 
     const [ingresos, setIngresos] = useState<number[]>([]);

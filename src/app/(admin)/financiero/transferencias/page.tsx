@@ -107,7 +107,6 @@ export default function Transferencias() {
                 },
             });
             const data = response.status === 200 || response.status === 201 ? response.data : [];
-            console.log('data', data);
             data.forEach(async (item: RowData, index: number) => {
                 item.no = index + 1;
                 item.paymentDate = new Date(item.paymentDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -212,7 +211,6 @@ export default function Transferencias() {
 
     const handleSaveComment = async() => {
         const paymentId = transferIds[openRowId - 1];
-        console.log('paymentId', paymentId);
         try {
             const response = await axios.patch(`${URL_BASE}transactions/validate-transfer/` + paymentId, {
                 id: paymentId,

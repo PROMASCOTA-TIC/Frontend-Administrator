@@ -273,8 +273,6 @@ export default function Reporte() {
     }
 
     const fetchDataByType = async (type: string, startDate: string, endDate: string) => {
-        console.log('startDateTYPE', startDate);
-        console.log('endDateTYPE', endDate);
         if (type === 'ingresos') {
             await fetchIngresosPC(startDate, endDate);
             await fetchTotalIncomes(startDate, endDate);
@@ -300,8 +298,6 @@ export default function Reporte() {
                 startDate = new Date(Date.UTC(now.getFullYear(), 0, 1, 0, 0, 0, 0)).toISOString();
                 endDate = new Date(Date.UTC(now.getFullYear(), 11, 31, 23, 59, 59, 999)).toISOString();
                 fetchDataByType(type, startDate, endDate);
-                console.log('startDate', startDate);
-                console.log('endDate', endDate);
                 break;
             case '1':
                 const startOfWeek = new Date(Date.UTC(
@@ -319,15 +315,11 @@ export default function Reporte() {
                 const startISODate = startOfWeek.toISOString();
                 const endISODate = endOfWeek.toISOString();
                 fetchDataByType(type, startISODate, endISODate);
-                console.log('startDate', startISODate);
-                console.log('endDate', endISODate);
                 break;
             case '2':
                 startDate = new Date(Date.UTC(now.getFullYear(), currentMonth , 1, 0, 0, 0, 0)).toISOString();
                 endDate = new Date(Date.UTC(now.getFullYear(), currentMonth + 1, 1, 0, 0, 0, 0)).toISOString();
                 fetchDataByType(type, startDate, endDate);
-                console.log('startDate', startDate );
-                console.log('endDate', endDate);
                 break;
             case '3':
                 const currentQuarter = Math.floor(currentMonth / 3);
@@ -336,8 +328,6 @@ export default function Reporte() {
                 const startOfQuarter = new Date(Date.UTC(now.getFullYear(), startMonthT, 1, 0, 0, 0, 0));
                 const endOfQuarter = new Date(Date.UTC(now.getFullYear(), endMonthT + 1, 0, 23, 59, 59, 999));
                 fetchDataByType(type, startOfQuarter.toISOString(), endOfQuarter.toISOString());
-                console.log('startDate', startOfQuarter);
-                console.log('endDate', endOfQuarter);
                 break;
             case '4':
                 const startMonth = currentMonth < 6 ? 0 : 6;
@@ -345,13 +335,9 @@ export default function Reporte() {
                 const startOfLastSemester = new Date(Date.UTC(now.getFullYear(), startMonth, 1, 0, 0, 0, 0));
                 const endOfLastSemester = new Date(Date.UTC(now.getFullYear(), endMonth + 1, 0, 23, 59, 59, 999));
                 fetchDataByType(type, startOfLastSemester.toISOString(), endOfLastSemester.toISOString());
-                console.log('startDate', startOfLastSemester);
-                console.log('endDate', endOfLastSemester);
                 break;
             default:
                 fetchData(selectedTimePeriod[0], selectedTimePeriod[1]);
-                console.log('startDate', startDate);
-                console.log('endDate', endDate);
                 break;
         }
     };

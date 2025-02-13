@@ -170,7 +170,6 @@ export default function PagoEmprendedores() {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log(data)
                 setNotification({ open: true, message: 'Comentario guardado', type: 'success' });
                 fetchData();
             } catch (error) {

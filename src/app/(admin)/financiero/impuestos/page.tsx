@@ -47,8 +47,6 @@ export default function Ventas() {
                 item.no = index + 1;
                 const date = new Date(data[index].taxDate);
                 date.setHours(date.getHours() + 5);
-                console.log('date', data[index].taxDate);
-                console.log('month', monthNames[date.getMonth()]);
                 item.month = monthNames[date.getMonth()];
             });
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
