@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import EntradaArticulo from '../EntradaPublirerportaje';
+import EntradaArticulo from '../EntradaPublireportaje';
 import { Box } from '@mui/system';
 import { useParams } from 'next/navigation';
 

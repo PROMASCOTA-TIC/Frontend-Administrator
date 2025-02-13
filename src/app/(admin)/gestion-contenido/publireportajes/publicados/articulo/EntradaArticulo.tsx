@@ -79,7 +79,7 @@ const EntradaArticulo: React.FC = () => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="flex-column txt-justify" style={{ width: "80%", gap: "21px", paddingRight: "34px" }}>
                     <h2 className="h2-semiBold txtcolor-secondary">{articulo?.titulo}</h2>
-                    <p className="n-regular">{articulo?.descripcion}</p>
+                    <p className="n-regular" style={{ whiteSpace: "pre-line" }}>{articulo?.descripcion}</p>
                     <p className="n-regular">
                         <b>Bibliografía:</b> {articulo?.bibliografia}
                     </p>
