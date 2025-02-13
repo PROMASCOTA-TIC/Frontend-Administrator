@@ -97,13 +97,13 @@ export default function Reporte() {
             }));
             const formattedIngresos = response.data.ingresos.map((income: any) => ({
                 id: income.id,
-                userName: income.username,
+                userName: income.userName,
                 amount: Number(income.amount),
                 incomeDate: new Date(income.incomeDate).toLocaleDateString()
             }))
             const formattedVentas = response.data.ventas.map((sale: any) => ({
                 id: sale.id,
-                entrepreneurName: sale.entrepreneruName,
+                entrepreneurName: sale.entrepreneurName,
                 productName: sale.productName,
                 productCategory: sale.productCategory,
                 amount: Number(sale.amount),
@@ -274,7 +274,7 @@ export default function Reporte() {
 
     const fetchDataByType = async (type: string, startDate: string, endDate: string) => {
         console.log('startDateTYPE', startDate);
-            console.log('endDateTYPE', endDate);
+        console.log('endDateTYPE', endDate);
         if (type === 'ingresos') {
             await fetchIngresosPC(startDate, endDate);
             await fetchTotalIncomes(startDate, endDate);
@@ -323,8 +323,8 @@ export default function Reporte() {
                 console.log('endDate', endISODate);
                 break;
             case '2':
-                startDate = new Date(Date.UTC(now.getFullYear(), currentMonth === 0 ? currentMonth : - 1, 1, 0, 0, 0, 0)).toISOString();
-                endDate = new Date(Date.UTC(now.getFullYear(), currentMonth + 1, 0, 23, 59, 59, 999)).toISOString();
+                startDate = new Date(Date.UTC(now.getFullYear(), currentMonth , 1, 0, 0, 0, 0)).toISOString();
+                endDate = new Date(Date.UTC(now.getFullYear(), currentMonth + 1, 1, 0, 0, 0, 0)).toISOString();
                 fetchDataByType(type, startDate, endDate);
                 console.log('startDate', startDate );
                 console.log('endDate', endDate);

@@ -15,11 +15,13 @@ import "@/assets/styles/styles.css"
 import axios from "axios";
 import { URL_BASE } from "@/config/config";
 import Notification from "@/components/ui/notifications/Notification";
+import LoadingSpinner from "@/components/ui/LoadingSpinner/LoadingSpinner";
 
 interface RowData {
     no: number;
     transactionDate: string;
     entrepreneurName: string;
+    entrepreneurBusiness: string;
     state: string;
     amount: string;
     paymentDate: string;
@@ -37,6 +39,7 @@ export default function PagoEmprendedores() {
     const [openRowNo, setOpenRowNo] = useState<number>(1);
     const [rows, setRows] = useState<RowData[]>([]);
     const [transactionsIds, setTransactionsIds] = useState<string[]>(['']);
+    const [loading, setLoading] = useState(true);
 
     const [notification, setNotification] = useState<{
         open: boolean;
@@ -45,6 +48,7 @@ export default function PagoEmprendedores() {
     }>({ open: false, message: '', type: 'info' });
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${URL_BASE}transactions`, {
                 headers: {
@@ -60,13 +64,19 @@ export default function PagoEmprendedores() {
                 item.state = item.state === 'S' ? 'Pagado' : 'Pendiente';
                 item.paymentDate = item.paymentDate ? new Date(item.paymentDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
                 item.coment = item.coment ? item.coment : '';
+                item.amount = `$ ${parseFloat(item.amount).toFixed(2)}`;
+                item.entrepreneurBusiness = item.entrepreneurBusiness;
+                item.entrepreneurName = item.entrepreneurName;
             });
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
             setRows(data);
+            setLoading(false);
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
+            setLoading(false);
             setRows([]);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -74,12 +84,13 @@ export default function PagoEmprendedores() {
     }, []);
 
     const columns: GridColDef[] = [
-        { field: "no", headerName: "No", flex: 0.5, minWidth: 50 },
-        { field: "transactionDate", headerName: "Fecha", flex: 1, minWidth: 100 },
-        { field: "entrepreneurName", headerName: "Nombre", flex: 1, minWidth: 180 },
-        { field: "amount", headerName: "Total", flex: 0.5, minWidth: 100 },
-        { field: "state", headerName: "Estado", flex: 1, minWidth: 100 },
-        { field: "paymentDate", headerName: "Fecha de Pago", flex: 1, minWidth: 100 },
+        { field: "no", headerName: "No", flex: 0.3, minWidth: 30 },
+        { field: "transactionDate", headerName: "Fecha", flex: 0.8, minWidth: 80 },
+        { field: "entrepreneurName", headerName: "Nombre", flex: 1.5, minWidth: 150 },
+        { field: "entrepreneurBusiness", headerName: "Emprendimiento", flex: 1, minWidth: 150 },
+        { field: "amount", headerName: "Total", flex: 0.7, minWidth: 70 },
+        { field: "state", headerName: "Estado", flex: 0.7, minWidth: 70 },
+        { field: "paymentDate", headerName: "Fecha de Pago", flex: 0.9, minWidth: 90 },
         {
             field: "resgisterPayment",
             headerName: "Registrar pago",
@@ -90,7 +101,8 @@ export default function PagoEmprendedores() {
                 <div>
                     <Checkbox
                         checked={params.row.state === "Pagado"}
-                        onClick={() =>{ handleOpenDialog(params.row.no);
+                        onClick={() => {
+                            handleOpenDialog(params.row.no);
                             setOpenRowNo(params.row.no)
                         }}
                         disabled={params.row.state === "Pagado"}
@@ -152,15 +164,16 @@ export default function PagoEmprendedores() {
                 state: 'S',
                 paymentDate: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString()
             };
-            try{
-                const response = await axios.patch(`${URL_BASE}transactions/${transactionId}`, {...data}, {
+            try {
+                const response = await axios.patch(`${URL_BASE}transactions/${transactionId}`, { ...data }, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
+                console.log(data)
                 setNotification({ open: true, message: 'Comentario guardado', type: 'success' });
                 fetchData();
-            } catch(error){
+            } catch (error) {
                 setNotification({ open: true, message: 'Error al guardar el comentario', type: 'error' });
             }
         }
@@ -194,7 +207,7 @@ export default function PagoEmprendedores() {
                 </Typography>
             </Grid2>
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
-                <Tables rows={rows} columns={columns} />
+                {loading ? <LoadingSpinner /> : <Tables rows={rows} columns={columns} />}
             </Grid2>
             <Dialog open={open} onClose={handleCancel}
             >
@@ -221,7 +234,7 @@ export default function PagoEmprendedores() {
                 <DialogActions>
                     <Button className="bg-primary text-white mb-e13"
                         onClick={() => {
-                                handleSaveComment(transactionsIds[openRowNo - 1]);
+                            handleSaveComment(transactionsIds[openRowNo - 1]);
                         }}
                         variant="outlined"
                         sx={{

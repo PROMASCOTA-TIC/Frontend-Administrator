@@ -17,6 +17,7 @@ import dayjs, { Dayjs } from "dayjs";
 import axios from "axios";
 import utc from 'dayjs/plugin/utc';
 import "@/assets/styles/styles.css"
+import LoadingSpinner from "@/components/ui/LoadingSpinner/LoadingSpinner";
 
 dayjs.extend(utc);
 
@@ -53,23 +54,18 @@ export default function Egresos() {
     const [open, setOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [rows, setRows] = useState<RowData[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [notification, setNotification] = useState<{
         open: boolean;
         message: string;
         type: 'success' | 'error' | 'info' | 'warning';
     }>({ open: false, message: '', type: 'info' });
-    const [isClient, setIsClient] = useState(false)
-
-    useEffect(() => {
-        setIsClient(true)
-    }, [])
 
     const fetchData = async () => {
+        setLoading(true);
         const currentYear = new Date().getFullYear();
         const startDate = new Date(`${currentYear}-01-01T00:00:00.000Z`).toISOString();
         const endDate = new Date(`${currentYear}-12-31T23:59:59.999Z`).toISOString();
-        console.log('startDate', startDate);
-        console.log('endDate', endDate);
         try {
             const response = await axios.post(`${URL_BASE}expenses/range`, {
                 startDate: startDate,
@@ -80,21 +76,21 @@ export default function Egresos() {
                         'Content-Type': 'application/json',
                     }
                 });
-            console.log('response', response.data);
             const data = response.status === 200 || response.status === 201 ? response.data : [];
-            console.log('expenses', data);
             data.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
                 item.expenseDate = dayjs(item.expenseDate).format('DD MMM YYYY');
-                item.price = `$ ${item.price}`;
+                item.price = `$ ${parseFloat(item.price).toFixed(2)}`;
             });
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
             setRows(data);
+            setLoading(false);
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
-            console.log('error', error);
             setRows([]);
+            setLoading(false);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -140,12 +136,12 @@ export default function Egresos() {
                 setNotification({ open: true, message: 'Error al registrar el egreso', type: 'error' });
             }
         } catch (error: any) {
-            console.log('error', error.response);
             setNotification({ open: true, message: 'Error de red al registrar el egreso', type: 'error' });
         }
     };
 
     const handleDateSubmit = async (data: { startDate: Dayjs | null, endDate: Dayjs | null }) => {
+        setLoading(true);
         if (!data.startDate || !data.endDate) {
             fetchData();
             return;
@@ -161,17 +157,19 @@ export default function Egresos() {
                     }
                 });
             const expenses = response.status === 200 || response.status === 201 ? response.data : [];
-            console.log('expenses', expenses);
             expenses.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
                 item.expenseDate = dayjs(item.expenseDate).format('DD MMM YYYY');
                 item.price = `$ ${item.price}`;
             });
-            console.log(expenses);
+            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
             setRows(expenses);
+            setLoading(false);
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
+            setLoading(false);
         }
+        setLoading(false);
     };
 
     return (
@@ -228,7 +226,7 @@ export default function Egresos() {
                 </Grid2>
             </Grid2>
             <Grid2 size={12} sx={{ height: 423, width: "100%", marginTop: "21px" }}>
-                    <Tables rows={rows} columns={columns} />
+                {loading ? <LoadingSpinner /> : <Tables rows={rows} columns={columns} />}
             </Grid2>
             <Notification
                 open={notification.open}

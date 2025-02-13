@@ -65,20 +65,19 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         const ingresosSheet = workbook.addWorksheet('Ingresos');
         ingresosSheet.addRow(['Id', 'Nombre del usuario', 'Monto', 'Fecha del Ingreso']);
         financialData.ingresos.forEach(item => {
-            ingresosSheet.addRow([item.id, item.userName, new Date(item.incomeDate).toLocaleDateString(), item.amount]);
+            ingresosSheet.addRow([item.id, item.userName, item.amount, new Date(item.incomeDate).toLocaleDateString()]);
         });
 
         const ventasSheet = workbook.addWorksheet('Ventas');
         ventasSheet.addRow(['Id', 'Emprendedor', 'Producto', 'Categoría', 'Precio', 'Fecha de la venta']);
-        console.log(financialData.ventas);
         financialData.ventas.forEach(item => {
-            ventasSheet.addRow([item.id, item.entrepreneurName, item.productName, item.productCategory, new Date(item.saleDate).toLocaleDateString(),  item.amount,]);
+            ventasSheet.addRow([item.id, item.entrepreneurName, item.productName, item.productCategory,  item.amount, new Date(item.saleDate).toLocaleDateString()]);
         });
 
         const egresosSheet = workbook.addWorksheet('Egresos');
         egresosSheet.addRow(['Id', 'Categoría', 'Descripción', 'Monto', 'Fecha del Gasto',]);
         financialData.egresos.forEach(item => {
-            egresosSheet.addRow([item.id, item.category, item.description, new Date(item.expenseDate).toLocaleDateString(), item.price]);
+            egresosSheet.addRow([item.id, item.category, item.description, item.price, new Date(item.expenseDate).toLocaleDateString()]);
         });
 
         const resumenSheet = workbook.addWorksheet('Resumen');
@@ -86,7 +85,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         resumenSheet.addRow(['Total Egresos', financialData.totalEgresos]);
         resumenSheet.addRow(['Balance', financialData.balance]);
 
-        [ingresosSheet, egresosSheet, resumenSheet].forEach(sheet => {
+        [ingresosSheet, egresosSheet, ventasSheet].forEach(sheet => {
             sheet.columns.forEach(column => {
                 if (column && column.eachCell) {
                     column.eachCell((cell, rowNumber) => {
@@ -104,7 +103,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'reporte_financiero.xlsx';
+        link.download = 'reporte_financiero_PROMASKOTA.xlsx';
         link.click();
         URL.revokeObjectURL(url);
     };
@@ -114,7 +113,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         const doc = new jsPDF();
 
         doc.setFontSize(18);
-        doc.text('PROMASCOTA', 105, 20, { align: 'center' });
+        doc.text('PROMASKOTA', 105, 20, { align: 'center' });
 
         doc.setFontSize(16);
         doc.text('Reporte Financiero', 105, 30, { align: 'center' });
@@ -167,7 +166,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         doc.text(`Total Egresos: $${financialData.totalEgresos}`, 14, startY + 5);
         doc.text(`Balance: $${financialData.balance}`, 14, startY + 10);
 
-        doc.save('reporte_financiero.pdf');
+        doc.save('reporte_financiero_PROMASKOTA.pdf');
     };
 
 
@@ -203,7 +202,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
                 }}
             >
                 <MenuItem onClick={() => handleDownload('excel')}>Descargar como XLSX</MenuItem>
-                <MenuItem onClick={() => handleDownload('pdf')}>Imprimir</MenuItem>
+                <MenuItem onClick={() => handleDownload('pdf')}>Descargar como PDF</MenuItem>
             </Menu>
         </>
     );

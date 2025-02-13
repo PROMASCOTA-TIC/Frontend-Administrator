@@ -6,24 +6,25 @@ import { Tables, } from "../components";
 import { GridColDef } from "@mui/x-data-grid";
 import { Check, Clear, EditNote, Receipt } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { transferSchema } from "@/validations/financiero/transferSchema";
 import Image from "next/image";
-import Imagen from "@/assets/images/ejemploTransferencia.png";
 import { themePalette } from "@/config/theme.config";
 import "@/assets/styles/styles.css"
 import axios from "axios";
 import { URL_BASE } from "@/config/config";
 import Notification from "@/components/ui/notifications/Notification";
+import LoadingSpinner from "@/components/ui/LoadingSpinner/LoadingSpinner";
 
 interface RowData {
     id: string;
     no: number;
     paymentDate: string;
-    entrepreneurName: string;
+    petOwnerName: string;
     amount: string;
     state: string;
     observation: string;
+    voucherUrl: string;
 }
 
 type Inputs = {
@@ -38,6 +39,8 @@ export default function Transferencias() {
     const [openRowId, setOpenRowId] = useState(0);
     const [transferIds, setTransferIds] = useState<string[]>([]);
     const [edit, setEdit] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [url, setUrl] = useState('');
     const [notification, setNotification] = useState<{
         open: boolean;
         message: string;
@@ -46,9 +49,9 @@ export default function Transferencias() {
 
     const [rows, setRows] = useState<RowData[]>([]);
     const columns: GridColDef[] = [
-        { field: "no", headerName: "ID", flex: 0.5, minWidth: 50 },
+        { field: "no", headerName: "No.", flex: 0.5, minWidth: 50 },
         { field: "paymentDate", headerName: "Fecha", flex: 1, minWidth: 100 },
-        { field: "entrepreneurName", headerName: "Nombre", flex: 1, minWidth: 180 },
+        { field: "petOwnerName", headerName: "Nombre", flex: 1, minWidth: 180 },
         { field: "amount", headerName: "Total", flex: 0.5, minWidth: 100 },
         {
             field: "voucher",
@@ -57,7 +60,7 @@ export default function Transferencias() {
             align: "center",
             renderCell: (params) => (
                 <IconButton
-                    onClick={() => handleClickOpen(params.row.id)}
+                    onClick={() => handleClickOpen(params.row.id, params.row.voucherUrl)}
                 >
                     <Receipt />
                 </IconButton>
@@ -69,6 +72,7 @@ export default function Transferencias() {
             headerName: "Observación",
             flex: 1.5, minWidth: 150,
             renderCell: (params) => (
+                setTimeout(() => { }, 2000),
                 <Box
                     sx={{
                         display: "flex",
@@ -78,7 +82,7 @@ export default function Transferencias() {
                     }}
                 >
                     <Typography variant="body2">
-                        {params.row.estado === 'Rechazado' || params.row.estado === 'Aprobado' ? params.row.observacion : params.row.estado === 'Pendiente' ? "" : "Sin observaciones"}
+                        {params.row.state === 'Rechazado' || params.row.state === 'Aprobado' ? params.row.observation : params.row.state === 'Pendiente' ? "" : "Sin observaciones"}
                     </Typography>
                     <IconButton onClick={() => handleEditComment(params.row.no)}
                         disabled={params.row.estado == 'Pendiente'}>
@@ -95,35 +99,44 @@ export default function Transferencias() {
     });
 
     const fetchData = async () => {
+        setLoading(true);
         try {
-            const response = await axios.get(`${URL_BASE}transactions`, {
+            const response = await axios.get(`${URL_BASE}transactions/transfers/all`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            const data = response.status === 200 ? response.data : [];
-            data.forEach((item: RowData, index: number) => {
+            const data = response.status === 200 || response.status === 201 ? response.data : [];
+            console.log('data', data);
+            data.forEach(async (item: RowData, index: number) => {
                 item.no = index + 1;
                 item.paymentDate = new Date(item.paymentDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                item.petOwnerName = item.petOwnerName;
+                item.amount = `$ ${parseFloat(item.amount).toFixed(2)}`;
                 item.observation = item.observation ? item.observation : '';
-                item.state = item.state === 'S' ? 'Aprobado' : item.state === 'R' ? 'Rechazado' :'Pendiente';
+                item.state = item.state === 'A' ? 'Aprobado' : item.state === 'R' ? 'Rechazado' : 'Pendiente';
+                item.voucherUrl = item.voucherUrl;
             });
+            setRows(data);
             setTransferIds(data.map((item: RowData) => item.id));
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
-            setRows(data);
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
             setRows([]);
+            setLoading(false);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    const handleClickOpen = (id: number) => {
+
+    const handleClickOpen = (id: number, url: string) => {
         reset();
         setOpenRowId(id);
+        setUrl(url);
         setOpen(true);
     }
     const handleClose = () => {
@@ -132,39 +145,54 @@ export default function Transferencias() {
         setShowCommentField(false);
     }
     const handleApprove = async () => {
-        const transferId = transferIds[openRowId - 1];
-        //TODO: llamar a la API para aprobar la transferencia  (coordinar con el JSON)
-        const response = await axios.post(`${URL_BASE}transactions/validate-transfer/${transferId}`, {
-            id: transferId,
-            state: 'Aprobado',
-            observation: comment
-        },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-        if (response.status === 200) {
-            setRows((prevRows) =>
-                prevRows.map((row) => 
-                    row.no === openRowId ? { ...row, estado: 'Aprobado', observacion: comment  } : row
-                )
-            );
-            fetchData();
+        try {
+            const response = await axios.patch(`${URL_BASE}transactions/validate-transfer/` + openRowId, {
+                id: openRowId,
+                status: 'A',
+                comment: comment
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+            if (response.status === 200 || response.status === 201) {
+                fetchData();
+                handleClose();
+                setNotification({ open: true, message: 'Transferencia validada con éxito', type: 'success' });
+            } else {
+                setNotification({ open: true, message: 'Error al validar la transferencia, vuelva a intentarlo más tarde', type: 'error' });
+            }
+        } catch (error) {
             handleClose();
-            setNotification({ open: true, message: 'Transferencia validad con éxito', type: 'success' });
-        } else {
-            setNotification({ open: true, message: 'Error al validar la transferencia', type: 'error' });
+            setNotification({ open: true, message: 'Error al validar la transferencia, vuelva a intentarlo más tarde', type: 'error' });
         }
     }
     const handleReject = () => {
         if (showCommentField) {
-            handleSubmit(() => {
-                setRows((prevRows) =>
-                    prevRows.map((row) =>
-                        row.no === openRowId ? { ...row, estado: 'Rechazado', observacion: comment } : row
-                    )
-                );
+            handleSubmit(async () => {
+                try {
+                    const response = await axios.patch(`${URL_BASE}transactions/validate-transfer/` + openRowId, {
+                        id: openRowId,
+                        status: 'R',
+                        comment: comment
+                    },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+                    if (response.status === 200 || response.status === 201) {
+                        fetchData();
+                        handleClose();
+                        setNotification({ open: true, message: 'Transferencia rechazada con éxito', type: 'success' });
+                    } else {
+                        setNotification({ open: true, message: 'Error al rechazar la transferencia, vuelva a intentarlo más tarde', type: 'error' });
+                    }
+                } catch (error) {
+                    handleClose();
+                    setNotification({ open: true, message: 'Error al rechazar la transferencia, vuelva a intentarlo más tarde', type: 'error' });
+                }
                 handleClose();
             })();
         } else {
@@ -175,21 +203,37 @@ export default function Transferencias() {
 
     const handleEditComment = (id: number) => {
         const rowToEdit = rows.find(row => row.no === id);
-        console.log('rowToEdit', rowToEdit);
         if (rowToEdit) {
-            setComment(rowToEdit.observation || "");
+            setComment(rowToEdit.observation);
         }
         setOpenRowId(id);
         setEdit(true);
     };
 
-    const handleSaveComment = () => {
-        //TODO: llamar update de la venta (JSON)
-        setRows((prevRows) =>
-            prevRows.map((row) => {
-                return row.no === openRowId ? { ...row, observacion: comment } : row;
-            })
-        );
+    const handleSaveComment = async() => {
+        const paymentId = transferIds[openRowId - 1];
+        console.log('paymentId', paymentId);
+        try {
+            const response = await axios.patch(`${URL_BASE}transactions/validate-transfer/` + paymentId, {
+                id: paymentId,
+                comment: comment
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+            if (response.status === 200 || response.status === 201) {
+                fetchData();
+                handleClose();
+                setNotification({ open: true, message: 'Observación guardada con éxito', type: 'success' });
+            } else {
+                setNotification({ open: true, message: 'Error al modificar la observación, vuelva a intentarlo más tarde', type: 'error' });
+            }
+        } catch (error) {
+            handleClose();
+            setNotification({ open: true, message: 'Error al modificar la observación, vuelva a intentarlo más tarde', type: 'error' });
+        }
         handleClose();
     };
 
@@ -220,7 +264,9 @@ export default function Transferencias() {
                 </Typography>
             </Grid2>
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
-                <Tables rows={rows} columns={columns} />
+                {loading && rows ? <LoadingSpinner /> : (
+                    <Tables rows={rows} columns={columns} />
+                )}
             </Grid2>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle
@@ -246,7 +292,7 @@ export default function Transferencias() {
                     >
                         <Box>
                             <Image
-                                src={Imagen}
+                                src={url}
                                 alt="transferencia"
                                 width={320}
                                 height={320}
@@ -276,7 +322,7 @@ export default function Transferencias() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {
-                        handleApprove;
+                        handleApprove();
                     }}
                         variant="outlined"
                         sx={{

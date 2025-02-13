@@ -1,15 +1,16 @@
 'use client';
 
 import "@/assets/styles/styles.css"
+import {  useEffect, useState } from "react";
 import { Grid2, Typography } from "@mui/material";
-import { DateFilter } from "../components";
 import { Tables } from "../components/Tables";
 import { GridColDef } from "@mui/x-data-grid";
-import {  useEffect, useState } from "react";
-import axios from "axios";
+import { DateFilter } from "../components";
 import { URL_BASE } from "@/config/config";
-import Notification from "@/components/ui/notifications/Notification";
 import { Dayjs } from "dayjs";
+import axios from "axios";
+import Notification from "@/components/ui/notifications/Notification";
+import LoadingSpinner from "@/components/ui/LoadingSpinner/LoadingSpinner";
 
 interface RowData {
     no: number;
@@ -31,18 +32,21 @@ const columns: GridColDef[] = [
 
 export default function Ventas() {
     const [rows, setRows] = useState<RowData[]>([]);
+    const [loading, setLoading] = useState(true);
     const [notification, setNotification] = useState<{
         open: boolean;
         message: string;
         type: 'success' | 'error' | 'info' | 'warning';
     }>({ open: false, message: '', type: 'info' });
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const fetchData = async () => {
         const currentYear = new Date().getFullYear();
         const startDate = new Date(`${currentYear}-01-01T00:00:00.000Z`).toISOString();
         const endDate = new Date(`${currentYear}-12-31T23:59:59.999Z`).toISOString();
-        console.log('startDate', startDate);
-        console.log('endDate', endDate);
         try {
             const response = await axios.post(`${URL_BASE}incomes/sales-date-range`, {
                 startDate: startDate,
@@ -53,29 +57,27 @@ export default function Ventas() {
                         'Content-Type': 'application/json',
                     }
                 });
-            console.log('response', response.data);
             const data = response.status === 200 || response.status === 201 ? response.data : [];
             data.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
                 item.salesDate = new Date(item.salesDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-                item.amount = `$ ${item.amount}`;
+                item.amount = `$ ${parseFloat(item.amount).toFixed(2)}`;
             });
-            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
             setRows(data);
+            setLoading(false);
+            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
             setRows([]);
+            setLoading(false);
         }
+        setLoading(false);
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const handleDateSubmit = async (data: { startDate: Dayjs | null, endDate: Dayjs | null }) => {
+        setLoading(true);
         if (!data.startDate || !data.endDate) {
             fetchData();
-            return;
         }
         try {
             const response = await axios.post(`${URL_BASE}incomes/sales-date-range`, {
@@ -91,12 +93,17 @@ export default function Ventas() {
             sales.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
                 item.salesDate = new Date(item.salesDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-                item.amount = `$ ${item.amount}`;
+                item.amount = `$ ${parseFloat(item.amount).toFixed(2)}`;
             });
             setRows(sales);
+            setLoading(false);
+            setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
+            setLoading(false);
+            console.log(error);
         }
+        setLoading(false);
     };
 
     return (
@@ -129,7 +136,7 @@ export default function Ventas() {
                     <DateFilter onDateSubmit={handleDateSubmit} />
                 </Grid2>
                 <Grid2 size={12} sx={{ height: 423, width: "100%", marginTop: "21px" }}>
-                    <Tables rows={rows} columns={columns} />
+                    {loading ? <LoadingSpinner /> : <Tables rows={rows} columns={columns} />}
                 </Grid2>
             </Grid2>
     );

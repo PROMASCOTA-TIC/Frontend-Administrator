@@ -45,8 +45,10 @@ export default function Ventas() {
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             data.forEach((item: RowData, index: number) => {
                 item.no = index + 1;
-                const date = new Date(data[index].taxesDate);
+                const date = new Date(data[index].taxDate);
                 date.setHours(date.getHours() + 5);
+                console.log('date', data[index].taxDate);
+                console.log('month', monthNames[date.getMonth()]);
                 item.month = monthNames[date.getMonth()];
             });
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });

@@ -1,9 +1,7 @@
-import React, { Suspense } from 'react';
-import { Box } from '@mui/material';
-import { esES } from '@mui/x-data-grid/locales';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { themePalette } from '@/config/theme.config';
-import LoadingSpinner from '@/components/ui/LoadingSpinner/LoadingSpinner';
+import { esES } from '@mui/x-data-grid/locales';
+import { Box } from '@mui/material';
 
 interface Props {
     rows: any;
@@ -26,9 +24,6 @@ const CustomToolbar = () => {
 };
 
 export const Tables = ({ rows, columns }: Props) => {
-    if (!rows || rows.length === 0) {
-        return <LoadingSpinner />;
-    }
     return (
         <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <DataGrid
