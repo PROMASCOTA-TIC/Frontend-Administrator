@@ -1,19 +1,20 @@
 "use client";
 import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, Typography, Box, Grid2, IconButton } from "@mui/material";
-import { GridRenderCellParams } from "@mui/x-data-grid";
+import { Button, Typography, Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,Snackbar,Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import "/src/assets/styles/emprendedores/general.css";
 import { themePalette } from "@/config/theme.config";
 import { esES } from '@mui/x-data-grid/locales';
+import axios from 'axios';
 import 'dayjs/locale/es';
+import { URL_BASE } from "@/config/config";
 
 interface DateFormValues {
   startDate: Dayjs | null;
@@ -21,187 +22,194 @@ interface DateFormValues {
 }
 
 interface RowData {
-  id: number;
+  id: string;
   nombrePropietario: string;
   email: string;
   telefono: string;
   nombreComercial: string;
   fechaSolicitud: string;
   ruc: string;
-  tipoVenta: string;
 }
 
-const rows: RowData[] = [
-  {
-    id: 1,
-    nombrePropietario: "Juan Pérez",
-    email: "juan@example.com",
-    telefono: "0991234567",
-    nombreComercial: "Comercial JP",
-    fechaSolicitud: "21/10/2024",
-    ruc: "1712345678001",
-    tipoVenta: "Directa",
-  },
-];
-
 export const SolicitudesEmprendedores = () => {
-  const {
-    handleSubmit: handleDateSubmit,
-    control: controlDate,
-    watch: watchDate,
-    formState: { errors: dateErrors },
-  } = useForm<DateFormValues>({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
-  });
+  const [rows, setRows] = React.useState<RowData[]>([]);
+  const [openApproveDialog, setOpenApproveDialog] = React.useState(false);
+  const [openRejectDialog, setOpenRejectDialog] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [comision, setComision] = React.useState<number | "">("");
+  const [comisionError, setComisionError] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
-  const startDate = watchDate("startDate");
+  const fetchPendingEntrepreneurs = async () => {
+    try {
+      const response = await axios.get(`${URL_BASE}users/entrepreneurs/state/PENDING`);
 
-  const onDateSubmit = (data: DateFormValues) => {
-    console.log("Filtrado por fechas:", data);
+      const data = response.data;
+
+      const formattedData = data.map((entrepreneur: any) => ({
+        id: entrepreneur.idEntrepreneur,
+        nombrePropietario: entrepreneur.name,
+        email: entrepreneur.email,
+        telefono: entrepreneur.numeroCelular,
+        nombreComercial: entrepreneur.nombreEmprendimiento,
+        fechaSolicitud: dayjs(entrepreneur.createdAt).format('DD/MM/YYYY'),
+        ruc: entrepreneur.ruc,
+      }));
+
+      setRows(formattedData);
+    } catch (error) {
+      console.error('Error al obtener los emprendedores pendientes:', error);
+    }
   };
 
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 0.5, minWidth: 40 }, 
-    { field: "nombrePropietario", headerName: "Nombre", flex: 1, minWidth: 100 }, 
-    { field: "email", headerName: "Email", flex: 1.5, minWidth: 150 }, 
-    { field: "telefono", headerName: "Teléfono", flex: 1, minWidth: 120 }, 
-    { field: "nombreComercial", headerName: "Nombre comercial", flex: 1.5, minWidth: 180 }, 
-    { field: "fechaSolicitud", headerName: "Fecha solicitud", flex: 1, minWidth: 115 }, 
-    { field: "ruc", headerName: "RUC", flex: 1, minWidth: 140 }, 
-    {
-      field: "aceptar",
-      headerName: "Aceptar",
-      flex: 0.5, minWidth: 80,
-      renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" sx={{ color: "green" }}>
-          <CheckIcon />
-        </IconButton>
-      ),
-    },
-    {
-      field: "rechazar",
-      headerName: "Rechazar",
-      flex: 0.5, minWidth: 80,
-      renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="medium" sx={{ color: "red" }}>
-          <CloseIcon />
-        </IconButton>
-      ),
-    },
-  ];
+  React.useEffect(() => {
+    fetchPendingEntrepreneurs();
+  }, []);
+
+  const handleApprove = async () => {
+    if (comision === "" || comisionError) {
+      setComisionError("Debes ingresar una comisión válida entre 1 y 99");
+      return;
+    }
+  
+    if (!selectedId) return;
+  
+    try {
+      console.log(`Aprobando emprendedor con ID: ${selectedId} y comisión: ${comision}`);
+  
+      const response = await axios.patch(
+       `${URL_BASE}users/entrepreneurs/${selectedId}/status-and-commission`,
+        { estado: "APPROVED", comision: Number(comision) },
+        { headers: { "Content-Type": "application/json" } }
+      );
+  
+      console.log("Respuesta del backend:", response.data);
+  
+      setRows((prevRows) => prevRows.filter(row => row.id !== selectedId));
+      setSuccessMessage("Emprendedor aprobado exitosamente");
+      console.log(`Emprendedor con ID ${selectedId} ha sido aprobado.`);
+      handleCloseApproveDialog();
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`Error al aprobar emprendedor ${selectedId}:`, error.response.data);
+      } else {
+        console.error(`Error desconocido al aprobar emprendedor ${selectedId}:`, error);
+      }
+    }
+  };
+  
+
+  const handleReject = async () => {
+    if (!selectedId) return;
+    try {
+      console.log(`Rechazando emprendedor con ID: ${selectedId}`);
+
+      const response = await axios.patch(
+        `${URL_BASE}users/update-entrepreneur/${selectedId}`, 
+        { estado: "REJECTED" },
+        { headers: { "Content-Type": "application/json" } } 
+      );
+
+      console.log("Respuesta del backend:", response.data);
+
+      setRows((prevRows) => prevRows.filter(row => row.id !== selectedId));
+
+      console.log(`Emprendedor con ID ${selectedId} ha sido rechazado.`);
+      setSuccessMessage("Emprendedor rechazado exitosamente");
+      handleCloseRejectDialog();
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`Error al rechazar emprendedor ${selectedId}:`, error.response.data);
+      } else {
+        console.error(`Error desconocido al rechazar emprendedor ${selectedId}:`, error);
+      }
+    }
+  };
+
+  const handleOpenApproveDialog = (id: string) => {
+    setSelectedId(id);
+    setComisionError(null);
+    setOpenApproveDialog(true);
+  };
+
+  const handleCloseApproveDialog = () => {
+    setOpenApproveDialog(false);
+    setSelectedId(null);
+    setComision("");
+  };
+
+  const handleOpenRejectDialog = (id: string) => {
+    setSelectedId(id);
+    setOpenRejectDialog(true);
+  };
+
+  const handleCloseRejectDialog = () => {
+    setOpenRejectDialog(false);
+    setSelectedId(null);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSuccessMessage(null);
+  };
 
   const CustomToolbar = () => {
     return (
-        <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div>
-                <GridToolbarFilterButton />
-                <GridToolbarExport />
-            </div>
-            <GridToolbarQuickFilter 
-                debounceMs={500}
-                sx={{ marginLeft: 'auto' }}
-            />
-        </GridToolbarContainer>
+      <GridToolbarContainer sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <GridToolbarFilterButton />
+          <GridToolbarExport />
+        </div>
+        <GridToolbarQuickFilter
+          debounceMs={500}
+          sx={{ marginLeft: 'auto' }}
+        />
+      </GridToolbarContainer>
     );
   };
 
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 20px",
-          width: "100%",
-        }}
-      >
-        {/* Título centrado */}
-        <Typography sx={{ marginBottom: "20px", textAlign: "center",
-        color:themePalette.primary, fontSize: "36px", fontWeight: "bold"
-       }}>
+      <Box sx={{ padding: "0 20px", width: "100%" }}>
+        <Typography sx={{ marginBottom: "20px", textAlign: "center", color: themePalette.primary, fontSize: "36px", fontWeight: "bold" }}>
           Solicitudes de emprendedores
         </Typography>
 
-        <Grid2 container spacing={2} alignItems="center" justifyContent="flex-end">
-          <Grid2 size={{ xs: 12, sm: 4, md: 2.09 }}>
-            <Controller
-              name="startDate"
-              control={controlDate}
-              rules={{ required: "La fecha de inicio es obligatoria" }}
-              render={({ field }) => (
-                <>
-                  <DatePicker
-                    {...field}
-                    format="DD/MM/YYYY"
-                    label="Fecha de inicio"
-                    sx={{ width: "100%" }}
-                    onChange={(date) => field.onChange(date)}
-                  />
-                  {dateErrors.startDate && (
-                    <Typography color="error" variant="body2">
-                      {dateErrors.startDate.message}
-                    </Typography>
-                  )}
-                </>
-              )}
-            />
-          </Grid2>
-
-          <Grid2 size={{ xs: 12, sm: 4, md: 2 }}>
-            <Controller
-              name="endDate"
-              control={controlDate}
-              rules={{
-                required: "La fecha de fin es obligatoria",
-                validate: (value) => {
-                  if (startDate && value && dayjs(value).isBefore(dayjs(startDate))) {
-                    return "La fecha de fin no puede ser anterior a la fecha de inicio";
-                  }
-                  return true;
-                },
-              }}
-              render={({ field }) => (
-                <>
-                  <DatePicker
-                    {...field}
-                    format="DD/MM/YYYY"
-                    label="Fecha de fin"
-                    sx={{ width: "100%" }}
-                    minDate={startDate || undefined}
-                    onChange={(date) => field.onChange(date)}
-                  />
-                  {dateErrors.endDate && (
-                    <Typography color="error" variant="body2">
-                      {dateErrors.endDate.message}
-                    </Typography>
-                  )}
-                </>
-              )}
-            />
-          </Grid2>
-
-          <Grid2 size={{ xs: 12, sm: 4, md: 2 }} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              type="submit"
-              className="buttonFiltrarBuscar"
-              sx={{ width: "100px" }}
-              onClick={handleDateSubmit(onDateSubmit)}
-            >
-              Filtrar
-            </Button>
-          </Grid2>
-        </Grid2>
         <Box sx={{ height: 400, width: "100%", marginTop: "30px" }}>
           <DataGrid
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             rows={rows}
-            columns={columns}
+            columns={[
+              { field: "id", headerName: "ID", flex: 0.5, minWidth: 40 },
+              { field: "nombrePropietario", headerName: "Nombre", flex: 1, minWidth: 100 },
+              { field: "email", headerName: "Email", flex: 1.5, minWidth: 150 },
+              { field: "telefono", headerName: "Teléfono", flex: 1, minWidth: 120 },
+              { field: "nombreComercial", headerName: "Nombre comercial", flex: 1.5, minWidth: 180 },
+              { field: "fechaSolicitud", headerName: "Fecha solicitud", flex: 1, minWidth: 115 },
+              { field: "ruc", headerName: "RUC", flex: 1, minWidth: 140 },
+              {
+                field: "aceptar",
+                headerName: "Aceptar",
+                renderCell: (params) => (
+                  <IconButton sx={{ color: "green" }} onClick={() => handleOpenApproveDialog(params.row.id)}>
+                    <CheckIcon />
+                  </IconButton>
+                ),
+              },
+              {
+                field: "rechazar",
+                headerName: "Rechazar",
+                renderCell: (params) => (
+                  <IconButton sx={{ color: "red" }} onClick={() => handleOpenRejectDialog(params.row.id)}>
+                    <CloseIcon />
+                  </IconButton>
+                ),
+              },
+            ]}
+
             initialState={{
               pagination: {
-                paginationModel: { pageSize: 5 },
+                paginationModel: { pageSize: 10 },
               },
             }}
             pageSizeOptions={[5, 10, 25]}
@@ -229,8 +237,93 @@ export const SolicitudesEmprendedores = () => {
                 fontWeight: 'bold',
               },
             }}
+
           />
         </Box>
+
+        <Dialog open={openApproveDialog} onClose={handleCloseApproveDialog}>
+  <DialogTitle
+  sx={{ display: "flex", justifyContent: "center", color: themePalette.primary, fontWeight: "bold" }}
+  >Confirmar Aprobación</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+    Antes de aprobar esta solicitud, ingresa la comisión acordada con el emprendedor.
+    </DialogContentText>
+
+    <Box sx={{ display: "flex", justifyContent: "center", width: "100%", marginTop: 2 }}>
+    <TextField
+      fullWidth
+      margin="dense"
+      label="Comisión (%)"
+      type="text"
+      value={comision}
+      sx={{width: "30%"}}
+      onChange={(e) => {
+        const inputValue = e.target.value;
+
+        if (/^\d*$/.test(inputValue)) {
+          const numberValue = Number(inputValue);
+          if (numberValue >= 1 && numberValue <= 99) {
+            setComision(numberValue);
+            setComisionError(""); 
+          } else {
+            setComision(inputValue === "" ? "" : numberValue);
+            setComisionError("La comisión debe estar entre 1 y 99");
+          }
+        }
+      }}
+      error={!!comisionError}
+      helperText={comisionError}
+    />
+      </Box>
+  </DialogContent>
+  <Snackbar open={!!successMessage} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="success">{successMessage}</Alert>
+      </Snackbar>
+
+  <DialogActions sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+    {/* Botón Cancelar */}
+    <Button
+      onClick={handleCloseApproveDialog}
+      sx={{ color: themePalette.cwhite, background: themePalette.primary, textTransform: "none" }}
+    >
+      Cancelar
+    </Button>
+
+    <Button
+      onClick={handleApprove}
+      sx={{
+        color: themePalette.cwhite,
+        background: comision === "" || comisionError ? "lightgray" : themePalette.primary,
+        textTransform: "none",
+      }}
+      disabled={comision === "" || comisionError !== ""}
+    >
+      Aprobar
+    </Button>
+  </DialogActions>
+</Dialog>
+
+        <Dialog open={openRejectDialog} onClose={handleCloseRejectDialog}>
+          <DialogTitle sx={{ display: "flex", justifyContent: "center", color: themePalette.primary, fontWeight: "bold" }}>Confirmar Rechazo</DialogTitle>
+          <DialogContent
+          >
+            <DialogContentText>
+              ¿Estás seguro de que deseas rechazar esta solicitud?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions  sx={{ display: "flex", justifyContent: "center", gap: 2 }} >
+            <Button onClick={handleCloseRejectDialog}
+            sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}
+            >Cancelar</Button>
+            <Button onClick={handleReject}
+            sx={{color:themePalette.cwhite, background:themePalette.primary, textTransform:"none"}}
+            >Aceptar</Button>
+          </DialogActions>
+        </Dialog>
+        <Snackbar open={!!successMessage} autoHideDuration={4000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="success">{successMessage}</Alert>
+      </Snackbar>
       </Box>
     </LocalizationProvider>
   );
