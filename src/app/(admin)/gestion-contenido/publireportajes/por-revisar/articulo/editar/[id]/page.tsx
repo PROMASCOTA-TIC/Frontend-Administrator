@@ -7,13 +7,32 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
 
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import ArchivosMultimedia from "@/components/gestionContenido/ArchivosMultimedia";
+
 interface Articulo {
     title: string;
     description: string;
     sourceLink: string;
     categoryId: number;
     publishDate: string | null; // Fecha y hora de publicación opcional
+    imagesUrl?: string;
 }
+
+// Configuración de Firebase
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_APP_ID,
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 const EditarArticulo = () => {
     const { id } = useParams(); // Obtiene el id desde la URL
@@ -21,6 +40,8 @@ const EditarArticulo = () => {
     const [categorias, setCategorias] = useState<{ id: number; name: string }[]>([]); // Lista de categorías
     const [loading, setLoading] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]); // 🔹 Ahora se usa esta variable para todas las imágenes
 
     const router = useRouter();
 
@@ -40,8 +61,14 @@ const EditarArticulo = () => {
                     description: data.description,
                     sourceLink: data.sourceLink,
                     categoryId: data.categoryId,
+                    imagesUrl: data.imagesUrl,
                     publishDate: data.publishDate || null, // Se obtiene la fecha de publicación si existe
                 });
+
+                // 🔹 Convertir las imágenes almacenadas en la BD en un array si existen
+                if (data.imagesUrl) {
+                    setImageUrls(data.imagesUrl.split(","));
+                }
             } catch (error) {
                 console.error("Error al cargar el artículo:", error);
             } finally {
@@ -65,6 +92,25 @@ const EditarArticulo = () => {
         }
     }, [id]);
 
+    // **🔹 Función para subir archivos a Firebase **
+    const uploadMediaToFirebase = async (files: File[]) => {
+        if (files.length === 0) return [];
+
+        const urls: string[] = [];
+        for (const file of files) {
+            try {
+                const storageRef = ref(storage, `gestion-contenido/publireportajes/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                urls.push(downloadURL);
+            } catch (error) {
+                console.error("Error al subir archivo:", error);
+            }
+        }
+
+        return urls;
+    };
+
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -86,28 +132,39 @@ const EditarArticulo = () => {
         console.log("Datos enviados en UTC:", updatedArticulo);  // Verificar los datos enviados
 
         try {
+            // 🔹 Subir las imágenes nuevas a Firebase
+            const newImageUrls = await uploadMediaToFirebase(selectedFiles);
+
+            // 🔹 Actualizar la lista final de imágenes (nuevas + actuales después de eliminar)
+            const updatedImagesUrl = [...imageUrls, ...newImageUrls].join(",");
+
             // Actualiza los datos del artículo
             const responseUpdate = await fetch(`http://localhost:3001/api/advertorials/update/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(updatedArticulo),
+                body: JSON.stringify({ ...articulo, imagesUrl: updatedImagesUrl })
             });
 
             if (!responseUpdate.ok) {
                 throw new Error("Error al actualizar el artículo");
             }
-
-            setOpenSnackbar(true);
-            setTimeout(() => {
-                router.push(`/gestion-contenido/publireportajes/por-revisar/articulo/${id}`);
-            }, 4000);
         } catch (error) {
             console.error("Error al enviar los datos:", error);
         }
+        
+        setOpenSnackbar(true);
+            setTimeout(() => {
+                router.push(`/gestion-contenido/publireportajes/por-revisar/articulo/${id}`);
+            }, 4000);
     };
 
+    // **🔹 Manejar imágenes nuevas y eliminadas **
+    const handleImageChange = (newFiles: File[], updatedImageUrls: string[]) => {
+        setSelectedFiles(newFiles);
+        setImageUrls(updatedImageUrls);
+    };
 
     if (loading) {
         return (
@@ -137,9 +194,11 @@ const EditarArticulo = () => {
                     fullWidth
                     label="Título"
                     value={articulo!.title || ""}
-                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value })}
                     sx={{ marginBottom: "20px" }}
+                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value.substring(0, 255) })}
+                    inputProps={{ maxLength: 255 }} // 🔹 Limita la entrada a 255 caracteres
                 />
+
                 <TextField
                     fullWidth
                     multiline
@@ -150,6 +209,7 @@ const EditarArticulo = () => {
                     sx={{ marginBottom: "20px" }}
                     style={{ whiteSpace: "pre-line" }}
                 />
+
                 <TextField
                     fullWidth
                     label="Fuente"
@@ -187,6 +247,10 @@ const EditarArticulo = () => {
                         min: now, // Evita que se seleccionen fechas anteriores
                     }}
                 />
+
+                <div>
+                    <ArchivosMultimedia onChange={handleImageChange} existingImages={imageUrls} />
+                </div>
 
                 <div className="flex-center">
                     <div className="flex-center gap-10">

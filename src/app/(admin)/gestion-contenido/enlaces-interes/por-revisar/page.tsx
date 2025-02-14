@@ -9,68 +9,81 @@ const EI_Categorias = () => {
   const [articulos, setArticulos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ** Función para obtener todos los publireportajes **
-  const fetchApprovedLinks = async () => {
+  // ** Función para obtener todos los enlaces pendientes **
+  const fetchPendingLinks = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/links/status/pending');
       const data = await response.json();
       console.log('Datos recibidos:', data); // Log para ver los datos de la API
 
-      // Adaptar los datos para el componente
-      const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.linkId,
-        titulo: articulo.title || "Sin título",
-        descripcion: articulo.description || "Sin descripción",
-        link: articulo.link || "#",
-        imagen: articulo.image || "https://via.placeholder.com/100",
-      }));
+      // 🔹 Adaptar los datos para el componente
+      const articulosAdaptados = data.map((articulo: any) => {
+        // 🔹 Obtener la primera imagen de la lista separada por comas
+        const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
+        const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
+
+        return {
+          id: articulo.id || articulo.linkId,
+          titulo: articulo.title || "Sin título",
+          descripcion: articulo.description || "Sin descripción",
+          link: articulo.link || "#",
+          imagen: primeraImagen, // Se asigna solo la primera imagen o `null` si no hay
+        };
+      });
 
       setArticulos(articulosAdaptados);
     } catch (error) {
-      console.error('Error al obtener los publireportajes:', error);
+      console.error('Error al obtener los enlaces pendientes:', error);
       setArticulos([]); // Si hay error, se limpia la lista
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para obtener publireportajes por categoría
-  const fetchAdvertorialsByCategory = async (categoryId: string | null) => {
+  // ** Función para obtener enlaces por categoría **
+  const fetchLinksByCategory = async (categoryId: string | null) => {
     if (categoryId === "none" || categoryId === null) {
-      fetchApprovedLinks();
+      fetchPendingLinks();
       return;
     }
 
     try {
       const response = await fetch(`http://localhost:3001/api/links/categories/${categoryId}/links`);
       const data = await response.json();
-      console.log(`Publireportajes de la categoría ${categoryId}:`, data);
+      console.log(`Enlaces de la categoría ${categoryId}:`, data);
 
-      const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.linkId,
-        titulo: articulo.title || "Sin título",
-        descripcion: articulo.description || "Sin descripción",
-        link: articulo.link || "#",
-        imagen: articulo.image || "https://via.placeholder.com/100",
-      }));
+      const articulosAdaptados = data.map((articulo: any) => {
+        // 🔹 Obtener la primera imagen de la lista separada por comas
+        const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
+        const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
+
+        return {
+          id: articulo.id || articulo.linkId,
+          titulo: articulo.title || "Sin título",
+          descripcion: articulo.description || "Sin descripción",
+          link: articulo.link || "#",
+          imagen: primeraImagen, // Se asigna solo la primera imagen o `null` si no hay
+        };
+      });
 
       setArticulos(articulosAdaptados);
     } catch (error) {
-      console.error(`Error al obtener publireportajes de la categoría ${categoryId}:`, error);
+      console.error(`Error al obtener enlaces de la categoría ${categoryId}:`, error);
       setArticulos([]);
     }
   };
 
-  // Cargar todos los publireportajes por defecto al abrir la página
+  // ** Cargar todos los enlaces pendientes por defecto al abrir la página **
   useEffect(() => {
-    fetchApprovedLinks();
+    fetchPendingLinks();
   }, []);
 
+  // ** Manejar cambio de categoría **
   const handleCategoryChange = (categoryId: string | null) => {
-    fetchAdvertorialsByCategory(categoryId);
+    fetchLinksByCategory(categoryId);
   };
 
-  // Render de carga o error
+  // ** Render de carga **
   if (loading) {
     return (
       <div

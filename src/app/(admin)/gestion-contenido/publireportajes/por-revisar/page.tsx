@@ -16,14 +16,20 @@ const PR_Categorias = () => {
       const data = await response.json();
       console.log('Datos recibidos:', data); // Log para ver los datos de la API
 
-      // Adaptar los datos para el componente
-      const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.advertorialId,
-        titulo: articulo.title || "Sin título",
-        descripcion: articulo.description || "Sin descripción",
-        link: articulo.link || "#",
-        imagen: articulo.image || "https://via.placeholder.com/100",
-      }));
+      // 🔹 Adaptar los datos para el componente
+      const articulosAdaptados = data.map((articulo: any) => {
+        // 🔹 Obtener la primera imagen de la lista separada por comas
+        const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
+        const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
+
+        return {
+          id: articulo.id || articulo.advertorialId,
+          titulo: articulo.title || "Sin título",
+          descripcion: articulo.description || "Sin descripción",
+          link: articulo.link || "#",
+          imagen: primeraImagen,
+        };
+      });
 
       setArticulos(articulosAdaptados);
     } catch (error) {
@@ -46,13 +52,19 @@ const PR_Categorias = () => {
       const data = await response.json();
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
-      const articulosAdaptados = data.map((articulo: any) => ({
-        id: articulo.id || articulo.advertorialId,
-        titulo: articulo.title || "Sin título",
-        descripcion: articulo.description || "Sin descripción",
-        link: articulo.link || "#",
-        imagen: articulo.image || "https://via.placeholder.com/100",
-      }));
+      const articulosAdaptados = data.map((articulo: any) => {
+        // 🔹 Obtener la primera imagen de la lista separada por comas
+        const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
+        const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
+
+        return {
+          id: articulo.id || articulo.adverotialId,
+          titulo: articulo.title || "Sin título",
+          descripcion: articulo.description || "Sin descripción",
+          link: articulo.link || "#",
+          imagen: primeraImagen, // Se asigna solo la primera imagen o `null` si no hay
+        };
+      });
 
       setArticulos(articulosAdaptados);
     } catch (error) {

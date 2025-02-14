@@ -5,20 +5,41 @@ import { useParams } from "next/navigation";
 import { Box, CircularProgress, TextField, Button, MenuItem, Select, FormControl, InputLabel, Snackbar, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
+import ArchivosMultimedia from "@/components/gestionContenido/ArchivosMultimedia";
+
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface Articulo {
     title: string;
     description: string;
     sourceLink: string;
     categoryId: number;
+    imagesUrl?: string;
 }
 
+// Configuración de Firebase
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_APP_ID,
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
 const EditarArticulo = () => {
-    const { id } = useParams(); // Obtiene el id desde la URL
+    const { id } = useParams();
     const [articulo, setArticulo] = useState<Articulo | null>(null);
-    const [categorias, setCategorias] = useState<{ id: number; name: string }[]>([]); // Lista de categorías
+    const [categorias, setCategorias] = useState<{ id: number; name: string }[]>([]);
     const [loading, setLoading] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]); // 🔹 Ahora se usa esta variable para todas las imágenes
 
     const router = useRouter();
 
@@ -35,7 +56,13 @@ const EditarArticulo = () => {
                     description: data.description,
                     sourceLink: data.sourceLink,
                     categoryId: data.categoryId,
+                    imagesUrl: data.imagesUrl,
                 });
+
+                // 🔹 Convertir las imágenes almacenadas en la BD en un array si existen
+                if (data.imagesUrl) {
+                    setImageUrls(data.imagesUrl.split(","));
+                }
             } catch (error) {
                 console.error("Error al cargar el artículo:", error);
             } finally {
@@ -47,7 +74,7 @@ const EditarArticulo = () => {
             try {
                 const response = await fetch(`http://localhost:3001/api/links/categories/all`);
                 const data = await response.json();
-                setCategorias(data); // Obtiene las categorías disponibles para mostrar en el <Select>
+                setCategorias(data);
             } catch (error) {
                 console.error("Error al cargar categorías:", error);
             }
@@ -55,19 +82,45 @@ const EditarArticulo = () => {
 
         if (id) {
             fetchArticulo();
-            fetchCategorias(); // Cargar las categorías al abrir la página
+            fetchCategorias();
         }
     }, [id]);
 
+    // **🔹 Función para subir archivos a Firebase **
+    const uploadMediaToFirebase = async (files: File[]) => {
+        if (files.length === 0) return [];
+
+        const urls: string[] = [];
+        for (const file of files) {
+            try {
+                const storageRef = ref(storage, `gestion-contenido/enlaces-interes/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                urls.push(downloadURL);
+            } catch (error) {
+                console.error("Error al subir archivo:", error);
+            }
+        }
+
+        return urls;
+    };
+
+    // **🔹 Función para manejar la actualización del artículo **
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // 🔹 Subir las imágenes nuevas a Firebase
+            const newImageUrls = await uploadMediaToFirebase(selectedFiles);
+
+            // 🔹 Actualizar la lista final de imágenes (nuevas + actuales después de eliminar)
+            const updatedImagesUrl = [...imageUrls, ...newImageUrls].join(",");
+
             const response = await fetch(`http://localhost:3001/api/links/update/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(articulo),
+                body: JSON.stringify({ ...articulo, imagesUrl: updatedImagesUrl }),
             });
 
             if (!response.ok) {
@@ -83,16 +136,15 @@ const EditarArticulo = () => {
         }, 4000);
     };
 
+    // **🔹 Manejar imágenes nuevas y eliminadas **
+    const handleImageChange = (newFiles: File[], updatedImageUrls: string[]) => {
+        setSelectedFiles(newFiles);
+        setImageUrls(updatedImageUrls);
+    };
+
     if (loading) {
         return (
-            <div
-                className="flex-center"
-                style={{
-                    height: "100vh",
-                    flexDirection: "column",
-                    gap: "20px",
-                }}
-            >
+            <div className="flex-center" style={{ height: "100vh", flexDirection: "column", gap: "20px" }}>
                 <CircularProgress style={{ color: "#004040" }} size={60} />
                 <h1 className="h1-bold txtcolor-primary">Cargando...</h1>
             </div>
@@ -111,7 +163,8 @@ const EditarArticulo = () => {
                     fullWidth
                     label="Título"
                     value={articulo.title || ""}
-                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value })}
+                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value.substring(0, 255) })}
+                    inputProps={{ maxLength: 255 }} // 🔹 Limita la entrada a 255 caracteres
                     sx={{ marginBottom: "20px" }}
                 />
                 <TextField
@@ -132,7 +185,7 @@ const EditarArticulo = () => {
                     sx={{ marginBottom: "20px" }}
                 />
 
-                <FormControl fullWidth variant="outlined" sx={{ marginBottom: "20px" }}>
+                <FormControl variant="outlined" sx={{ marginBottom: "20px" }}>
                     <InputLabel>Categoría</InputLabel>
                     <Select
                         value={articulo.categoryId || ""}
@@ -146,6 +199,10 @@ const EditarArticulo = () => {
                         ))}
                     </Select>
                 </FormControl>
+
+                <div>
+                    <ArchivosMultimedia onChange={handleImageChange} existingImages={imageUrls} />
+                </div>
 
                 <div className="flex-center">
                     <div className="flex-center gap-10">

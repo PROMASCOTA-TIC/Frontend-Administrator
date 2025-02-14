@@ -6,12 +6,32 @@ import { Box, CircularProgress, TextField, Button, MenuItem, Select, FormControl
 import { useRouter } from "next/navigation";
 import BotonCancelar from "@/components/gestionContenido/botones/BotonCancelar";
 
+import ArchivosMultimedia from "@/components/gestionContenido/ArchivosMultimedia";
+
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 interface Articulo {
     title: string;
     description: string;
     sourceLink: string;
     categoryId: number;
+    imagesUrl?: string;
 }
+
+// Configuración de Firebase
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_APP_ID,
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 const EditarArticulo = () => {
     const { id } = useParams(); // Obtiene el id desde la URL
@@ -19,6 +39,8 @@ const EditarArticulo = () => {
     const [categorias, setCategorias] = useState<{ id: number; name: string }[]>([]); // Lista de categorías
     const [loading, setLoading] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]); // 🔹 Ahora se usa esta variable para todas las imágenes
 
     const router = useRouter();
 
@@ -35,7 +57,13 @@ const EditarArticulo = () => {
                     description: data.description,
                     sourceLink: data.sourceLink,
                     categoryId: data.categoryId,
+                    imagesUrl: data.imagesUrl,
                 });
+
+                // 🔹 Convertir las imágenes almacenadas en la BD en un array si existen
+                if (data.imagesUrl) {
+                    setImageUrls(data.imagesUrl.split(","));
+                }
             } catch (error) {
                 console.error("Error al cargar el artículo:", error);
             } finally {
@@ -59,15 +87,40 @@ const EditarArticulo = () => {
         }
     }, [id]);
 
+    // **🔹 Función para subir archivos a Firebase **
+    const uploadMediaToFirebase = async (files: File[]) => {
+        if (files.length === 0) return [];
+
+        const urls: string[] = [];
+        for (const file of files) {
+            try {
+                const storageRef = ref(storage, `gestion-contenido/publireportajes/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                urls.push(downloadURL);
+            } catch (error) {
+                console.error("Error al subir archivo:", error);
+            }
+        }
+
+        return urls;
+    };
+
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // 🔹 Subir las imágenes nuevas a Firebase
+            const newImageUrls = await uploadMediaToFirebase(selectedFiles);
+
+            // 🔹 Actualizar la lista final de imágenes (nuevas + actuales después de eliminar)
+            const updatedImagesUrl = [...imageUrls, ...newImageUrls].join(",");
+
             const response = await fetch(`http://localhost:3001/api/advertorials/update/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(articulo),
+                body: JSON.stringify({ ...articulo, imagesUrl: updatedImagesUrl }),
             });
 
             if (!response.ok) {
@@ -81,6 +134,12 @@ const EditarArticulo = () => {
         setTimeout(() => {
             router.push(`/gestion-contenido/publireportajes/publicados/articulo/${id}`);
         }, 4000);
+    };
+
+    // **🔹 Manejar imágenes nuevas y eliminadas **
+    const handleImageChange = (newFiles: File[], updatedImageUrls: string[]) => {
+        setSelectedFiles(newFiles);
+        setImageUrls(updatedImageUrls);
     };
 
     if (loading) {
@@ -111,8 +170,9 @@ const EditarArticulo = () => {
                     fullWidth
                     label="Título"
                     value={articulo.title || ""}
-                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value })}
                     sx={{ marginBottom: "20px" }}
+                    onChange={(e) => setArticulo({ ...articulo, title: e.target.value.substring(0, 255) })}
+                    inputProps={{ maxLength: 255 }} // 🔹 Limita la entrada a 255 caracteres
                 />
                 <TextField
                     fullWidth
@@ -146,6 +206,10 @@ const EditarArticulo = () => {
                         ))}
                     </Select>
                 </FormControl>
+
+                <div>
+                    <ArchivosMultimedia onChange={handleImageChange} existingImages={imageUrls} />
+                </div>
 
                 <div className="flex-center">
                     <div className="flex-center gap-10">

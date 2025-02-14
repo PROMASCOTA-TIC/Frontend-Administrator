@@ -171,6 +171,7 @@ const Form_CrearPregunta: React.FC = () => {
                                     className='minima-regular'
                                     {...register('title')}
                                     error={!!errors.title}
+                                    inputProps={{ maxLength: 255 }} // 🔹 Limita la entrada a 255 caracteres
                                     sx={{
                                         borderRadius: '15px',
                                         backgroundColor: 'white',
@@ -208,7 +209,7 @@ const Form_CrearPregunta: React.FC = () => {
                                     placeholder="Ingresar"
                                     {...register('description')}
                                     error={!!errors.description}
-                                    style={{whiteSpace: 'pre-line'}}
+                                    style={{ whiteSpace: 'pre-line' }}
                                     sx={{
                                         borderRadius: '15px',
                                         backgroundColor: 'white',

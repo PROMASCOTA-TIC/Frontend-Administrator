@@ -12,7 +12,7 @@ interface Articulo {
     categoria: string;
     titulo: string;
     descripcion: string;
-    imagen: string;
+    imagenes: string[];
     bibliografia: string;
     autor: string;
 }
@@ -37,7 +37,9 @@ const EntradaPublireportaje: React.FC = () => {
                     descripcion: data.description || "Descripción no disponible",
                     bibliografia: data.sourceLink || "No especificada",
                     autor: data.ownerName || "Desconocido",
-                    imagen: data.image || "https://via.placeholder.com/200",
+                    imagenes: data.imagesUrl
+                        ? data.imagesUrl.split(",").map((url: string) => url.trim())
+                        : [],
                 });
             } catch (error) {
                 console.error("Error al obtener los datos del artículo:", error);
@@ -76,23 +78,56 @@ const EntradaPublireportaje: React.FC = () => {
     return (
         <Box sx={{ padding: "34px 55px", gap: "21px" }}>
             <h1 className="h1-bold txtcolor-primary" style={{ padding: '21px 0px' }}>{articulo?.categoria}</h1>
+
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div className="flex-column txt-justify" style={{ width: "80%", gap: "21px", paddingRight: "34px" }}>
-                    <h2 className="h2-semiBold txtcolor-secondary">{articulo?.titulo}</h2>
-                    <p className="n-regular" style={{ whiteSpace: "pre-line" }}>{articulo?.descripcion}</p>
-                    <p className="n-regular">
-                        <b>Bibliografía:</b> {articulo?.bibliografia}
+                <div className="flex-column txt-justify" style={{ width: articulo.imagenes.length > 0 ? "80%" : "100%", gap: "21px", paddingRight: "34px" }}>
+                    <h2
+                        className="h2-semiBold txtcolor-secondary txt-justify"
+                        style={{
+                            wordBreak: "break-word", // Permite que el texto salte de línea
+                            overflowWrap: "break-word", // Rompe la palabra si es necesario
+                            whiteSpace: "normal", // Asegura que el texto fluya
+                        }}
+                    >
+                        {articulo?.titulo}
+                    </h2>
+                    <p
+                        className="n-regular"
+                        style={{
+                            whiteSpace: "pre-line",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                        }}
+                    >{articulo?.descripcion}
                     </p>
+                    
+                    <p className="n-regular"
+                        style={{
+                            whiteSpace: "pre-line",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                        }}
+                    >
+                        <b>Bibliografía:</b> {articulo?.bibliografia}</p>
                     <p className="n-regular">
                         <b>Compartido por:</b> {articulo?.autor}
                     </p>
                 </div>
-                <img
-                    src={articulo?.imagen}
-                    className="articulo_imagen"
-                    alt={articulo?.titulo}
-                    style={{ width: "200px", borderRadius: "10px" }}
-                />
+
+                {/* 🔹 Solo se muestra si hay imágenes */}
+                {articulo.imagenes.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {articulo.imagenes.map((imagen, index) => (
+                            <img
+                                key={index}
+                                src={imagen}
+                                className="articulo_imagen"
+                                alt={`Imagen ${index + 1} de ${articulo.titulo}`}
+                                style={{ width: "200px", borderRadius: "10px" }}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </Box>
     );
