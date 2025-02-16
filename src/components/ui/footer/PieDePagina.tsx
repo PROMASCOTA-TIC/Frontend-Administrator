@@ -31,7 +31,7 @@ const PieDePagina: React.FC<PieDePaginaProps> = ({ isOpen }) => {
                     <p>0999999999</p>
                     <p>0999999999</p>
                 </div>
-                <p className='minima-regular'>info@promascota.com</p>
+                <p className='minima-regular'>info@promaskota.com</p>
             </div>
 
             <div>

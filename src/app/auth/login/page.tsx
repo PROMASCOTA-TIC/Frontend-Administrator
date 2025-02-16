@@ -32,7 +32,7 @@ export default function Login() {
                 fontSize: { xs: '32px', md: '42px' },
                 color: theme.palette.primary.main,
               }}>
-              PROMASCOTA
+              PROMASKOTA
             </Typography>
             <Image src={LogoVerde}
               style={{
@@ -92,6 +92,20 @@ export default function Login() {
             }}
             priority
           />
+          
+  <h1 style={{
+    position: 'absolute',
+    top: '8%', 
+    left: '55%',
+    transform: 'translate(-50%, -50%)',
+    color: 'white',
+    fontSize: '3rem', 
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadow: '2px 2px 10px rgba(0, 0, 0, 0.5)', 
+  }}>
+    Administrador
+  </h1>
         </Grid2>
       </Grid2>
   );

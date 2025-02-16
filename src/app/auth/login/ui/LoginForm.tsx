@@ -101,6 +101,15 @@ export const LoginForm = () => {
                 error={!!errors.email}
                 placeholder="Ingrese su correo electrónico"
                 {...register('email')}
+                sx={{
+                    "& .MuiOutlinedInput-root": {
+                        "& fieldset": { borderColor: "gray", borderRadius: "10px" },
+                        "&:hover fieldset": { borderColor: themePalette.secondary },
+                        "&.Mui-focused fieldset": { borderColor: themePalette.secondary },
+                    },
+                    backgroundColor: "white",
+                    borderRadius: "10px",
+                }}
             />
             {errors.email &&
                 <Typography className="text-red-500 text-fs12"
@@ -135,6 +144,13 @@ export const LoginForm = () => {
                     </InputAdornment>
                 }
                 inputProps={{ placeholder: "Ingrese su contraseña" }}
+                sx={{
+                    "& .MuiOutlinedInput-notchedOutline": { borderColor: "gray", borderRadius: "10px" },
+                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: themePalette.secondary },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: themePalette.secondary },
+                    backgroundColor: "white",
+                    borderRadius: "10px",
+                }}
             />
             {errors.password &&
                 <Typography className="text-red-500 text-fs12"

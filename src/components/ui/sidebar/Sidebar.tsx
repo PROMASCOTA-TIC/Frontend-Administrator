@@ -107,7 +107,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     <>
                         <Image src={LogoVerde} alt='Logo de un perro y un gato' width={40} height={40} priority style={{ marginLeft: '10px' }} />
                         <Typography sx={{ fontWeight: 'bold', color: themePalette.primary, marginLeft: '10px' }}>
-                            PROMASCOTA
+                            PROMASKOTA
                         </Typography>
                     </>
                 )}
@@ -142,7 +142,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: React.Disp
                     >
                         <Image src={LogoBlanco} alt='Logo de un perro y un gato' width={80} height={80} priority style={{ marginTop: '48px' }} />
                         <Typography sx={{ fontWeight: 'bold', color: '#fff' }}>
-                            PROMASCOTA
+                            PROMASKOTA
                         </Typography>
                     </Box>
                 )}
