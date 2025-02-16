@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ArticulosConFoto from "@/components/gestionContenido/ArticulosConFoto";
 import { CircularProgress } from "@mui/material";
 import PR_Filtro from "@/components/gestionContenido/filtros/PR_Filtro";
+import EI_Filtro from "@/components/gestionContenido/filtros/EI_Filtro";
 
 const EI_Categorias = () => {
   const [articulos, setArticulos] = useState<any[]>([]);
@@ -16,8 +17,11 @@ const EI_Categorias = () => {
       const data = await response.json();
       console.log("Datos recibidos:", data); // Log para ver los datos de la API
 
+      // 🔹 Filtrar solo los que tienen estado "pending"
+      const filteredData = data.filter((articulo: any) => articulo.status === "approved");
+
       // 🔹 Adaptar los datos para el componente
-      const articulosAdaptados = data.map((articulo: any) => {
+      const articulosAdaptados = filteredData.map((articulo: any) => {
         // 🔹 Obtener la primera imagen de la lista separada por comas
         const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
         const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
@@ -101,7 +105,7 @@ const EI_Categorias = () => {
 
   return (
     <div>
-      <PR_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
+      <EI_Filtro onChangeCategory={handleCategoryChange} defaultCategory="none" />
       <div
         style={{
           height: "435px", // el alto máximo que desees

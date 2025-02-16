@@ -52,13 +52,16 @@ const PR_Categorias = () => {
       const data = await response.json();
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
-      const articulosAdaptados = data.map((articulo: any) => {
+      // 🔹 Filtrar solo los que tienen estado "pending"
+      const filteredData = data.filter((articulo: any) => articulo.status === "pending");
+
+      const articulosAdaptados = filteredData.map((articulo: any) => {
         // 🔹 Obtener la primera imagen de la lista separada por comas
         const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
         const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;
 
         return {
-          id: articulo.id || articulo.adverotialId,
+          id: articulo.id || articulo.advertorialId,
           titulo: articulo.title || "Sin título",
           descripcion: articulo.description || "Sin descripción",
           link: articulo.link || "#",

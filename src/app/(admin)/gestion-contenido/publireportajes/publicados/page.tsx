@@ -52,7 +52,10 @@ const PR_Categorias = () => {
       const data = await response.json();
       console.log(`Publireportajes de la categoría ${categoryId}:`, data);
 
-      const articulosAdaptados = data.map((articulo: any) => {
+      // 🔹 Filtrar solo los que tienen estado "approved"
+      const filteredData = data.filter((articulo: any) => articulo.status === "approved");
+
+      const articulosAdaptados = filteredData.map((articulo: any) => {
         // 🔹 Obtener la primera imagen de la lista separada por comas
         const imagenesArray = articulo.imagesUrl ? articulo.imagesUrl.split(",").map((url: string) => url.trim()) : [];
         const primeraImagen = imagenesArray.length > 0 ? imagenesArray[0] : null;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Button, IconButton, CardMedia } from "@mui/material";
+import { Box, Button, IconButton, CardMedia, Typography } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -92,6 +92,7 @@ const ArchivosMultimedia: React.FC<ArchivosMultimediaProps> = ({ onChange, exist
             Seleccionar archivos
           </Button>
         </label>
+        <Typography style={{ fontSize: "15px", paddingTop: "8px" }}>En formato .jpg o .png</Typography>
 
         <Box display="flex" flexWrap="wrap" mt={2} gap={2} justifyContent="center">
           {previewFiles.map((file, index) => (
