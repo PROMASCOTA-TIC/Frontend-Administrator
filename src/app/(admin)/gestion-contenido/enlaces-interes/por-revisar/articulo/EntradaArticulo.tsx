@@ -12,7 +12,7 @@ interface Articulo {
     categoria: string;
     titulo: string;
     descripcion: string;
-    imagenes: string[]; // Cambiado de `imagen` a un array `imagenes`
+    imagenes: string[];
     bibliografia: string;
     autor: string;
 }
