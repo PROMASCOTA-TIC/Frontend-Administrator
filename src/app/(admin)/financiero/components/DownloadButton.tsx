@@ -8,22 +8,29 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
 import ExcelJS from 'exceljs';
 
-interface Ingreso {
-    category: string;
-    amount: number;
-    description: string;
-}
-
-interface Egreso {
-    category: string;
-    amount: number;
-    description: string;
-}
-
 interface FinancialData {
     financialData: {
-        ingresos: Ingreso[];
-        egresos: Egreso[];
+        ingresos: {
+            id: string;
+            userName: string;
+            amount: number;
+            incomeDate: Date;
+        }[];
+        egresos: {
+            id: string;
+            category: string;
+            description: string;
+            expenseDate: Date;
+            price: number;
+        }[];
+        ventas: {
+            id: string;
+            entrepreneurName: string;
+            productName: string;
+            productCategory: string;
+            amount: number;
+            saleDate: Date;
+        }[];
         totalIngresos: number;
         totalEgresos: number;
         balance: number;
@@ -52,19 +59,25 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         }
 
         const workbook = new ExcelJS.Workbook();
-        workbook.creator = 'Your App';
+        workbook.creator = 'PROMASKOTA';
         workbook.created = new Date();
 
         const ingresosSheet = workbook.addWorksheet('Ingresos');
-        ingresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        ingresosSheet.addRow(['Id', 'Nombre del usuario', 'Monto', 'Fecha del Ingreso']);
         financialData.ingresos.forEach(item => {
-            ingresosSheet.addRow([item.category, item.amount, item.description]);
+            ingresosSheet.addRow([item.id, item.userName, item.amount, new Date(item.incomeDate).toLocaleDateString()]);
+        });
+
+        const ventasSheet = workbook.addWorksheet('Ventas');
+        ventasSheet.addRow(['Id', 'Emprendedor', 'Producto', 'Categoría', 'Precio', 'Fecha de la venta']);
+        financialData.ventas.forEach(item => {
+            ventasSheet.addRow([item.id, item.entrepreneurName, item.productName, item.productCategory,  item.amount, new Date(item.saleDate).toLocaleDateString()]);
         });
 
         const egresosSheet = workbook.addWorksheet('Egresos');
-        egresosSheet.addRow(['Categoría', 'Monto', 'Descripción']);
+        egresosSheet.addRow(['Id', 'Categoría', 'Descripción', 'Monto', 'Fecha del Gasto',]);
         financialData.egresos.forEach(item => {
-            egresosSheet.addRow([item.category, item.amount, item.description]);
+            egresosSheet.addRow([item.id, item.category, item.description, item.price, new Date(item.expenseDate).toLocaleDateString()]);
         });
 
         const resumenSheet = workbook.addWorksheet('Resumen');
@@ -72,7 +85,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         resumenSheet.addRow(['Total Egresos', financialData.totalEgresos]);
         resumenSheet.addRow(['Balance', financialData.balance]);
 
-        [ingresosSheet, egresosSheet, resumenSheet].forEach(sheet => {
+        [ingresosSheet, egresosSheet, ventasSheet].forEach(sheet => {
             sheet.columns.forEach(column => {
                 if (column && column.eachCell) {
                     column.eachCell((cell, rowNumber) => {
@@ -90,7 +103,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'reporte_financiero.xlsx';
+        link.download = 'reporte_financiero_PROMASKOTA.xlsx';
         link.click();
         URL.revokeObjectURL(url);
     };
@@ -100,7 +113,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         const doc = new jsPDF();
 
         doc.setFontSize(18);
-        doc.text('PROMASCOTA', 105, 20, { align: 'center' });
+        doc.text('PROMASKOTA', 105, 20, { align: 'center' });
 
         doc.setFontSize(16);
         doc.text('Reporte Financiero', 105, 30, { align: 'center' });
@@ -113,8 +126,21 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
 
         autoTable(doc, {
             startY: startY,
-            head: [['Categoría', 'Monto', 'Descripción']],
-            body: financialData.ingresos.map(item => [item.category, `$${item.amount}`, item.description]),
+            head: [['Id', 'Nombre del usuario', 'Monto', 'Fecha del Ingreso']],
+            body: financialData.ingresos.map(item => [item.id, item.userName, `$${item.amount}`, new Date(item.incomeDate).toLocaleDateString()]),
+        });
+
+        startY = (doc as any).autoTable.previous.finalY + 10;
+        doc.setFontSize(14);
+        doc.text('Ventas', 14, startY);
+
+        startY += 5;
+        doc.setFontSize(12);
+
+        autoTable(doc, {
+            startY: startY,
+            head: [['Id', 'Emprendedor', 'Producto', 'Categoría', 'Precio', 'Fecha de la venta']],
+            body: financialData.ventas.map(item => [item.id, item.entrepreneurName, item.productName, item.productCategory, `$${item.amount}`, new Date(item.saleDate).toLocaleDateString()]),
         });
 
         startY = (doc as any).autoTable.previous.finalY + 10;
@@ -126,8 +152,8 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
 
         autoTable(doc, {
             startY: startY,
-            head: [['Categoría', 'Monto', 'Descripción']],
-            body: financialData.egresos.map(item => [item.category, `$${item.amount}`, item.description]),
+            head: [['Id', 'Categoría', 'Descripción', 'Monto', 'Fecha del Gasto']],
+            body: financialData.egresos.map(item => [item.id, item.category, item.description, `$${item.price}`, new Date(item.expenseDate).toLocaleDateString()]),
         });
 
         startY = (doc as any).autoTable.previous.finalY + 10;
@@ -140,7 +166,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
         doc.text(`Total Egresos: $${financialData.totalEgresos}`, 14, startY + 5);
         doc.text(`Balance: $${financialData.balance}`, 14, startY + 10);
 
-        doc.save('reporte_financiero.pdf');
+        doc.save('reporte_financiero_PROMASKOTA.pdf');
     };
 
 
@@ -176,7 +202,7 @@ export const DownloadButton: React.FC<FinancialData> = ({ financialData }) => {
                 }}
             >
                 <MenuItem onClick={() => handleDownload('excel')}>Descargar como XLSX</MenuItem>
-                <MenuItem onClick={() => handleDownload('pdf')}>Imprimir</MenuItem>
+                <MenuItem onClick={() => handleDownload('pdf')}>Descargar como PDF</MenuItem>
             </Menu>
         </>
     );

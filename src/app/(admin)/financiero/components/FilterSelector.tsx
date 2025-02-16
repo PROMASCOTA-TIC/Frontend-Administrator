@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const FilterSelector = ({ label, options, onFilterChange, sx, md }: Props) => {
-    const [selectedValue, setSelectedValue] = useState(options[0]?.value || '');
+    const [selectedValue, setSelectedValue] = useState('');
 
     const handleChange = (event: { target: { value: any; }; }) => {
         const value = event.target.value;

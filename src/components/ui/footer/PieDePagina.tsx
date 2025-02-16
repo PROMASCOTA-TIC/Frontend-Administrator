@@ -31,19 +31,19 @@ const PieDePagina: React.FC<PieDePaginaProps> = ({ isOpen }) => {
                     <p>0999999999</p>
                     <p>0999999999</p>
                 </div>
-                <p className='minima-regular'>info@promascota.com</p>
+                <p className='minima-regular'>info@promaskota.com</p>
             </div>
 
             <div>
                 <p className='n-bold'>Redes Sociales</p>
                 <div className='flex-around'>
-                    <IconButton href="https://www.facebook.com" target="_blank" color='inherit'>
+                    <IconButton href="https://www.facebook.com/share/18kPrQkn6p/?mibextid=wwXIfr" target="_blank" color='inherit'>
                         <Facebook />
                     </IconButton>
-                    <IconButton href="https://www.instagram.com" target="_blank" color='inherit'>
+                    <IconButton href="https://www.instagram.com/pro_maskota?igsh=MWJzcDh1ZXNwbzltZA==" target="_blank" color='inherit'>
                         <Instagram />
                     </IconButton>
-                    <IconButton href="https://www.tiktok.com" target="_blank" color='inherit'>
+                    <IconButton href="https://x.com/promaskota?s=21&t=zNTMFwVc03kXulFPEG6ZGg" target="_blank" color='inherit'>
                         <X />
                     </IconButton>
                 </div>

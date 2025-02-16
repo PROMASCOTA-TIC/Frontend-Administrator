@@ -13,11 +13,16 @@ interface DateFormValues {
     endDate: Dayjs | null;
 }
 
-export const DateFilter = () => {
+interface DateFilterProps {
+    onDateSubmit?: (data: DateFormValues) => void;
+}
+
+export const DateFilter = (props: DateFilterProps) => {
     const {
         handleSubmit: handleDateSubmit,
         control: controlDate,
         watch: watchDate,
+        reset: resetDate,
         formState: { errors: dateErrors },
     } = useForm<DateFormValues>({
         defaultValues: {
@@ -29,7 +34,19 @@ export const DateFilter = () => {
     const startDate = watchDate("startDate");
 
     const onDateSubmit = (data: DateFormValues) => {
-        console.log("Filtrado por fechas:", data);
+        if (props.onDateSubmit) {
+            props.onDateSubmit(data);
+        }
+    };
+
+    const handleReset = () => {
+        resetDate({
+            startDate: null,
+            endDate: null,
+        });
+        if (props.onDateSubmit) {
+            props.onDateSubmit({ startDate: null, endDate: null });
+        }
     };
 
     return (
@@ -107,6 +124,22 @@ export const DateFilter = () => {
                         onClick={handleDateSubmit(onDateSubmit)}
                     >
                         Filtrar
+                    </Button>
+                    <Button
+                    sx={{
+                        minWidth: '80px',
+                        marginLeft: {xs:'10px'},
+                        marginBottom: { xs: '21px', md: '0px' },
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        maxHeight: '54px'
+                    }}
+                        type="button"
+                        className="buttonFiltrarBuscar"
+                        onClick={handleReset}
+                    >
+                        Limpiar
                     </Button>
                 </Grid2>
             </Grid2>

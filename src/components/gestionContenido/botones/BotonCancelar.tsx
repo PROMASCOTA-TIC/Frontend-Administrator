@@ -60,7 +60,7 @@ const BotonCancelar: React.FC<BotonCancelarProps> = ({ link, onConfirm }) => {
                 </DialogContent>
                 <DialogActions className='flex-center p-13' style={{ gap: '34px' }}>
                     <Button onClick={handleConfirm} autoFocus className='bg-secondary txtcolor-white'>
-                        Eliminar
+                        Aceptar
                     </Button>
                     <Button onClick={handleClose} className='bg-primary txtcolor-white' style={{ margin: '0px' }}>
                         Cancelar

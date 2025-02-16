@@ -1,8 +1,7 @@
-import React from 'react';
-import { Box } from '@mui/material';
-import { esES } from '@mui/x-data-grid/locales';
 import { DataGrid, GridColDef, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { themePalette } from '@/config/theme.config';
+import { esES } from '@mui/x-data-grid/locales';
+import { Box } from '@mui/material';
 
 interface Props {
     rows: any;
@@ -47,6 +46,7 @@ export const Tables = ({ rows, columns }: Props) => {
                     },
                 }}
                 sx={{
+                    fontSize: '1rem',
                     flexGrow: 1,
                     '& .MuiDataGrid-toolbarContainer': {
                         backgroundColor: themePalette.cwhite,
@@ -55,12 +55,14 @@ export const Tables = ({ rows, columns }: Props) => {
                     },
                     '& .MuiDataGrid-columnHeader': {
                         backgroundColor: themePalette.black10,
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
                         fontWeight: 'bold',
                     },
                     '& .MuiDataGrid-footerContainer': {
                         backgroundColor: themePalette.black10,
                         fontWeight: 'bold',
-                    },
+                    }
                 }}
             />
         </Box>
