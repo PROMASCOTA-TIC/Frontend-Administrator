@@ -24,7 +24,10 @@ dayjs.extend(utc);
 const categories = [
     { label: 'Todos', value: '' },
     { label: 'Hosting', value: 'Hosting' },
-    { label: 'Pagos', value: 'Payments' },
+    { label: 'Honorarios', value: 'Honorarios' },
+    { label: 'Botón de pago', value: 'Boton de pago' },
+    { label: 'Pagos a emprendedores', value: 'Pagos a emprendedores' },
+    { label: 'Otros', value: 'Otros' },
 ];
 
 interface RowData {

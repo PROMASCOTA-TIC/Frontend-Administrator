@@ -36,7 +36,7 @@ const SIDEBAR_ITEMS: SideBarItem[] = [
             { title: 'Egresos', path: '/financiero/egresos' },
             { title: 'Transferencias', path: '/financiero/transferencias' },
             { title: 'Pago a emprendedores', path: '/financiero/pago-a-emprendedores' },
-            { title: 'Impuestos', path: '/financiero/impuestos' },
+            { title: 'Consolidado', path: '/financiero/impuestos' },
         ],
     },
     {

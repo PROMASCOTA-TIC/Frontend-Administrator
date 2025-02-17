@@ -17,12 +17,11 @@ interface RowData {
     netProfit: string;
 }
 
-
 const columns: GridColDef[] = [
     { field: "no", headerName: "No", flex: 0.5, minWidth: 50 },
     { field: "month", headerName: "Mes", flex: 1, minWidth: 100 },
     { field: "totalCommissions", headerName: "Comisión", flex: 1, minWidth: 100 },
-    { field: "ivaCalculated", headerName: "IVA (15%)", flex: 1, minWidth: 100 },
+    { field: "ivaCalculated", headerName: "IVA", flex: 1, minWidth: 100 },
     { field: "netProfit", headerName: "Ganancia", flex: 1, minWidth: 100 },
 ];
 
@@ -85,7 +84,7 @@ export default function Ventas() {
                         fontSize: { xs: "26px", md: "34px" },
                     }}
                 >
-                    Impuestos
+                    Consolidado
                 </Typography>
             </Grid2>
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>

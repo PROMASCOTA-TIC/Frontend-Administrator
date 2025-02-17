@@ -57,6 +57,11 @@ export const LoginForm = () => {
             document.cookie = `auth_cookie=${response.data.token}; expires=${expirationTime.toUTCString()}; path=/`;
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user_id', response.data.id);
+            setNotification({
+                open: true,
+                message: 'Inicio de sesión exitoso',
+                type: 'error',
+            });
             router.push('/')
         } catch (error) {
             setNotification({
