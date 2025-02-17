@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { URL_BASE } from "@/config/config";
 import Notification from "@/components/ui/notifications/Notification";
+import LoadingSpinner from "@/components/ui/LoadingSpinner/LoadingSpinner";
 
 interface RowData {
     no: number;
@@ -27,6 +28,7 @@ const columns: GridColDef[] = [
 
 export default function Ventas() {
     const [rows, setRows] = useState<RowData[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [notification, setNotification] = useState<{
         open: boolean;
         message: string;
@@ -34,6 +36,7 @@ export default function Ventas() {
     }>({ open: false, message: '', type: 'info' });
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${URL_BASE}taxes`, {
                 headers: {
@@ -49,10 +52,12 @@ export default function Ventas() {
                 item.month = monthNames[date.getMonth()];
             });
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
+            setLoading(false);
             setRows(data);
         } catch (error) {
             setNotification({ open: true, message: 'Error al cargar los datos', type: 'error' });
             console.log('error', error);
+            setLoading(false);
             setRows([]);
         }
     };
@@ -88,7 +93,7 @@ export default function Ventas() {
                 </Typography>
             </Grid2>
             <Grid2 size={12} sx={{ height: 400, width: "100%", marginTop: "21px" }}>
-                <Tables rows={rows} columns={columns} />
+                {loading ? <LoadingSpinner /> : <Tables rows={rows} columns={columns} />}
             </Grid2>
         </Grid2>
     );

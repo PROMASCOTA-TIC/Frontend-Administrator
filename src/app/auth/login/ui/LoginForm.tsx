@@ -60,7 +60,7 @@ export const LoginForm = () => {
             setNotification({
                 open: true,
                 message: 'Inicio de sesión exitoso',
-                type: 'error',
+                type: 'success',
             });
             router.push('/')
         } catch (error) {

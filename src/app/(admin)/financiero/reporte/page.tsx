@@ -99,7 +99,8 @@ export default function Reporte() {
                 id: income.id,
                 userName: income.userName,
                 amount: Number(income.amount),
-                incomeDate: new Date(income.incomeDate).toLocaleDateString()
+                incomeDate: new Date(income.incomeDate).toLocaleDateString(),
+                category: income.category === 'PetOwner' || income.category === 'Comprador' ? 'Comprador' : 'Emprendedor'
             }))
             const formattedVentas = response.data.ventas.map((sale: any) => ({
                 id: sale.id,
@@ -136,7 +137,7 @@ export default function Reporte() {
                     }
                 });
             const formattedIngresosTG = response.data.map((income: any) => ({
-                label: income.label,
+                label: income.label === 'PetOwner' || 'Comprador' ? 'Comprador' : 'Emprendedor',
                 value: Number(income.value)
             }));
             setIngresosTG(formattedIngresosTG);
@@ -181,10 +182,16 @@ export default function Reporte() {
                         'Content-Type': 'application/json',
                     }
                 });
-            const formattedIngresosPC = response.data.map((income: any) => ({
-                label: income.label,
-                value: income.value
-            }));
+            const formattedIngresosPC = response.data.reduce((acc: any, income: any) => {
+                const label = income.label === 'PetOwner' || income.label === 'Comprador' ? 'Comprador' : 'Emprendedor';
+                const existing = acc.find((item: any) => item.label === label);
+                if (existing) {
+                    existing.value = parseFloat((existing.value + income.value).toFixed(2));
+                } else {
+                    acc.push({ label, value: income.value });
+                }
+                return acc;
+            }, []);
             setIngresosPC(formattedIngresosPC);
             setNotification({ open: true, message: 'Datos cargados correctamente', type: 'success' });
         } catch (error) {
